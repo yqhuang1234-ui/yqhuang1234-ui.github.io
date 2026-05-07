@@ -57,6 +57,25 @@ Week 1 covers the core techniques that separate a working network from a well-tu
 
 ---
 
+## Week 2 — Optimization Algorithms
+
+Week 2 focuses on the algorithms that make training faster and more reliable: mini-batch gradient descent, momentum, RMSprop, and Adam. Understanding these methods is key to getting networks to converge quickly in practice rather than waiting hours for vanilla gradient descent to creep toward a solution.
+
+📖 **[Full notes on Notion →](https://www.notion.so/yanqihuang/Week-2-Optimization-Algorithms-Complete-Guide-35853115b8b880a3b46ad5003d1b8e7e?source=copy_link)**
+
+<div class="nb-card">
+  <div class="nb-card-header">
+    <span class="nb-label">Code · Week 2</span>
+    <span class="nb-filename">Optimization_methods.html</span>
+  </div>
+  <p class="nb-desc">Implements mini-batch gradient descent, momentum, RMSprop, and Adam — comparing convergence behavior on a real classification task.</p>
+  <div class="nb-actions">
+    <a class="nb-btn nb-btn-view" href="/files/course2/week 2 Optimization_methods.html" target="_blank">View in browser</a>
+  </div>
+</div>
+
+---
+
 More weeks coming as I work through the course.
 
 <style>
