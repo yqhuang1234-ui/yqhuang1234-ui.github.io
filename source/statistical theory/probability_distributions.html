@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Probability Distributions Reference</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -63,6 +66,27 @@ body {
   gap: 1.5rem;
 }
 
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  text-decoration: none;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.home-btn:hover {
+  background: var(--accent-light);
+  border-color: #c5bff8;
+  color: var(--accent);
+}
+
 .header-title {
   font-family: var(--font-display);
   font-size: 1.3rem;
@@ -108,7 +132,7 @@ body {
 /* ─── MAIN LAYOUT ─── */
 .main {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 180px 1fr;
   min-height: calc(100vh - 56px);
 }
 
@@ -116,7 +140,7 @@ body {
 .sidebar {
   background: var(--surface);
   border-right: 1px solid var(--border);
-  padding: 1.25rem;
+  padding: 0.75rem;
   overflow-y: auto;
   position: sticky;
   top: 56px;
@@ -138,13 +162,13 @@ body {
 .dist-btn {
   width: 100%;
   text-align: left;
-  padding: 7px 10px;
+  padding: 5px 8px;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text2);
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.12s;
   display: flex;
@@ -249,8 +273,8 @@ body {
 .cont .card-type-badge { background: var(--teal-light); color: var(--teal); }
 
 .card-formula {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-family: var(--font-body);
+  font-size: 14px;
   color: var(--text2);
   margin-top: 3px;
   line-height: 1.5;
@@ -270,7 +294,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4px 12px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text2);
   margin-bottom: 8px;
 }
@@ -278,7 +302,7 @@ body {
 .card-stats strong { color: var(--text); font-weight: 500; font-family: var(--font-mono); }
 
 .card-example {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text3);
   line-height: 1.5;
   font-style: italic;
@@ -328,7 +352,7 @@ body {
   flex: 1;
 }
 .detail-notation {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 11.5px;
   color: var(--text2);
   background: var(--surface);
@@ -561,7 +585,7 @@ input[type=range]::-webkit-slider-thumb {
 }
 .full-table tr:hover td { background: var(--surface2); }
 .full-table td.formula-cell {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 11px;
   line-height: 1.7;
   color: var(--text2);
@@ -600,6 +624,7 @@ input[type=range]::-webkit-slider-thumb {
 <body>
 
 <header class="site-header">
+  <button class="home-btn" onclick="resetView()" title="Back to overview">&#8592; All distributions</button>
   <div class="header-title"><em>Probability</em> Distributions Reference</div>
   <div class="header-nav">
     <button class="nav-btn active" onclick="setView('grid')">Grid</button>
@@ -687,21 +712,21 @@ const DISTS = {
   Bernoulli: {
     type:'disc', paramStr:'p',
     support:'x ∈ {0, 1},  0 ≤ p ≤ 1',
-    notation:'pmf: P(x) = pˣ(1−p)¹⁻ˣ',
-    mgf:'M_X(t) = (1−p) + peᵗ',
+    notation:'pmf: \\(P(x) = p^x(1-p)^{1-x}\\)',
+    mgf:'\\(M_X(t) = (1-p)+pe^{t}\\)',
     params:[{name:'p',label:'p',sym:'p',min:0.01,max:0.99,step:0.01,default:0.5}],
     pmf:(x,{p})=>x===0?(1-p):x===1?p:0,
     support_fn:()=>[0,1],
     mean:({p})=>p,
     variance:({p})=>p*(1-p),
-    meanStr:'p',varStr:'p(1−p)',mgfStr:'(1−p) + peᵗ',
+    meanStr:'p',varStr:'p(1−p)',mgfStr:'(1−p)+peᵗ',
     example:'Indicator of success in a single trial (e.g. coin flip: heads=1, tails=0).'
   },
   Binomial: {
     type:'disc', paramStr:'n, p',
     support:'x = 0,1,...,n;  0 ≤ p ≤ 1',
-    notation:'pmf: P(x) = C(n,x) pˣ(1−p)ⁿ⁻ˣ',
-    mgf:'M_X(t) = ((1−p) + peᵗ)ⁿ',
+    notation:'pmf: \\(P(x) = \\binom{n}{x}p^x(1-p)^{n-x}\\)',
+    mgf:'\\(M_X(t) = ((1-p)+pe^t)^n\\)',
     params:[
       {name:'n',label:'n',sym:'n',min:1,max:50,step:1,default:10},
       {name:'p',label:'p',sym:'p',min:0.01,max:0.99,step:0.01,default:0.3}
@@ -710,40 +735,40 @@ const DISTS = {
     support_fn:({n})=>Array.from({length:n+1},(_,i)=>i),
     mean:({n,p})=>n*p,
     variance:({n,p})=>n*p*(1-p),
-    meanStr:'np',varStr:'np(1−p)',mgfStr:'((1−p) + peᵗ)ⁿ',
+    meanStr:'np',varStr:'np(1−p)',mgfStr:'((1−p)+peᵗ)ⁿ',
     example:'Number of successes in n independent Bernoulli trials (e.g. # of heads in n flips).'
   },
   Geometric: {
     type:'disc', paramStr:'p',
     support:'x = 1,2,3,...;  0 ≤ p ≤ 1',
-    notation:'pmf: P(x) = (1−p)ˣ⁻¹ · p',
-    mgf:'M_X(t) = peᵗ / (1−(1−p)eᵗ)',
+    notation:'pmf: \\(P(x) = (1-p)^{x-1}\\cdot p\\)',
+    mgf:'\\(M_X(t) = \\dfrac{pe^t}{1-(1-p)e^t}\\)',
     params:[{name:'p',label:'p',sym:'p',min:0.05,max:0.95,step:0.01,default:0.3}],
     pmf:(x,{p})=>Math.pow(1-p,x-1)*p,
     support_fn:()=>Array.from({length:25},(_,i)=>i+1),
     mean:({p})=>1/p,
     variance:({p})=>(1-p)/(p*p),
-    meanStr:'1/p',varStr:'(1−p)/p²',mgfStr:'peᵗ / (1−(1−p)eᵗ)',
+    meanStr:'1/p',varStr:'(1−p)/p²',mgfStr:'peᵗ/(1−(1−p)eᵗ)',
     example:'Number of trials required to obtain the first success (e.g. number of flips until first heads).'
   },
   Poisson: {
     type:'disc', paramStr:'λ',
     support:'x = 0,1,2,...;  0 ≤ λ',
-    notation:'pmf: P(x) = e⁻ᵸ λˣ / x!',
-    mgf:'M_X(t) = exp(λ(eᵗ − 1))',
+    notation:'pmf: \\(P(x) = \\dfrac{e^{-\\lambda}\\lambda^x}{x!}\\)',
+    mgf:'\\(M_X(t) = \\exp(\\lambda(e^t-1))\\)',
     params:[{name:'lambda',label:'λ',sym:'λ',min:0.1,max:15,step:0.1,default:3}],
     pmf:(x,{lambda})=>Math.exp(-lambda)*Math.pow(lambda,x)/factorial(x),
     support_fn:({lambda})=>Array.from({length:Math.max(20,Math.ceil(lambda*3)+5)},(_,i)=>i),
     mean:({lambda})=>lambda,
     variance:({lambda})=>lambda,
-    meanStr:'λ',varStr:'λ',mgfStr:'exp(λ(eᵗ − 1))',
+    meanStr:'λ',varStr:'λ',mgfStr:'exp(λ(eᵗ−1))',
     example:'Number of events occurring in a fixed interval when events happen independently at a constant rate.'
   },
   NegBin: {
     type:'disc', paramStr:'r, p',
     support:'x = 0,1,2,...;  0 ≤ p ≤ 1',
-    notation:'pmf: P(x) = C(x+r−1, x)(1−p)ˣ pʳ',
-    mgf:'M_X(t) = (p / (1−(1−p)eᵗ))ʳ',
+    notation:'pmf: \\(P(x) = \\binom{x+r-1}{x}(1-p)^x p^r\\)',
+    mgf:'\\(M_X(t) = \\left(\\dfrac{p}{1-(1-p)e^t}\\right)^r\\)',
     params:[
       {name:'r',label:'r',sym:'r',min:1,max:20,step:1,default:4},
       {name:'p',label:'p',sym:'p',min:0.05,max:0.95,step:0.01,default:0.4}
@@ -752,27 +777,27 @@ const DISTS = {
     support_fn:()=>Array.from({length:35},(_,i)=>i),
     mean:({r,p})=>r*(1-p)/p,
     variance:({r,p})=>r*(1-p)/(p*p),
-    meanStr:'r(1−p)/p',varStr:'r(1−p)/p²',mgfStr:'(p / (1−(1−p)eᵗ))ʳ',
+    meanStr:'r(1−p)/p',varStr:'r(1−p)/p²',mgfStr:'(p/(1−(1−p)eᵗ))ʳ',
     example:'Number of failures observed before achieving r successes in repeated Bernoulli trials.'
   },
   DisUniform: {
     type:'disc', paramStr:'N',
     support:'x = 1,2,...,N;  N = 1,2,...',
-    notation:'pmf: P(x) = 1/N',
-    mgf:'M_X(t) = (1/N) Σᵢ₌₁ᴺ eⁱᵗ',
+    notation:'pmf: \\(P(x) = 1/N\\)',
+    mgf:'\\(M_X(t) = \\dfrac{1}{N}\\sum_{i=1}^{N}e^{it}\\)',
     params:[{name:'N',label:'N',sym:'N',min:2,max:20,step:1,default:6}],
     pmf:(x,{N})=>(x>=1&&x<=N)?1/N:0,
     support_fn:({N})=>Array.from({length:N},(_,i)=>i+1),
     mean:({N})=>(N+1)/2,
     variance:({N})=>(N+1)*(N-1)/12,
-    meanStr:'(N+1)/2',varStr:'(N+1)(N−1)/12',mgfStr:'(1/N) Σᵢ₌₁ᴺ eⁱᵗ',
+    meanStr:'(N+1)/2',varStr:'(N²−1)/12',mgfStr:'(1/N)Σeⁱᵗ',
     example:'All integers from 1 to N are equally likely.'
   },
   Normal: {
     type:'cont', paramStr:'μ, σ²',
     support:'−∞ < x < ∞,  −∞ < μ < ∞,  σ > 0',
-    notation:'pdf: f(x) = (1/√(2πσ²)) · exp(−(x−μ)²/(2σ²))',
-    mgf:'M_X(t) = exp(μt + ½σ²t²)',
+    notation:'pdf: \\(f(x) = \\dfrac{1}{\\sqrt{2\\pi\\sigma^2}}\\exp\\!\\left(-\\dfrac{(x-\\mu)^2}{2\\sigma^2}\\right)\\)',
+    mgf:'\\(M_X(t) = \\exp\\!\\left(\\mu t+\\tfrac{1}{2}\\sigma^2 t^2\\right)\\)',
     params:[
       {name:'mu',label:'μ',sym:'μ',min:-5,max:5,step:0.1,default:0},
       {name:'sigma2',label:'σ²',sym:'σ²',min:0.1,max:9,step:0.1,default:1}
@@ -781,14 +806,14 @@ const DISTS = {
     xRange:({mu,sigma2})=>{const s=Math.sqrt(sigma2);return[mu-4.5*s,mu+4.5*s];},
     mean:({mu})=>mu,
     variance:({sigma2})=>sigma2,
-    meanStr:'μ',varStr:'σ²',mgfStr:'exp(μt + ½σ²t²)',
+    meanStr:'μ',varStr:'σ²',mgfStr:'exp(μt+½σ²t²)',
     example:'Measurement errors, biological variation, test scores — the classic bell curve.'
   },
   Exponential: {
     type:'cont', paramStr:'β',
     support:'0 ≤ x < ∞,  β > 0',
-    notation:'pdf: f(x) = (1/β)e^(−x/β)',
-    mgf:'M_X(t) = 1/(1−βt),  t < 1/β',
+    notation:'pdf: \\(f(x) = \\dfrac{1}{\\beta}e^{-x/\\beta}\\)',
+    mgf:'\\(M_X(t) = \\dfrac{1}{1-\\beta t},\\; t < 1/\\beta\\)',
     params:[{name:'beta',label:'β',sym:'β',min:0.1,max:5,step:0.1,default:1}],
     pdf:(x,{beta})=>x<0?0:(1/beta)*Math.exp(-x/beta),
     xRange:({beta})=>[0,beta*6],
@@ -800,8 +825,8 @@ const DISTS = {
   Gamma: {
     type:'cont', paramStr:'α, β',
     support:'0 ≤ x < ∞,  α, β > 0',
-    notation:'pdf: f(x) = x^(α−1) e^(−x/β) / (Γ(α)βᵅ)',
-    mgf:'M_X(t) = (1/(1−βt))ᵅ,  t < 1/β',
+    notation:'pdf: \\(f(x) = \\dfrac{x^{\\alpha-1}e^{-x/\\beta}}{\\Gamma(\\alpha)\\beta^{\\alpha}}\\)',
+    mgf:'\\(M_X(t) = \\left(\\dfrac{1}{1-\\beta t}\\right)^{\\alpha},\\; t < 1/\\beta\\)',
     params:[
       {name:'alpha',label:'α',sym:'α',min:0.5,max:10,step:0.1,default:2},
       {name:'beta',label:'β',sym:'β',min:0.1,max:5,step:0.1,default:1}
@@ -810,14 +835,14 @@ const DISTS = {
     xRange:({alpha,beta})=>[0,Math.max(1,(alpha*beta+4.5*Math.sqrt(alpha)*beta))],
     mean:({alpha,beta})=>alpha*beta,
     variance:({alpha,beta})=>alpha*beta*beta,
-    meanStr:'αβ',varStr:'αβ²',mgfStr:'(1/(1−βt))ᵅ',
+    meanStr:'αβ',varStr:'αβ²',mgfStr:'(1−βt)⁻ᵅ',
     example:'Includes the exponential distribution as a special case when α=1; widely used for waiting times and as a prior in Bayesian models.'
   },
   Uniform: {
     type:'cont', paramStr:'a, b',
     support:'a ≤ x ≤ b',
-    notation:'pdf: f(x) = 1/(b−a)',
-    mgf:'M_X(t) = (eᵗᵇ − eᵗᵃ) / (t(b−a))',
+    notation:'pdf: \\(f(x) = \\dfrac{1}{b-a}\\)',
+    mgf:'\\(M_X(t) = \\dfrac{e^{tb}-e^{ta}}{t(b-a)}\\)',
     params:[
       {name:'a',label:'a',sym:'a',min:-5,max:4,step:0.5,default:0},
       {name:'b',label:'b',sym:'b',min:-4,max:5,step:0.5,default:1}
@@ -826,14 +851,14 @@ const DISTS = {
     xRange:({a,b})=>{const lo=Math.min(a,b),hi=Math.max(a,b)+0.001,pad=(hi-lo)*0.4;return[lo-pad,hi+pad];},
     mean:({a,b})=>(a+b)/2,
     variance:({a,b})=>Math.pow(Math.abs(b-a),2)/12,
-    meanStr:'(a+b)/2',varStr:'(b−a)²/12',mgfStr:'(eᵗᵇ − eᵗᵃ)/(t(b−a))',
+    meanStr:'(a+b)/2',varStr:'(b−a)²/12',mgfStr:'(eᵗᵇ−eᵗᵃ)/(t(b−a))',
     example:'All values between a and b are equally likely.'
   },
   Beta: {
     type:'cont', paramStr:'α, β',
     support:'0 ≤ x ≤ 1,  α, β > 0',
-    notation:'pdf: f(x) = x^(α−1)(1−x)^(β−1) / B(α,β)',
-    mgf:'No closed form (only as series)',
+    notation:'pdf: \\(f(x) = \\dfrac{x^{\\alpha-1}(1-x)^{\\beta-1}}{B(\\alpha,\\beta)}\\)',
+    mgf:'No closed form (series only)',
     params:[
       {name:'alpha',label:'α',sym:'α',min:0.1,max:10,step:0.1,default:2},
       {name:'beta',label:'β',sym:'β',min:0.1,max:10,step:0.1,default:2}
@@ -848,7 +873,7 @@ const DISTS = {
   Cauchy: {
     type:'cont', paramStr:'θ, σ',
     support:'−∞ < x < ∞,  −∞ < θ < ∞,  σ > 0',
-    notation:'pdf: f(x) = 1/(πσ · (1 + ((x−θ)/σ)²))',
+    notation:'pdf: \\(f(x) = \\dfrac{1}{\\pi\\sigma\\!\\left(1+\\left(\\frac{x-\\theta}{\\sigma}\\right)^2\\right)}\\)',
     mgf:'Does not exist',
     params:[
       {name:'theta',label:'θ',sym:'θ',min:-5,max:5,step:0.1,default:0},
@@ -864,20 +889,20 @@ const DISTS = {
   ChiSquared: {
     type:'cont', paramStr:'p',
     support:'0 ≤ x < ∞,  p = 1,2,...',
-    notation:'pdf: f(x) = x^(p/2−1) e^(−x/2) / (2^(p/2) Γ(p/2))',
-    mgf:'M_X(t) = (1/(1−2t))^(p/2),  t < 1/2',
+    notation:'pdf: \\(f(x) = \\dfrac{x^{p/2-1}e^{-x/2}}{2^{p/2}\\,\\Gamma(p/2)}\\)',
+    mgf:'\\(M_X(t) = \\left(\\dfrac{1}{1-2t}\\right)^{p/2},\\; t < 1/2\\)',
     params:[{name:'p',label:'p (df)',sym:'p',min:1,max:20,step:1,default:3}],
     pdf:(x,{p})=>{if(x<=0)return 0;return Math.pow(x,p/2-1)*Math.exp(-x/2)/(Math.pow(2,p/2)*gamma(p/2));},
     xRange:({p})=>[0,Math.max(5,p*2.5+4*Math.sqrt(2*p))],
     mean:({p})=>p,
     variance:({p})=>2*p,
-    meanStr:'p',varStr:'2p',mgfStr:'(1/(1−2t))^(p/2)',
+    meanStr:'p',varStr:'2p',mgfStr:'(1−2t)⁻ᵖ/²',
     example:'Special case of the gamma distribution. Sum of squares of independent standard Normal variables.'
   },
   StudentT: {
     type:'cont', paramStr:'ν',
     support:'−∞ < x < ∞,  ν = 1,2,...',
-    notation:'pdf: f(x) = Γ((ν+1)/2) / (√(νπ)·Γ(ν/2)) · (1+x²/ν)^(−(ν+1)/2)',
+    notation:'pdf: \\(f(x) = \\dfrac{\\Gamma\\!\\left(\\frac{\\nu+1}{2}\\right)}{\\sqrt{\\nu\\pi}\\,\\Gamma\\!\\left(\\frac{\\nu}{2}\\right)}\\left(1+\\dfrac{x^2}{\\nu}\\right)^{-(\\nu+1)/2}\\)',
     mgf:'Does not exist',
     params:[{name:'nu',label:'ν',sym:'ν',min:1,max:30,step:1,default:5}],
     pdf:(x,{nu})=>{const c=gamma((nu+1)/2)/(Math.sqrt(nu*Math.PI)*gamma(nu/2));return c*Math.pow(1+x*x/nu,-(nu+1)/2);},
@@ -890,7 +915,7 @@ const DISTS = {
   FDist: {
     type:'cont', paramStr:'ν₁, ν₂',
     support:'0 ≤ x < ∞,  ν₁, ν₂ = 1,2,...',
-    notation:'pdf: [Γ((ν₁+ν₂)/2)/(Γ(ν₁/2)Γ(ν₂/2))]·(ν₁/ν₂)^(ν₁/2)·x^(ν₁/2−1)·(1+ν₁x/ν₂)^(−(ν₁+ν₂)/2)',
+    notation:'pdf: \\(\\dfrac{\\Gamma\\!\\left(\\frac{\\nu_1+\\nu_2}{2}\\right)}{\\Gamma(\\nu_1/2)\\,\\Gamma(\\nu_2/2)}\\!\\left(\\dfrac{\\nu_1}{\\nu_2}\\right)^{\\nu_1/2}\\!x^{\\nu_1/2-1}\\left(1+\\dfrac{\\nu_1 x}{\\nu_2}\\right)^{-(\\nu_1+\\nu_2)/2}\\)',
     mgf:'Does not exist',
     params:[
       {name:'v1',label:'ν₁',sym:'ν₁',min:1,max:20,step:1,default:5},
@@ -900,7 +925,7 @@ const DISTS = {
     xRange:()=>[0,5],
     mean:({v2})=>v2>2?v2/(v2-2):'does not exist (ν₂≤2)',
     variance:({v1,v2})=>v2>4?2*v2*v2*(v1+v2-2)/(v1*(v2-2)**2*(v2-4)):'does not exist (ν₂≤4)',
-    meanStr:'ν₂/(ν₂−2)  (ν₂ > 2)',varStr:'2ν₂²(ν₁+ν₂−2)/(ν₁(ν₂−2)²(ν₂−4))  (ν₂ > 4)',mgfStr:'does not exist',
+    meanStr:'ν₂/(ν₂−2)  (ν₂>2)',varStr:'2ν₂²(ν₁+ν₂−2)/(ν₁(ν₂−2)²(ν₂−4))  (ν₂>4)',mgfStr:'does not exist',
     example:'Ratio of scaled chi-squared variables; used in ANOVA and regression analysis.'
   }
 };
@@ -923,6 +948,17 @@ let miniCharts = {};
 let detailChart = null;
 
 // ─── VIEW SWITCHING ──────────────────────────────────────────────────────────
+function resetView() {
+  if(selectedDist) {
+    document.getElementById(`card-${selectedDist}`)?.classList.remove('selected');
+    document.getElementById(`nav-${selectedDist}`)?.classList.remove('active');
+    selectedDist = null;
+  }
+  document.getElementById('detail-panel').classList.remove('visible');
+  setView('grid');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
 function setView(v) {
   currentView = v;
   document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='grid')||(i===1&&v==='table')));
@@ -973,11 +1009,12 @@ function buildGrid() {
           <span>E[X] <strong id="card-mean-${name}">${d.meanStr}</strong></span>
           <span>Var(X) <strong id="card-var-${name}">${d.varStr}</strong></span>
           <span>Support <strong style="font-size:10px">${d.support.split(';')[0]}</strong></span>
-          <span>MGF <strong style="font-size:10px">${d.mgfStr.length>20?d.mgfStr.substring(0,18)+'…':d.mgfStr}</strong></span>
+          <span>MGF <strong style="font-size:10px">${d.mgfStr}</strong></span>
         </div>
         <div class="card-example">${d.example}</div>
       </div>
     `;
+    renderMath(card);
     card.onclick = () => selectDist(name);
     el.appendChild(card);
     drawMiniChart(name);
@@ -1045,6 +1082,7 @@ function selectDist(name) {
 
   document.getElementById('detail-title').innerHTML = `${formatName(name)} <span class="param-hint">(${d.paramStr})</span>`;
   document.getElementById('detail-notation').innerHTML = `${d.notation}<br>${d.support}<br>MGF: ${d.mgf}`;
+  renderMath(document.getElementById('detail-notation'));
   document.getElementById('detail-support').textContent = '';
 
   // init curves with default
@@ -1261,8 +1299,19 @@ function buildFullTable() {
       <td class="formula-cell" style="font-size:10px">${d.mgfStr}</td>
       <td style="font-size:11px;color:#5a5750;font-style:italic;min-width:180px">${d.example}</td>
     `;
+    renderMath(row);
     body.appendChild(row);
   });
+}
+
+// ─── MATH RENDERING ──────────────────────────────────────────────────────────
+function renderMath(el) {
+  if(window.renderMathInElement) {
+    renderMathInElement(el, {
+      delimiters:[{left:'\\(',right:'\\)',display:false}],
+      throwOnError:false
+    });
+  }
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────

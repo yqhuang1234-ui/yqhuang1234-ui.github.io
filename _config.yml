@@ -34,6 +34,7 @@ skip_render:
   - statistical theory/**
   - files/course2_week1_code/**
   - files/course2/**
+  - files/course1/**
 
 # Writing
 new_post_name: :title.md

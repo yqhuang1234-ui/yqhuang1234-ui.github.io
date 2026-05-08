@@ -22,6 +22,17 @@ Week 2 is where things start clicking. It introduces logistic regression as a si
 
 📖 **[Full notes on Notion →](https://yanqihuang.notion.site/Week-2-Basics-of-Neural-Network-Programming-Complete-Guide-32853115b8b8812cb7e3fe9e2f0136ed)**
 
+<div class="nb-card">
+  <div class="nb-card-header">
+    <span class="nb-label">Code · Week 2</span>
+    <span class="nb-filename">Logistic_Regression_with_a_Neural_Network_mindset.html</span>
+  </div>
+  <p class="nb-desc">Builds a logistic regression classifier with a neural network mindset — implementing forward and backward propagation from scratch to recognize cat images.</p>
+  <div class="nb-actions">
+    <a class="nb-btn nb-btn-view" href="/files/course1/week 2 Logistic_Regression_with_a_Neural_Network_mindset.html" target="_blank">View in browser</a>
+  </div>
+</div>
+
 ---
 
 ## Week 3 — Shallow Neural Networks
@@ -30,6 +41,17 @@ Week 3 extends the single-neuron picture into a two-layer network. You work thro
 
 📖 **[Full notes on Notion →](https://www.notion.so/yanqihuang/Week-3-Shallow-Neural-Networks-Complete-Guide-32d53115b8b880dea091df09e8db5ebb)**
 
+<div class="nb-card">
+  <div class="nb-card-header">
+    <span class="nb-label">Code · Week 3</span>
+    <span class="nb-filename">Planar_data_classification_with_one_hidden_layer.html</span>
+  </div>
+  <p class="nb-desc">Implements a two-layer neural network to classify non-linearly separable planar data — demonstrating how a hidden layer learns features that logistic regression cannot.</p>
+  <div class="nb-actions">
+    <a class="nb-btn nb-btn-view" href="/files/course1/week 3 Planar_data_classification_with_one_hidden_layer.html" target="_blank">View in browser</a>
+  </div>
+</div>
+
 ---
 
 ## Week 4 — Deep Neural Networks
@@ -37,6 +59,17 @@ Week 3 extends the single-neuron picture into a two-layer network. You work thro
 Week 4 generalizes everything to an L-layer network. The notation gets a bit heavy, but the underlying ideas follow the same pattern — forward pass, compute cost, backward pass, update weights. There's also a good section on why depth matters in practice and how to think about what each layer is learning.
 
 📖 **[Full notes on Notion →](https://www.notion.so/yanqihuang/Week-4-deep-neural-networks-33d53115b8b880ad9434ffee80234d4c)**
+
+<div class="nb-card">
+  <div class="nb-card-header">
+    <span class="nb-label">Code · Week 4</span>
+    <span class="nb-filename">Building_your_Deep_Neural_Network_Step_by_Step.html</span>
+  </div>
+  <p class="nb-desc">Builds an L-layer deep neural network step by step — implementing initialization, linear forward/backward, and parameter updates for a full deep network from scratch.</p>
+  <div class="nb-actions">
+    <a class="nb-btn nb-btn-view" href="/files/course1/week 4 Building_your_Deep_Neural_Network_Step_by_Step.html" target="_blank">View in browser</a>
+  </div>
+</div>
 
 <style>
 .nb-card {
