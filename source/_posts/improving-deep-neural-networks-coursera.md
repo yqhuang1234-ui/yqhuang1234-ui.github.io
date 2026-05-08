@@ -95,8 +95,6 @@ Week 3 ties the course together: systematic hyperparameter search strategies, ba
 
 ---
 
----
-
 ## Certificate
 
 <img src="/img/posts/coursera-certificate-2.png" alt="Coursera Certificate — Improving Deep Neural Networks" style="display:block; max-width:560px; width:100%; margin:0 auto; border:1px solid #E8E2D9; border-radius:10px; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
