@@ -76,6 +76,25 @@ Week 2 focuses on the algorithms that make training faster and more reliable: mi
 
 ---
 
+## Week 3 — Hyperparameter Tuning, Batch Normalization & Frameworks
+
+Week 3 ties the course together: systematic hyperparameter search strategies, batch normalization (what it does and why it helps), and a practical introduction to TensorFlow. The TensorFlow section moves fast but gives enough to start building real models without writing everything from scratch.
+
+📖 **[Full notes on Notion →](https://www.notion.so/yanqihuang/Week-3-Hyperparameter-Tuning-Batch-Normalization-Frameworks-Complete-Guide-35953115b8b880558da1f226ead40cd7?source=copy_link)**
+
+<div class="nb-card">
+  <div class="nb-card-header">
+    <span class="nb-label">Code · Week 3</span>
+    <span class="nb-filename">Tensorflow_introduction.html</span>
+  </div>
+  <p class="nb-desc">Hands-on introduction to TensorFlow — building and training a neural network using the framework's core APIs.</p>
+  <div class="nb-actions">
+    <a class="nb-btn nb-btn-view" href="/files/course2/week 3 Tensorflow_introduction.html" target="_blank">View in browser</a>
+  </div>
+</div>
+
+---
+
 More weeks coming as I work through the course.
 
 <style>
