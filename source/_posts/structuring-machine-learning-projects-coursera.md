@@ -32,6 +32,10 @@ Week 2 goes deeper: error analysis by hand, handling mismatched train and dev/te
 
 ---
 
+## Certificate
+
+<img src="/img/posts/coursera-certificate-3.png" alt="Coursera Certificate — Structuring Machine Learning Projects" style="display:block; max-width:560px; width:100%; margin:0 auto; border:1px solid #E8E2D9; border-radius:10px; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+
 <style>
 .nb-card {
   border: 1px solid #E8E2D9;
