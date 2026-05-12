@@ -35,6 +35,7 @@ skip_render:
   - files/course2_week1_code/**
   - files/course2/**
   - files/course1/**
+  - deep-learning/**
 
 # Writing
 new_post_name: :title.md
