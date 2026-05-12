@@ -96,6 +96,6 @@ theme: fluid
 # Deployment
 deploy:
   type: git
-  repo: https://github.com/yqhuang1234-ui/yqhuang1234-ui.github.io.git
+  repo: git@github.com:yqhuang1234-ui/yqhuang1234-ui.github.io.git
   branch: gh-pages
   message: "Deploy site [ci skip] - {{ now('YYYY-MM-DD HH:mm:ss') }}"
