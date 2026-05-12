@@ -613,6 +613,37 @@ input[type=range]::-webkit-slider-thumb {
 .type-pill.disc { background: var(--accent-light); color: var(--accent); }
 .type-pill.cont { background: var(--teal-light); color: var(--teal); }
 
+/* ─── USE CASES ─── */
+.use-cases-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+.use-case-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.use-case-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.use-case-label.general  { color: var(--accent); }
+.use-case-label.business { color: var(--amber); }
+.use-case-label.bio      { color: var(--teal); }
+.use-case-text {
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
 /* ─── VIEWS ─── */
 .view { display: none; }
 .view.active { display: block; }
@@ -671,6 +702,7 @@ input[type=range]::-webkit-slider-thumb {
           </div>
         </div>
         <div class="stats-row" id="detail-stats"></div>
+        <div class="use-cases-row" id="detail-usecases"></div>
       </div>
 
       <!-- Discrete section -->
@@ -720,7 +752,12 @@ const DISTS = {
     mean:({p})=>p,
     variance:({p})=>p*(1-p),
     meanStr:'p',varStr:'p(1−p)',mgfStr:'(1−p)+peᵗ',
-    example:'Indicator of success in a single trial (e.g. coin flip: heads=1, tails=0).'
+    example:'Indicator of success in a single trial (e.g. coin flip: heads=1, tails=0).',
+    useCases:{
+      general:'Any single binary outcome — coin flip, whether it rains today, pass/fail quality check on one unit.',
+      business:'Email click-through (clicked vs. not), ad conversion, customer churn flag (churned vs. retained) per user.',
+      biomedical:'Patient responds to treatment (yes/no), diagnostic test result (positive/negative), presence of a genetic variant.'
+    }
   },
   Binomial: {
     type:'disc', paramStr:'n, p',
@@ -736,7 +773,12 @@ const DISTS = {
     mean:({n,p})=>n*p,
     variance:({n,p})=>n*p*(1-p),
     meanStr:'np',varStr:'np(1−p)',mgfStr:'((1−p)+peᵗ)ⁿ',
-    example:'Number of successes in n independent Bernoulli trials (e.g. # of heads in n flips).'
+    example:'Number of successes in n independent Bernoulli trials (e.g. # of heads in n flips).',
+    useCases:{
+      general:'Quality inspection: how many defective items in a batch of n. Surveys: how many respondents agree out of n polled.',
+      business:'Conversions out of n website visitors, A/B test success counts, number of defaulting loans in a portfolio of n.',
+      biomedical:'Patients responding to a drug out of n enrolled, number of positive PCR samples in a batch, adverse events in a trial arm.'
+    }
   },
   Geometric: {
     type:'disc', paramStr:'p',
@@ -749,7 +791,12 @@ const DISTS = {
     mean:({p})=>1/p,
     variance:({p})=>(1-p)/(p*p),
     meanStr:'1/p',varStr:'(1−p)/p²',mgfStr:'peᵗ/(1−(1−p)eᵗ)',
-    example:'Number of trials required to obtain the first success (e.g. number of flips until first heads).'
+    example:'Number of trials required to obtain the first success (e.g. number of flips until first heads).',
+    useCases:{
+      general:'How many dice rolls until a 6, how many interviews until a job offer, retries until a network packet is delivered.',
+      business:'Sales calls needed to close the first deal, attempts until a customer completes checkout, cold emails until first reply.',
+      biomedical:'Number of screening tests until first positive detection, attempts until a successful surgery, trials until first drug-resistant mutation.'
+    }
   },
   Poisson: {
     type:'disc', paramStr:'λ',
@@ -762,7 +809,12 @@ const DISTS = {
     mean:({lambda})=>lambda,
     variance:({lambda})=>lambda,
     meanStr:'λ',varStr:'λ',mgfStr:'exp(λ(eᵗ−1))',
-    example:'Number of events occurring in a fixed interval when events happen independently at a constant rate.'
+    example:'Number of events occurring in a fixed interval when events happen independently at a constant rate.',
+    useCases:{
+      general:'Meteor strikes per year, typos per page, cars passing a checkpoint per minute, radioactive decay counts.',
+      business:'Customer service calls per hour, website requests per second, insurance claims per month, fraud incidents per week.',
+      biomedical:'Mutations in a DNA strand per generation, bacterial colonies on a culture plate, rare disease cases per 100,000 population per year.'
+    }
   },
   NegBin: {
     type:'disc', paramStr:'r, p',
@@ -778,7 +830,12 @@ const DISTS = {
     mean:({r,p})=>r*(1-p)/p,
     variance:({r,p})=>r*(1-p)/(p*p),
     meanStr:'r(1−p)/p',varStr:'r(1−p)/p²',mgfStr:'(p/(1−(1−p)eᵗ))ʳ',
-    example:'Number of failures observed before achieving r successes in repeated Bernoulli trials.'
+    example:'Number of failures observed before achieving r successes in repeated Bernoulli trials.',
+    useCases:{
+      general:'Defective parts produced before r good ones pass QC, failed attempts before r successful deliveries.',
+      business:'Overdispersed customer count modeling, churn events before r renewals, aggregate insurance claim frequency.',
+      biomedical:'RNA-seq read counts per gene (handles overdispersion vs. Poisson), hospital readmissions before r stable discharges, disease recurrence episodes.'
+    }
   },
   DisUniform: {
     type:'disc', paramStr:'N',
@@ -791,7 +848,12 @@ const DISTS = {
     mean:({N})=>(N+1)/2,
     variance:({N})=>(N+1)*(N-1)/12,
     meanStr:'(N+1)/2',varStr:'(N²−1)/12',mgfStr:'(1/N)Σeⁱᵗ',
-    example:'All integers from 1 to N are equally likely.'
+    example:'All integers from 1 to N are equally likely.',
+    useCases:{
+      general:'Rolling a fair die, drawing a random card, random number generation between 1 and N.',
+      business:'Random audit selection, lottery draws, assigning customers to equally sized experiment buckets.',
+      biomedical:'Random allocation of patients to treatment arms, random selection of biopsy sites from a grid, random gene sampling.'
+    }
   },
   Normal: {
     type:'cont', paramStr:'μ, σ²',
@@ -807,7 +869,12 @@ const DISTS = {
     mean:({mu})=>mu,
     variance:({sigma2})=>sigma2,
     meanStr:'μ',varStr:'σ²',mgfStr:'exp(μt+½σ²t²)',
-    example:'Measurement errors, biological variation, test scores — the classic bell curve.'
+    example:'Measurement errors, biological variation, test scores — the classic bell curve.',
+    useCases:{
+      general:'Heights, weights, exam scores, measurement errors — any quantity shaped by many small independent factors (Central Limit Theorem).',
+      business:'Manufacturing tolerance errors, stock return approximations, sales forecast residuals, customer lifetime value modeling.',
+      biomedical:'Blood pressure, cholesterol levels, birth weights, IQ scores, lab assay measurement errors in large population studies.'
+    }
   },
   Exponential: {
     type:'cont', paramStr:'β',
@@ -820,7 +887,12 @@ const DISTS = {
     mean:({beta})=>beta,
     variance:({beta})=>beta*beta,
     meanStr:'β',varStr:'β²',mgfStr:'1/(1−βt)',
-    example:'Waiting time until a Poisson event occurs.'
+    example:'Waiting time until a Poisson event occurs.',
+    useCases:{
+      general:'Time between earthquakes, gaps between bus arrivals, radioactive decay inter-event times.',
+      business:'Time between customer arrivals at a store, equipment time-to-failure in reliability engineering, call center inter-arrival times.',
+      biomedical:'Time between ER patient arrivals, survival analysis with constant hazard rate, time to first adverse drug event.'
+    }
   },
   Gamma: {
     type:'cont', paramStr:'α, β',
@@ -836,7 +908,12 @@ const DISTS = {
     mean:({alpha,beta})=>alpha*beta,
     variance:({alpha,beta})=>alpha*beta*beta,
     meanStr:'αβ',varStr:'αβ²',mgfStr:'(1−βt)⁻ᵅ',
-    example:'Includes the exponential distribution as a special case when α=1; widely used for waiting times and as a prior in Bayesian models.'
+    example:'Includes the exponential distribution as a special case when α=1; widely used for waiting times and as a prior in Bayesian models.',
+    useCases:{
+      general:'Total waiting time for r Poisson events, rainfall amounts, file sizes, income distributions with positive skew.',
+      business:'Aggregate insurance claim amounts, project completion time with multiple sequential tasks, total loss modeling in actuarial science.',
+      biomedical:'Time to r-th cancer recurrence, hospital length-of-stay, pharmacokinetic drug clearance, conjugate prior for Poisson rate in Bayesian analysis.'
+    }
   },
   Uniform: {
     type:'cont', paramStr:'a, b',
@@ -852,7 +929,12 @@ const DISTS = {
     mean:({a,b})=>(a+b)/2,
     variance:({a,b})=>Math.pow(Math.abs(b-a),2)/12,
     meanStr:'(a+b)/2',varStr:'(b−a)²/12',mgfStr:'(eᵗᵇ−eᵗᵃ)/(t(b−a))',
-    example:'All values between a and b are equally likely.'
+    example:'All values between a and b are equally likely.',
+    useCases:{
+      general:'Rounding errors, birth time within a day, random number generation when no prior knowledge of the distribution exists.',
+      business:'Simulation inputs when bounds are known but shape is unknown, random price fluctuations within a regulated band.',
+      biomedical:'Non-informative prior in Bayesian analysis, random timing of intervention within a window, uniform random assignment.'
+    }
   },
   Beta: {
     type:'cont', paramStr:'α, β',
@@ -868,7 +950,12 @@ const DISTS = {
     mean:({alpha,beta})=>alpha/(alpha+beta),
     variance:({alpha,beta})=>alpha*beta/((alpha+beta)**2*(alpha+beta+1)),
     meanStr:'α/(α+β)',varStr:'αβ/((α+β)²(α+β+1))',mgfStr:'Series only',
-    example:'Useful for modeling random probabilities and proportions; widely used as a prior in Bayesian inference.'
+    example:'Useful for modeling random probabilities and proportions; widely used as a prior in Bayesian inference.',
+    useCases:{
+      general:'Batting averages, survey response rates, proportion of time a system is busy — any proportion bounded in [0, 1].',
+      business:'Conversion rate modeling in A/B testing (conjugate prior/posterior), click-through rate estimation, Bayesian revenue-per-user.',
+      biomedical:'Proportion of patients responding to therapy, tumor purity in cancer genomics, allele frequency estimation, sensitivity/specificity of a diagnostic test.'
+    }
   },
   Cauchy: {
     type:'cont', paramStr:'θ, σ',
@@ -884,7 +971,12 @@ const DISTS = {
     mean:()=>'does not exist',
     variance:()=>'does not exist',
     meanStr:'does not exist',varStr:'does not exist',mgfStr:'does not exist',
-    example:'Special case of Student-t with df=1. If X,Y are independent N(0,1), then X/Y is Cauchy.'
+    example:'Special case of Student-t with df=1. If X,Y are independent N(0,1), then X/Y is Cauchy.',
+    useCases:{
+      general:'Ratio of two independent normals, Lorentzian spectral line shapes in physics, direction of a random walk in 2D.',
+      business:'Modeling extreme financial returns with fat tails, robust regression to down-weight outliers, high-frequency trading price impact.',
+      biomedical:'Spectroscopy and NMR resonance line widths (Lorentzian profile), robust statistical models for outlier-prone clinical measurements.'
+    }
   },
   ChiSquared: {
     type:'cont', paramStr:'p',
@@ -897,7 +989,12 @@ const DISTS = {
     mean:({p})=>p,
     variance:({p})=>2*p,
     meanStr:'p',varStr:'2p',mgfStr:'(1−2t)⁻ᵖ/²',
-    example:'Special case of the gamma distribution. Sum of squares of independent standard Normal variables.'
+    example:'Special case of the gamma distribution. Sum of squares of independent standard Normal variables.',
+    useCases:{
+      general:'Goodness-of-fit tests, testing independence of categorical variables, variance estimation from normal samples.',
+      business:'Chi-squared test for independence in market research (e.g. age vs. product preference), quality control acceptance sampling.',
+      biomedical:'Genome-wide association studies (GWAS test statistics), testing independence of disease status and risk factor, variance components in mixed models.'
+    }
   },
   StudentT: {
     type:'cont', paramStr:'ν',
@@ -910,7 +1007,12 @@ const DISTS = {
     mean:({nu})=>nu>1?0:'does not exist (ν≤1)',
     variance:({nu})=>nu>2?nu/(nu-2):'does not exist (ν≤2)',
     meanStr:'0  (ν > 1)',varStr:'ν/(ν−2)  (ν > 2)',mgfStr:'does not exist',
-    example:'Distribution of the standardized sample mean when the population variance is unknown.'
+    example:'Distribution of the standardized sample mean when the population variance is unknown.',
+    useCases:{
+      general:'Small-sample mean inference when population variance is unknown; converges to Normal for large n.',
+      business:'Comparing A/B test means with small samples, earnings estimate confidence intervals, financial return modeling with fat tails.',
+      biomedical:'Comparing treatment vs. control group means in small clinical trials, paired t-tests for before/after measurements, pilot study analysis.'
+    }
   },
   FDist: {
     type:'cont', paramStr:'ν₁, ν₂',
@@ -926,7 +1028,12 @@ const DISTS = {
     mean:({v2})=>v2>2?v2/(v2-2):'does not exist (ν₂≤2)',
     variance:({v1,v2})=>v2>4?2*v2*v2*(v1+v2-2)/(v1*(v2-2)**2*(v2-4)):'does not exist (ν₂≤4)',
     meanStr:'ν₂/(ν₂−2)  (ν₂>2)',varStr:'2ν₂²(ν₁+ν₂−2)/(ν₁(ν₂−2)²(ν₂−4))  (ν₂>4)',mgfStr:'does not exist',
-    example:'Ratio of scaled chi-squared variables; used in ANOVA and regression analysis.'
+    example:'Ratio of scaled chi-squared variables; used in ANOVA and regression analysis.',
+    useCases:{
+      general:'Comparing two population variances, overall F-test significance in linear regression, ANOVA between-group vs. within-group variance.',
+      business:'ANOVA F-test comparing sales across regions or channels, testing overall significance of a marketing mix model.',
+      biomedical:'ANOVA comparing multiple treatment group outcomes, differential gene expression analysis, testing model fit in pharmacokinetic studies.'
+    }
   }
 };
 
@@ -1090,6 +1197,7 @@ function selectDist(name) {
   renderCurvesList(name);
   renderDetailChart(name);
   renderStats(name);
+  renderUseCases(name);
 
   // scroll panel into view
   panel.scrollIntoView({behavior:'smooth', block:'nearest'});
@@ -1244,6 +1352,26 @@ function renderDetailChart(name) {
     item.innerHTML = `<span class="legend-swatch" style="background:${col.line}"></span>${paramLabel}`;
     legend.appendChild(item);
   });
+}
+
+function renderUseCases(name) {
+  const d = DISTS[name];
+  const row = document.getElementById('detail-usecases');
+  if(!d.useCases) { row.innerHTML = ''; return; }
+  row.innerHTML = `
+    <div class="use-case-card">
+      <div class="use-case-label general">Real World</div>
+      <div class="use-case-text">${d.useCases.general}</div>
+    </div>
+    <div class="use-case-card">
+      <div class="use-case-label business">Business</div>
+      <div class="use-case-text">${d.useCases.business}</div>
+    </div>
+    <div class="use-case-card">
+      <div class="use-case-label bio">Biomedical</div>
+      <div class="use-case-text">${d.useCases.biomedical}</div>
+    </div>
+  `;
 }
 
 function renderStats(name) {
