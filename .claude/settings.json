@@ -14,7 +14,23 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://yqhuang1234-ui.github.io/tags/blog/\")",
       "Bash(curl -s \"https://yqhuang1234-ui.github.io/blog/\")",
       "Bash(curl -sL \"https://yqhuang1234-ui.github.io/blog/\")",
-      "Bash(curl -s -o /dev/null -w '%{http_code}' https://yqhuang1234-ui.github.io__TRACKED_VAR__)"
+      "Bash(curl -s -o /dev/null -w '%{http_code}' https://yqhuang1234-ui.github.io__TRACKED_VAR__)",
+      "Bash(git commit -m ' *)",
+      "Bash(npx hexo *)",
+      "Bash(echo \"Server PID: $!\")",
+      "Read(//private/tmp/**)",
+      "Bash(lsof -ti:4001)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(lsof -ti:4000)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4000/)",
+      "Bash(sips -s format png \"/Users/huangyanqi/Library/CloudStorage/Dropbox/Growing/code/personal-website/source/files/Coursera YSL6Q7X63TS2.pdf\" --out \"/Users/huangyanqi/Library/CloudStorage/Dropbox/Growing/code/personal-website/source/img/posts/coursera-certificate-2.png\" -Z 1120)",
+      "Bash(xargs kill *)",
+      "Bash(git config *)",
+      "Bash(gh auth *)",
+      "Read(//Users/huangyanqi/.ssh/**)",
+      "Bash(ssh -T git@github.com)",
+      "Bash(git remote *)",
+      "Bash(sips -s format png \"/Users/huangyanqi/Library/CloudStorage/Dropbox/Growing/code/personal-website/source/files/Coursera W03HCJ455ESW.pdf\" --out \"/Users/huangyanqi/Library/CloudStorage/Dropbox/Growing/code/personal-website/source/img/posts/coursera-certificate-3.png\")"
     ]
   }
 }
