@@ -553,9 +553,11 @@ input[type=range]::-webkit-slider-thumb {
 }
 .stat-box-val {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text);
+  word-break: break-word;
+  line-height: 1.4;
 }
 
 /* ─── FULL TABLE VIEW ─── */
@@ -1374,6 +1376,11 @@ function renderUseCases(name) {
   `;
 }
 
+function statDisplay(formulaStr, val) {
+  if (typeof val === 'string') return val;
+  return `${formulaStr} = ${fmt(val)}`;
+}
+
 function renderStats(name) {
   const d = DISTS[name];
   const row = document.getElementById('detail-stats');
@@ -1385,8 +1392,8 @@ function renderStats(name) {
   const std = (typeof variance==='number'&&isFinite(variance))?Math.sqrt(variance):'—';
   [
     ['Distribution', `${formatName(name)}(${d.paramStr})`],
-    ['E[X]', `${fmt(mean)}`],
-    ['Var(X)', `${fmt(variance)}`],
+    ['E[X]', statDisplay(d.meanStr, mean)],
+    ['Var(X)', statDisplay(d.varStr, variance)],
     ['Std(X)', `${typeof std==='number'?fmt(std):'—'}`],
   ].forEach(([label, val]) => {
     const box = document.createElement('div');
