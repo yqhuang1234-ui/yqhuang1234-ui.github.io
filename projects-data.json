@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Surgery Timing and 30-Day Mortality Outcomes",
+    "date": "Nov 2025",
+    "desc": "Investigates whether the hour of day a surgery is performed correlates with 30-day patient mortality. Applies logistic regression with restricted cubic splines to 32,001 surgical cases, capturing non-linear timing effects while adjusting for patient comorbidities and procedure classification. Produces a reproducible PDF report with baseline characteristic tables, odds ratio estimates, and risk visualizations.",
+    "img": "/img/projects/surgery-timing.jpg",
+    "tags": ["logistic-regression", "restricted-cubic-splines"],
+    "links": [
+      { "label": "View Code",   "href": "https://github.com/yqhuang1234-ui/surgery_timing_outcome",                                                                                                                                                                  "style": "primary" },
+      { "label": "View Report", "href": "https://github.com/yqhuang1234-ui/surgery_timing_outcome/blob/c77953e5f38a14e208dad83299d162daeca90d78/2025-12-02_report-only_surgery-timing-outcome_yanqi-huang.pdf", "style": "outline" }
+    ]
+  },
+  {
+    "title": "OLS Under Heteroscedasticity: A Monte Carlo Simulation",
+    "date": "Oct 2025",
+    "desc": "A Monte Carlo simulation study (1,000 repetitions) examining how heteroscedasticity violations affect OLS regression inference. Evaluates estimator bias, standard error accuracy, and confidence interval coverage across four error-variance intensity levels, showing when and why classical OLS inference breaks down and robust standard errors are needed.",
+    "img": "/img/projects/monte-carlo-sim.jpg",
+    "tags": ["simulation", "heteroscedasticity"],
+    "links": [
+      { "label": "View Code",   "href": "https://github.com/yqhuang1234-ui/simulation-study",                                                                                                 "style": "primary" },
+      { "label": "View Report", "href": "https://github.com/yqhuang1234-ui/simulation-study/blob/main/10-24-25_yanqi-huang_simulation-report_only.pdf", "style": "outline" }
+    ]
+  }
+]

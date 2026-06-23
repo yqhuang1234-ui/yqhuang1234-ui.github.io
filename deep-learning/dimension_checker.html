@@ -1,0 +1,925 @@
+---
+layout: false
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Neural Network Dimension Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<style>
+:root {
+  --bg:      #fafaf8;
+  --bg2:     #f2f1ed;
+  --bg3:     #e8e7e1;
+  --border:  rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.15);
+  --text:    #1a1916;
+  --text2:   #5a5850;
+  --text3:   #9a9890;
+  --blue:    #2563b0;
+  --blue-bg: #eff4fc;
+  --blue-bd: #bdd0f0;
+  --green:   #1a7a4a;
+  --green-bg:#edf7f1;
+  --green-bd:#a8ddc0;
+  --amber:   #92500a;
+  --amber-bg:#fdf3e3;
+  --amber-bd:#f0cc90;
+  --red:     #c0281e;
+  --red-bg:  #fdf0ef;
+  --red-bd:  #f0b8b4;
+  --purple:  #5b3eac;
+  --purple-bg:#f2effc;
+  --purple-bd:#c8bcf0;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'IBM Plex Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.6;
+}
+
+/* ── HEADER ── */
+header{
+  background:#1a1916;
+  color:#fafaf8;
+  padding:32px 48px 28px;
+}
+.hdr-tag{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  color:#9a9890;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+header h1{
+  font-family:'IBM Plex Serif',serif;
+  font-size:26px;
+  font-weight:400;
+  margin-bottom:6px;
+}
+header p{
+  font-size:14px;
+  color:#9a9890;
+  font-weight:300;
+}
+
+/* ── CONTROLS ── */
+.controls{
+  background:var(--bg2);
+  border-bottom:1px solid var(--border2);
+  padding:20px 48px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  align-items:flex-end;
+}
+.ctrl-group{display:flex;flex-direction:column;gap:5px;}
+.ctrl-label{
+  font-size:11px;
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+}
+.ctrl-row{display:flex;gap:8px;align-items:center;}
+input[type=number]{
+  width:70px;
+  padding:7px 10px;
+  border:1px solid var(--border2);
+  border-radius:6px;
+  background:var(--bg);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:14px;
+  color:var(--text);
+  outline:none;
+}
+input[type=number]:focus{border-color:var(--blue);}
+.ctrl-hint{font-size:12px;color:var(--text3);}
+
+.btn-recalc{
+  padding:8px 20px;
+  background:#1a1916;
+  color:#fafaf8;
+  border:none;
+  border-radius:6px;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  transition:opacity 0.15s;
+  align-self:flex-end;
+}
+.btn-recalc:hover{opacity:0.82;}
+
+.layer-pills{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.pill{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:20px;
+  border:1px solid var(--border2);
+  background:var(--bg);
+  color:var(--text2);
+}
+.pill.input-pill {background:var(--blue-bg);border-color:var(--blue-bd);color:var(--blue);}
+.pill.hidden-pill{background:var(--purple-bg);border-color:var(--purple-bd);color:var(--purple);}
+.pill.output-pill{background:var(--amber-bg);border-color:var(--amber-bd);color:var(--amber);}
+.pill-arrow{color:var(--text3);font-size:14px;}
+
+/* ── MAIN LAYOUT ── */
+.page-body{
+  display:grid;
+  grid-template-columns:1fr 340px;
+  gap:0;
+  min-height:calc(100vh - 180px);
+}
+
+/* ── LEFT: STEPS ── */
+.steps-col{
+  padding:32px 40px;
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+
+.section-heading{
+  font-family:'IBM Plex Serif',serif;
+  font-size:18px;
+  font-weight:400;
+  color:var(--text);
+  margin-bottom:16px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border2);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.section-badge{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:4px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.badge-fwd{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd);}
+.badge-bwd{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+
+.step-block{
+  display:grid;
+  grid-template-columns:28px 1fr;
+  gap:0 16px;
+  margin-bottom:4px;
+  position:relative;
+}
+
+.step-line-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.step-num-circle{
+  width:28px;height:28px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  font-weight:500;
+  flex-shrink:0;
+  margin-top:2px;
+}
+.circle-fwd{background:var(--blue-bg);color:var(--blue);border:1.5px solid var(--blue-bd);}
+.circle-bwd{background:var(--red-bg);color:var(--red);border:1.5px solid var(--red-bd);}
+.step-connector{
+  flex:1;
+  width:1.5px;
+  background:var(--border2);
+  margin:4px 0;
+  min-height:16px;
+}
+
+.step-content{
+  padding-bottom:20px;
+}
+
+.step-title{
+  font-size:15px;
+  font-weight:500;
+  color:var(--text);
+  margin-bottom:6px;
+  margin-top:4px;
+}
+
+.step-formula{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px 14px;
+  margin-bottom:10px;
+  overflow-x:auto;
+  font-size:15px;
+}
+
+.dim-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:10px;
+  align-items:center;
+}
+
+.dim-chip{
+  display:flex;
+  flex-direction:column;
+  gap:1px;
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid;
+  min-width:80px;
+}
+.dim-chip .var-name{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;
+  font-weight:500;
+}
+.dim-chip .dim-shape{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+}
+.dim-chip .dim-why{
+  font-size:11px;
+  margin-top:2px;
+  line-height:1.4;
+}
+
+.chip-blue  {background:var(--blue-bg);border-color:var(--blue-bd);}
+.chip-blue .var-name{color:var(--blue);}
+.chip-blue .dim-shape{color:var(--blue);}
+.chip-blue .dim-why{color:#4a7abf;}
+
+.chip-green {background:var(--green-bg);border-color:var(--green-bd);}
+.chip-green .var-name{color:var(--green);}
+.chip-green .dim-shape{color:var(--green);}
+.chip-green .dim-why{color:#2d8a5a;}
+
+.chip-amber {background:var(--amber-bg);border-color:var(--amber-bd);}
+.chip-amber .var-name{color:var(--amber);}
+.chip-amber .dim-shape{color:var(--amber);}
+.chip-amber .dim-why{color:#a06020;}
+
+.chip-red   {background:var(--red-bg);border-color:var(--red-bd);}
+.chip-red .var-name{color:var(--red);}
+.chip-red .dim-shape{color:var(--red);}
+.chip-red .dim-why{color:#c84040;}
+
+.chip-purple{background:var(--purple-bg);border-color:var(--purple-bd);}
+.chip-purple .var-name{color:var(--purple);}
+.chip-purple .dim-shape{color:var(--purple);}
+.chip-purple .dim-why{color:#7050c0;}
+
+.chip-gray  {background:var(--bg2);border-color:var(--border2);}
+.chip-gray .var-name{color:var(--text);}
+.chip-gray .dim-shape{color:var(--text2);}
+.chip-gray .dim-why{color:var(--text3);}
+
+.mult-check{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  padding:8px 12px;
+  border-radius:6px;
+  margin-bottom:10px;
+}
+.mult-check.ok   {background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+.mult-check.warn {background:var(--red-bg);  color:var(--red);  border:1px solid var(--red-bd);}
+.mult-check .tick{font-size:14px;}
+
+.why-box{
+  font-size:13px;
+  color:var(--text2);
+  line-height:1.7;
+  border-left:3px solid var(--border2);
+  padding-left:12px;
+  margin-top:4px;
+}
+.why-box strong{color:var(--text);font-weight:500;}
+.why-box code{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  background:var(--bg3);
+  border-radius:3px;
+  padding:1px 4px;
+}
+
+.section-gap{height:32px;}
+
+/* ── RIGHT: LEGEND + SUMMARY ── */
+.sidebar-col{
+  padding:28px 28px;
+  background:var(--bg2);
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+.legend-card{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px 18px;
+}
+.legend-card h3{
+  font-size:12px;
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin-bottom:12px;
+}
+.legend-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+  align-items:flex-start;
+}
+.legend-dot{
+  width:10px;height:10px;
+  border-radius:50%;
+  flex-shrink:0;
+  margin-top:4px;
+  border:1.5px solid;
+}
+.legend-text .leg-var{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;
+  font-weight:500;
+}
+.legend-text .leg-desc{
+  font-size:12px;
+  color:var(--text2);
+  line-height:1.5;
+}
+
+.rule-card{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px 18px;
+}
+.rule-card h3{
+  font-size:12px;
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin-bottom:12px;
+}
+.rule-item{
+  font-size:13px;
+  color:var(--text2);
+  padding:8px 0;
+  border-bottom:1px solid var(--border);
+  line-height:1.6;
+}
+.rule-item:last-child{border-bottom:none;}
+.rule-item strong{color:var(--text);font-weight:500;}
+.rule-item code{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  background:var(--bg2);
+  border-radius:3px;
+  padding:1px 4px;
+}
+
+.summary-card{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px 18px;
+}
+.summary-card h3{
+  font-size:12px;
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin-bottom:12px;
+}
+.summary-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  font-family:'IBM Plex Mono',monospace;
+}
+.summary-table th{
+  text-align:left;
+  color:var(--text3);
+  font-weight:400;
+  padding:4px 6px;
+  border-bottom:1px solid var(--border2);
+  font-size:11px;
+}
+.summary-table td{
+  padding:6px 6px;
+  color:var(--text);
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
+}
+.summary-table tr:last-child td{border-bottom:none;}
+.td-var{font-weight:500;}
+.td-dim{color:var(--blue);}
+
+.katex{font-size:1em;}
+.katex-display{margin:0;}
+
+@media(max-width:900px){
+  .page-body{grid-template-columns:1fr;}
+  .sidebar-col{border-top:1px solid var(--border);}
+  .controls{padding:16px 20px;}
+  .steps-col{padding:20px;}
+  header{padding:24px 20px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-tag">Deep Learning · Dimension Reference</div>
+  <h1>Neural Network Dimension Checker</h1>
+  <p>Every matrix, vector, and gradient — with the exact reason why each shape must be what it is</p>
+</header>
+
+<div class="controls">
+  <div class="ctrl-group">
+    <div class="ctrl-label">nₓ — input features</div>
+    <input type="number" id="nx" value="3" min="1" max="100"/>
+  </div>
+  <div class="ctrl-group">
+    <div class="ctrl-label">n⁽¹⁾ — hidden layer 1</div>
+    <input type="number" id="n1" value="4" min="1" max="100"/>
+  </div>
+  <div class="ctrl-group">
+    <div class="ctrl-label">n⁽²⁾ — hidden layer 2</div>
+    <input type="number" id="n2" value="3" min="1" max="100"/>
+  </div>
+  <div class="ctrl-group">
+    <div class="ctrl-label">n⁽³⁾ — output units</div>
+    <input type="number" id="n3" value="1" min="1" max="100"/>
+  </div>
+  <div class="ctrl-group">
+    <div class="ctrl-label">m — training examples</div>
+    <input type="number" id="m" value="100" min="1" max="10000"/>
+  </div>
+  <button class="btn-recalc" onclick="render()">Recalculate</button>
+  <div class="ctrl-group" style="margin-left:auto">
+    <div class="ctrl-label">Network shape</div>
+    <div class="layer-pills" id="layer-pills"></div>
+  </div>
+</div>
+
+<div class="page-body">
+  <div class="steps-col" id="steps-col"></div>
+  <div class="sidebar-col">
+
+    <div class="legend-card">
+      <h3>Variable legend</h3>
+      <div class="legend-row">
+        <div class="legend-dot" style="background:var(--blue-bg);border-color:var(--blue-bd)"></div>
+        <div class="legend-text">
+          <div class="leg-var" style="color:var(--blue)">W⁽ˡ⁾</div>
+          <div class="leg-desc">Weight matrix for layer ℓ. Shape (n⁽ˡ⁾, n⁽ˡ⁻¹⁾). Each row = one neuron's weights.</div>
+        </div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot" style="background:var(--green-bg);border-color:var(--green-bd)"></div>
+        <div class="legend-text">
+          <div class="leg-var" style="color:var(--green)">b⁽ˡ⁾</div>
+          <div class="leg-desc">Bias vector for layer ℓ. Shape (n⁽ˡ⁾, 1). One bias per neuron.</div>
+        </div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot" style="background:var(--purple-bg);border-color:var(--purple-bd)"></div>
+        <div class="legend-text">
+          <div class="leg-var" style="color:var(--purple)">Z⁽ˡ⁾, A⁽ˡ⁾</div>
+          <div class="leg-desc">Pre-activation and activation. Shape (n⁽ˡ⁾, m). Columns = training examples.</div>
+        </div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot" style="background:var(--red-bg);border-color:var(--red-bd)"></div>
+        <div class="legend-text">
+          <div class="leg-var" style="color:var(--red)">dW⁽ˡ⁾, db⁽ˡ⁾, dZ⁽ˡ⁾</div>
+          <div class="leg-desc">Gradients. Always same shape as their forward-pass counterpart.</div>
+        </div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot" style="background:var(--amber-bg);border-color:var(--amber-bd)"></div>
+        <div class="legend-text">
+          <div class="leg-var" style="color:var(--amber)">X, Y, Ŷ</div>
+          <div class="leg-desc">Input/label/prediction matrices. Shape (nₓ, m) and (n⁽L⁾, m).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <h3>The 3 golden rules</h3>
+      <div class="rule-item">
+        <strong>Rule 1 — W shape</strong><br>
+        <code>W⁽ˡ⁾ = (n⁽ˡ⁾, n⁽ˡ⁻¹⁾)</code><br>
+        Rows = current layer size, Cols = previous layer size. This makes <code>W·A</code> inner dimensions cancel.
+      </div>
+      <div class="rule-item">
+        <strong>Rule 2 — m columns everywhere</strong><br>
+        Z, A always have m columns. We process all m examples simultaneously (vectorization).
+      </div>
+      <div class="rule-item">
+        <strong>Rule 3 — gradients mirror forward shapes</strong><br>
+        <code>dW</code> has same shape as <code>W</code>, <code>db</code> same as <code>b</code>, <code>dZ</code> same as <code>Z</code>. The derivative of a scalar loss w.r.t. a matrix has the same shape as that matrix.
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <h3>All dimensions at a glance</h3>
+      <table class="summary-table" id="summary-table">
+        <thead>
+          <tr><th>Variable</th><th>Shape</th></tr>
+        </thead>
+        <tbody id="summary-body"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function k(latex) {
+  const s = document.createElement('span');
+  katex.render(latex, s, { throwOnError: false, displayMode: false });
+  return s.outerHTML;
+}
+
+function chip(varName, shape, why, colorClass) {
+  return `<div class="dim-chip ${colorClass}">
+    <div class="var-name">${varName}</div>
+    <div class="dim-shape">${shape}</div>
+    <div class="dim-why">${why}</div>
+  </div>`;
+}
+
+function multCheck(expr, ok, note) {
+  const cls = ok ? 'ok' : 'warn';
+  const icon = ok ? '✓' : '✗';
+  return `<div class="mult-check ${cls}"><span class="tick">${icon}</span> ${expr} &nbsp;→&nbsp; ${note}</div>`;
+}
+
+function step(num, title, content, isBack) {
+  const circleClass = isBack ? 'circle-bwd' : 'circle-fwd';
+  return `
+  <div class="step-block">
+    <div class="step-line-wrap">
+      <div class="step-num-circle ${circleClass}">${num}</div>
+      <div class="step-connector"></div>
+    </div>
+    <div class="step-content">
+      <div class="step-title">${title}</div>
+      ${content}
+    </div>
+  </div>`;
+}
+
+function render() {
+  const nx = parseInt(document.getElementById('nx').value) || 3;
+  const n1 = parseInt(document.getElementById('n1').value) || 4;
+  const n2 = parseInt(document.getElementById('n2').value) || 3;
+  const n3 = parseInt(document.getElementById('n3').value) || 1;
+  const m  = parseInt(document.getElementById('m').value)  || 100;
+
+  // Pills
+  const pills = document.getElementById('layer-pills');
+  pills.innerHTML = `
+    <span class="pill input-pill">X: ${nx}×${m}</span>
+    <span class="pill-arrow">→</span>
+    <span class="pill hidden-pill">L1: ${n1}</span>
+    <span class="pill-arrow">→</span>
+    <span class="pill hidden-pill">L2: ${n2}</span>
+    <span class="pill-arrow">→</span>
+    <span class="pill output-pill">Ŷ: ${n3}×${m}</span>`;
+
+  // Summary table
+  const rows = [
+    ['X',    `(${nx}, ${m})`],
+    ['W⁽¹⁾', `(${n1}, ${nx})`],
+    ['b⁽¹⁾', `(${n1}, 1)`],
+    ['Z⁽¹⁾', `(${n1}, ${m})`],
+    ['A⁽¹⁾', `(${n1}, ${m})`],
+    ['W⁽²⁾', `(${n2}, ${n1})`],
+    ['b⁽²⁾', `(${n2}, 1)`],
+    ['Z⁽²⁾', `(${n2}, ${m})`],
+    ['A⁽²⁾', `(${n2}, ${m})`],
+    ['W⁽³⁾', `(${n3}, ${n2})`],
+    ['b⁽³⁾', `(${n3}, 1)`],
+    ['Z⁽³⁾', `(${n3}, ${m})`],
+    ['Ŷ',    `(${n3}, ${m})`],
+    ['Y',    `(${n3}, ${m})`],
+    ['dZ⁽³⁾',`(${n3}, ${m})`],
+    ['dW⁽³⁾',`(${n3}, ${n2})`],
+    ['db⁽³⁾',`(${n3}, 1)`],
+    ['dA⁽²⁾',`(${n2}, ${m})`],
+    ['dZ⁽²⁾',`(${n2}, ${m})`],
+    ['dW⁽²⁾',`(${n2}, ${n1})`],
+    ['db⁽²⁾',`(${n2}, 1)`],
+    ['dZ⁽¹⁾',`(${n1}, ${m})`],
+    ['dW⁽¹⁾',`(${n1}, ${nx})`],
+    ['db⁽¹⁾',`(${n1}, 1)`],
+  ];
+  document.getElementById('summary-body').innerHTML = rows.map(([v, s]) =>
+    `<tr><td class="td-var">${v}</td><td class="td-dim">${s}</td></tr>`).join('');
+
+  // ── BUILD STEPS ──
+  let html = '';
+
+  // ── FORWARD PASS ──
+  html += `<div class="section-heading">
+    Forward pass
+    <span class="section-badge badge-fwd">left → right</span>
+  </div>`;
+
+  // Step F0: Input X
+  html += step('F0', 'Input matrix X', `
+    <div class="step-formula">${k('X \\in \\mathbb{R}^{n_x \\times m}')}</div>
+    <div class="dim-row">
+      ${chip('X', `(${nx}, ${m})`, `${nx} features × ${m} examples`, 'chip-amber')}
+    </div>
+    <div class="why-box">
+      Each <strong>column</strong> of X is one training example (a vector of ${nx} features).
+      We stack all ${m} examples side-by-side, giving X shape <code>(${nx}, ${m})</code>.
+      This lets us run all examples through the network in one matrix multiply — no for-loop needed.
+    </div>
+  `);
+
+  // Step F1: Layer 1 W and b
+  html += step('F1', 'Layer 1 weights W⁽¹⁾ and bias b⁽¹⁾', `
+    <div class="step-formula">${k('Z^{(1)} = W^{(1)} X + b^{(1)}')}</div>
+    <div class="dim-row">
+      ${chip('W⁽¹⁾', `(${n1}, ${nx})`, `${n1} neurons × ${nx} inputs`, 'chip-blue')}
+      ${chip('X', `(${nx}, ${m})`, `${nx} features × ${m} examples`, 'chip-amber')}
+      ${chip('b⁽¹⁾', `(${n1}, 1)`, `1 bias per neuron`, 'chip-green')}
+    </div>
+    ${multCheck(
+      `(${n1}, ${nx}) · (${nx}, ${m})`,
+      true,
+      `(${n1}, ${m}) ✓ inner dims ${nx}=${nx} cancel`
+    )}
+    <div class="why-box">
+      <strong>Why W⁽¹⁾ is (${n1}, ${nx})?</strong>
+      Layer 1 has ${n1} neurons, each receiving ${nx} inputs.
+      Each row of W⁽¹⁾ = one neuron's ${nx} weights.
+      With ${n1} rows × ${nx} cols, the multiply <code>(${n1},${nx})·(${nx},${m})</code>
+      is legal — inner dims match — and produces <code>(${n1},${m})</code>:
+      one pre-activation value per neuron per example.<br><br>
+      <strong>Why b⁽¹⁾ is (${n1}, 1)?</strong>
+      One bias per neuron (${n1} neurons). Shape (${n1},1) broadcasts across all ${m} columns automatically in NumPy — no need to repeat it ${m} times manually.
+    </div>
+  `);
+
+  // Step F2: Z1 and A1
+  html += step('F2', 'Pre-activation Z⁽¹⁾ and activation A⁽¹⁾', `
+    <div class="step-formula">${k('A^{(1)} = g\\!\\left(Z^{(1)}\\right)')}</div>
+    <div class="dim-row">
+      ${chip('Z⁽¹⁾', `(${n1}, ${m})`, `${n1} neurons × ${m} examples`, 'chip-purple')}
+      ${chip('A⁽¹⁾', `(${n1}, ${m})`, `same shape as Z⁽¹⁾`, 'chip-purple')}
+    </div>
+    <div class="why-box">
+      Z⁽¹⁾ = W⁽¹⁾·X + b⁽¹⁾ gives one number per (neuron, example) pair →
+      <code>(${n1}, ${m})</code>.<br>
+      A⁽¹⁾ = g(Z⁽¹⁾) applies the activation element-wise — every element independently
+      — so the shape is <strong>unchanged</strong>: still <code>(${n1}, ${m})</code>.<br>
+      Each column of A⁽¹⁾ = the ${n1}-dimensional hidden representation of one training example.
+    </div>
+  `);
+
+  // Step F3: Layer 2
+  html += step('F3', 'Layer 2 weights W⁽²⁾ and bias b⁽²⁾', `
+    <div class="step-formula">${k('Z^{(2)} = W^{(2)} A^{(1)} + b^{(2)}')}</div>
+    <div class="dim-row">
+      ${chip('W⁽²⁾', `(${n2}, ${n1})`, `${n2} neurons × ${n1} inputs`, 'chip-blue')}
+      ${chip('A⁽¹⁾', `(${n1}, ${m})`, `from layer 1`, 'chip-purple')}
+      ${chip('b⁽²⁾', `(${n2}, 1)`, `1 bias per neuron`, 'chip-green')}
+    </div>
+    ${multCheck(
+      `(${n2}, ${n1}) · (${n1}, ${m})`,
+      true,
+      `(${n2}, ${m}) ✓ inner dims ${n1}=${n1} cancel`
+    )}
+    <div class="dim-row">
+      ${chip('Z⁽²⁾', `(${n2}, ${m})`, `${n2} neurons × ${m} examples`, 'chip-purple')}
+      ${chip('A⁽²⁾', `(${n2}, ${m})`, `g applied element-wise`, 'chip-purple')}
+    </div>
+    <div class="why-box">
+      Notice the pattern: <strong>W⁽ˡ⁾ always bridges the previous layer size to the current</strong>.
+      W⁽²⁾ has <code>${n1}</code> columns (= n⁽¹⁾, previous layer) and <code>${n2}</code> rows (= n⁽²⁾, current layer).
+      The inner dimensions <code>${n1}</code> always cancel when you write W⁽ˡ⁾ · A⁽ˡ⁻¹⁾.
+    </div>
+  `);
+
+  // Step F4: Output layer
+  html += step('F4', 'Output layer W⁽³⁾ → prediction Ŷ', `
+    <div class="step-formula">${k('Z^{(3)} = W^{(3)} A^{(2)} + b^{(3)}, \\quad \\hat{Y} = \\sigma(Z^{(3)})')}</div>
+    <div class="dim-row">
+      ${chip('W⁽³⁾', `(${n3}, ${n2})`, `${n3} outputs × ${n2} inputs`, 'chip-blue')}
+      ${chip('A⁽²⁾', `(${n2}, ${m})`, `from layer 2`, 'chip-purple')}
+      ${chip('b⁽³⁾', `(${n3}, 1)`, `1 bias per output`, 'chip-green')}
+    </div>
+    ${multCheck(
+      `(${n3}, ${n2}) · (${n2}, ${m})`,
+      true,
+      `(${n3}, ${m}) ✓ inner dims ${n2}=${n2} cancel`
+    )}
+    <div class="dim-row">
+      ${chip('Ŷ', `(${n3}, ${m})`, `${n3} predictions × ${m} examples`, 'chip-amber')}
+      ${chip('Y', `(${n3}, ${m})`, `true labels — same shape as Ŷ`, 'chip-amber')}
+    </div>
+    <div class="why-box">
+      For <strong>binary classification</strong>, n⁽³⁾=${n3} and Ŷ has shape <code>(1,${m})</code> —
+      one probability per example. For multi-class (C classes), n⁽³⁾=C and each column is a
+      probability vector over classes. Y must match Ŷ's shape so the loss L = −Y·log(Ŷ) is element-wise.
+    </div>
+  `);
+
+  // ── BACKWARD PASS ──
+  html += `<div class="section-gap"></div>
+  <div class="section-heading">
+    Backward pass
+    <span class="section-badge badge-bwd">right → left</span>
+  </div>`;
+
+  // Step B1: dZ3
+  html += step('B1', 'Output layer gradient dZ⁽³⁾', `
+    <div class="step-formula">${k('dZ^{(3)} = \\hat{Y} - Y')}</div>
+    <div class="dim-row">
+      ${chip('Ŷ', `(${n3}, ${m})`, `predictions`, 'chip-amber')}
+      ${chip('Y', `(${n3}, ${m})`, `true labels`, 'chip-amber')}
+      ${chip('dZ⁽³⁾', `(${n3}, ${m})`, `element-wise subtraction`, 'chip-red')}
+    </div>
+    <div class="why-box">
+      dZ⁽³⁾ = Ŷ − Y is the error at each output unit for each example.
+      Since Ŷ and Y are both <code>(${n3},${m})</code>, their difference is too.
+      <strong>This is the starting point of backprop</strong> — the gradient of the loss
+      w.r.t. Z⁽³⁾, which flows left through every layer.
+    </div>
+  `, true);
+
+  // Step B2: dW3, db3
+  html += step('B2', 'Output layer weight gradient dW⁽³⁾ and db⁽³⁾', `
+    <div class="step-formula">${k('dW^{(3)} = \\frac{1}{m}\\, dZ^{(3)} A^{(2)\\top}, \\quad db^{(3)} = \\frac{1}{m}\\sum dZ^{(3)}')}</div>
+    <div class="dim-row">
+      ${chip('dZ⁽³⁾', `(${n3}, ${m})`, `output gradient`, 'chip-red')}
+      ${chip('A⁽²⁾ᵀ', `(${m}, ${n2})`, `transpose of layer 2 activations`, 'chip-purple')}
+    </div>
+    ${multCheck(
+      `(${n3}, ${m}) · (${m}, ${n2})`,
+      true,
+      `(${n3}, ${n2}) — same shape as W⁽³⁾ ✓`
+    )}
+    <div class="dim-row">
+      ${chip('dW⁽³⁾', `(${n3}, ${n2})`, `same shape as W⁽³⁾`, 'chip-red')}
+      ${chip('db⁽³⁾', `(${n3}, 1)`, `sum over m examples`, 'chip-red')}
+    </div>
+    <div class="why-box">
+      <strong>Why A⁽²⁾ transposed?</strong> We need dW⁽³⁾ to be <code>(${n3},${n2})</code>
+      (same as W⁽³⁾ so we can subtract it in gradient descent).
+      dZ⁽³⁾ is <code>(${n3},${m})</code> and A⁽²⁾ is <code>(${n2},${m})</code>.
+      To get shape <code>(${n3},${n2})</code> we need <code>(${n3},${m})·(${m},${n2})</code>,
+      so we transpose A⁽²⁾.<br><br>
+      <strong>Why divide by m and sum for db?</strong> We average gradients over all ${m} examples
+      (the 1/m factor). db⁽³⁾ sums dZ⁽³⁾ across the ${m} columns (keepdims=True), giving <code>(${n3},1)</code>.
+    </div>
+  `, true);
+
+  // Step B3: dA2 and dZ2
+  html += step('B3', 'Propagate error to layer 2: dA⁽²⁾ and dZ⁽²⁾', `
+    <div class="step-formula">${k('dA^{(2)} = W^{(3)\\top} dZ^{(3)}, \\quad dZ^{(2)} = dA^{(2)} * g^{\\prime}(Z^{(2)})')}</div>
+    <div class="dim-row">
+      ${chip('W⁽³⁾ᵀ', `(${n2}, ${n3})`, `transpose of W⁽³⁾`, 'chip-blue')}
+      ${chip('dZ⁽³⁾', `(${n3}, ${m})`, `output gradient`, 'chip-red')}
+    </div>
+    ${multCheck(
+      `(${n2}, ${n3}) · (${n3}, ${m})`,
+      true,
+      `(${n2}, ${m}) — same shape as A⁽²⁾ ✓`
+    )}
+    <div class="dim-row">
+      ${chip('dA⁽²⁾', `(${n2}, ${m})`, `same as A⁽²⁾`, 'chip-red')}
+      ${chip("g'(Z⁽²⁾)", `(${n2}, ${m})`, `derivative of activation`, 'chip-purple')}
+      ${chip('dZ⁽²⁾', `(${n2}, ${m})`, `element-wise *, same as Z⁽²⁾`, 'chip-red')}
+    </div>
+    <div class="why-box">
+      <strong>Why W⁽³⁾ transposed?</strong> In the forward pass, W⁽³⁾ transformed
+      <code>(${n2},${m})</code> → <code>(${n3},${m})</code>.
+      In the backward pass we reverse that: we need to send the gradient
+      <em>back</em> from <code>(${n3},${m})</code> to <code>(${n2},${m})</code>.
+      Transposing W⁽³⁾ to <code>(${n2},${n3})</code> and multiplying gives exactly <code>(${n2},${m})</code>.<br><br>
+      <strong>Why element-wise * for dZ?</strong> The chain rule says: multiply the incoming
+      gradient dA⁽²⁾ by the local derivative g'(Z⁽²⁾) at each neuron.
+      Both are <code>(${n2},${m})</code>, so this is a Hadamard product (∗), not a matrix multiply.
+    </div>
+  `, true);
+
+  // Step B4: dW2, db2
+  html += step('B4', 'Layer 2 weight gradients dW⁽²⁾ and db⁽²⁾', `
+    <div class="step-formula">${k('dW^{(2)} = \\frac{1}{m}\\, dZ^{(2)} A^{(1)\\top}, \\quad db^{(2)} = \\frac{1}{m}\\sum dZ^{(2)}')}</div>
+    <div class="dim-row">
+      ${chip('dZ⁽²⁾', `(${n2}, ${m})`, `layer 2 gradient`, 'chip-red')}
+      ${chip('A⁽¹⁾ᵀ', `(${m}, ${n1})`, `transpose of layer 1 activations`, 'chip-purple')}
+    </div>
+    ${multCheck(
+      `(${n2}, ${m}) · (${m}, ${n1})`,
+      true,
+      `(${n2}, ${n1}) — same shape as W⁽²⁾ ✓`
+    )}
+    <div class="dim-row">
+      ${chip('dW⁽²⁾', `(${n2}, ${n1})`, `same shape as W⁽²⁾`, 'chip-red')}
+      ${chip('db⁽²⁾', `(${n2}, 1)`, `sum over m examples`, 'chip-red')}
+    </div>
+    <div class="why-box">
+      Same pattern as B2. The gradient of the loss w.r.t. W⁽²⁾ is always:
+      <code>(dZ of this layer) · (A of previous layer)ᵀ</code>,
+      scaled by 1/m to average over examples.
+      The transpose ensures the result shape matches W⁽²⁾ exactly.
+    </div>
+  `, true);
+
+  // Step B5: dA1, dZ1
+  html += step('B5', 'Propagate to layer 1: dA⁽¹⁾ and dZ⁽¹⁾', `
+    <div class="step-formula">${k('dA^{(1)} = W^{(2)\\top} dZ^{(2)}, \\quad dZ^{(1)} = dA^{(1)} * g^{\\prime}(Z^{(1)})')}</div>
+    <div class="dim-row">
+      ${chip('W⁽²⁾ᵀ', `(${n1}, ${n2})`, `transpose of W⁽²⁾`, 'chip-blue')}
+      ${chip('dZ⁽²⁾', `(${n2}, ${m})`, `layer 2 gradient`, 'chip-red')}
+    </div>
+    ${multCheck(
+      `(${n1}, ${n2}) · (${n2}, ${m})`,
+      true,
+      `(${n1}, ${m}) — same shape as A⁽¹⁾ ✓`
+    )}
+    <div class="dim-row">
+      ${chip('dA⁽¹⁾', `(${n1}, ${m})`, `same as A⁽¹⁾`, 'chip-red')}
+      ${chip('dZ⁽¹⁾', `(${n1}, ${m})`, `element-wise *, same as Z⁽¹⁾`, 'chip-red')}
+    </div>
+    <div class="why-box">
+      Same pattern again: transpose W⁽²⁾ to reverse the forward transformation,
+      then element-wise multiply by the activation derivative to apply the chain rule.
+      This is the key recursive pattern of backprop — each layer does exactly the same thing.
+    </div>
+  `, true);
+
+  // Step B6: dW1, db1
+  html += step('B6', 'Layer 1 weight gradients dW⁽¹⁾ and db⁽¹⁾', `
+    <div class="step-formula">${k('dW^{(1)} = \\frac{1}{m}\\, dZ^{(1)} X^{\\top}, \\quad db^{(1)} = \\frac{1}{m}\\sum dZ^{(1)}')}</div>
+    <div class="dim-row">
+      ${chip('dZ⁽¹⁾', `(${n1}, ${m})`, `layer 1 gradient`, 'chip-red')}
+      ${chip('Xᵀ', `(${m}, ${nx})`, `transpose of input X`, 'chip-amber')}
+    </div>
+    ${multCheck(
+      `(${n1}, ${m}) · (${m}, ${nx})`,
+      true,
+      `(${n1}, ${nx}) — same shape as W⁽¹⁾ ✓`
+    )}
+    <div class="dim-row">
+      ${chip('dW⁽¹⁾', `(${n1}, ${nx})`, `same shape as W⁽¹⁾`, 'chip-red')}
+      ${chip('db⁽¹⁾', `(${n1}, 1)`, `sum over m examples`, 'chip-red')}
+    </div>
+    <div class="why-box">
+      For the first layer, the "previous activation" is X itself.
+      We use Xᵀ shape <code>(${m},${nx})</code> so the multiply
+      <code>(${n1},${m})·(${m},${nx})</code> gives <code>(${n1},${nx})</code> — exactly W⁽¹⁾'s shape.<br><br>
+      <strong>Gradient descent update:</strong>
+      ${k('W^{(l)} := W^{(l)} - \\alpha \\, dW^{(l)}')}
+      <br>Every dW has the same shape as W — that's why the subtraction works.
+    </div>
+  `, true);
+
+  document.getElementById('steps-col').innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>

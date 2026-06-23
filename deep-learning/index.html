@@ -1,0 +1,158 @@
+---
+layout: false
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deep Learning Notes</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #fafaf8;
+      --surface: #ffffff;
+      --border:  #e0e4ea;
+      --text:    #2c3e50;
+      --muted:   #5a6a7a;
+      --accent:  #2a5298;
+      --shadow:  rgba(0,0,0,0.06);
+      --shadow-hover: rgba(42,82,152,0.14);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:      #181c27;
+        --surface: #252d38;
+        --border:  #435266;
+        --text:    #c4c6c9;
+        --muted:   #a7a9ad;
+        --accent:  #5b8ef0;
+        --shadow:  rgba(0,0,0,0.25);
+        --shadow-hover: rgba(91,142,240,0.18);
+      }
+    }
+
+    body {
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 2px solid var(--text);
+      padding-bottom: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    header p {
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .cards {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.4rem 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      box-shadow: 0 1px 4px var(--shadow);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 16px var(--shadow-hover);
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .card a {
+      align-self: flex-start;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 1px;
+      transition: border-color 0.15s;
+    }
+
+    .card a:hover { border-bottom-color: var(--accent); }
+
+    @media (max-width: 480px) {
+      header h1 { font-size: 1.4rem; }
+      .card { padding: 1.1rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Deep Learning Notes</h1>
+      <p>Interactive reference notes on neural network fundamentals.</p>
+    </header>
+
+    <div class="cards">
+
+      <div class="card">
+        <h2>Activation Functions &amp; Gradients</h2>
+        <p>Compares Sigmoid, Tanh, ReLU, and Leaky ReLU with interactive gradient visualizations and backpropagation insights.</p>
+        <a href="activation_functions.html">View Notes &rarr;</a>
+      </div>
+
+      <div class="card">
+        <h2>Backpropagation &mdash; Interactive Deep Dive</h2>
+        <p>A six-section guided walkthrough of backpropagation: from the chain rule and forward pass to the full set of gradient equations.</p>
+        <a href="backprop_explainer.html">View Notes &rarr;</a>
+      </div>
+
+      <div class="card">
+        <h2>Neural Network Dimension Checker</h2>
+        <p>An interactive reference tool for computing the exact tensor shapes of weights, biases, and activations for any network architecture.</p>
+        <a href="dimension_checker.html">View Notes &rarr;</a>
+      </div>
+
+      <div class="card">
+        <h2>Neural Network &mdash; Annotated</h2>
+        <p>A clickable annotated diagram of a multi-layer network showing the weighted-sum and activation computation at every node.</p>
+        <a href="neural_network_annotated.html">View Notes &rarr;</a>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probability Distributions Reference</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #faf9f6;
+  --surface: #ffffff;
+  --surface2: #f3f1ec;
+  --border: #e2dfd6;
+  --border2: #ccc9bf;
+  --text: #1a1917;
+  --text2: #5a5750;
+  --text3: #8a877e;
+  --accent: #4a3fbf;
+  --accent2: #6b5fff;
+  --accent-light: #ebe9ff;
+  --teal: #0d7f62;
+  --teal-light: #e0f5ee;
+  --coral: #c94d2a;
+  --coral-light: #fdeee9;
+  --amber: #b85c00;
+  --amber-light: #fef3e2;
+  --disc-color: #4a3fbf;
+  --cont-color: #0d7f62;
+  --font-display: 'Crimson Pro', Georgia, serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── HEADER ─── */
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  gap: 1.5rem;
+}
+
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  text-decoration: none;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.home-btn:hover {
+  background: var(--accent-light);
+  border-color: #c5bff8;
+  color: var(--accent);
+}
+
+.header-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+.header-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.header-nav {
+  display: flex;
+  gap: 4px;
+  background: var(--surface2);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.nav-btn {
+  padding: 4px 14px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.nav-btn.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+.nav-btn:hover:not(.active) {
+  color: var(--text);
+}
+
+/* ─── MAIN LAYOUT ─── */
+.main {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  min-height: calc(100vh - 56px);
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 0.75rem;
+  overflow-y: auto;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+}
+
+.sidebar-section {
+  margin-bottom: 1.5rem;
+}
+.sidebar-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+.dist-btn {
+  width: 100%;
+  text-align: left;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--font-body);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1px;
+}
+.dist-btn:hover { background: var(--surface2); color: var(--text); }
+.dist-btn.active {
+  background: var(--accent-light);
+  border-color: #c5bff8;
+  color: var(--accent);
+  font-weight: 500;
+}
+.dist-btn.active.cont {
+  background: var(--teal-light);
+  border-color: #9adccb;
+  color: var(--teal);
+}
+.dist-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.disc .dist-dot { background: var(--disc-color); }
+.cont .dist-dot { background: var(--cont-color); }
+
+/* ─── CONTENT ─── */
+.content {
+  padding: 1.75rem 2rem;
+  overflow-y: auto;
+}
+
+/* ─── SECTION TITLE ─── */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.3rem;
+}
+.section-sub {
+  font-size: 13px;
+  color: var(--text3);
+  margin-bottom: 1.5rem;
+}
+
+/* ─── DISTRIBUTION GRID ─── */
+.dist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dist-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  cursor: pointer;
+}
+.dist-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border2);
+}
+.dist-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-light), var(--shadow-md);
+}
+.dist-card.selected.cont {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px var(--teal-light), var(--shadow-md);
+}
+
+.card-header {
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.card-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.card-type-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 100px;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.disc .card-type-badge { background: var(--accent-light); color: var(--accent); }
+.cont .card-type-badge { background: var(--teal-light); color: var(--teal); }
+
+.card-formula {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text2);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+
+.card-body {
+  padding: 10px 14px;
+}
+
+.card-chart-wrap {
+  position: relative;
+  height: 120px;
+  margin-bottom: 8px;
+}
+
+.card-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+.card-stats span { display: flex; gap: 4px; }
+.card-stats strong { color: var(--text); font-weight: 500; font-family: var(--font-mono); }
+
+.card-example {
+  font-size: 13px;
+  color: var(--text3);
+  line-height: 1.5;
+  font-style: italic;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── DETAIL PANEL (shown when a dist is selected) ─── */
+.detail-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  display: none;
+}
+.detail-panel.visible { display: block; }
+
+.detail-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.detail-title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.detail-title .param-hint {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--text3);
+  font-style: italic;
+}
+
+.detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.detail-notation {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  color: var(--text2);
+  background: var(--surface);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  line-height: 1.6;
+}
+.detail-support {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.detail-body {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 0;
+}
+
+.detail-chart-section {
+  padding: 1.25rem 1.5rem;
+  border-right: 1px solid var(--border);
+}
+.detail-chart-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.detail-chart-wrap {
+  position: relative;
+  height: 240px;
+}
+
+.color-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text2);
+  font-family: var(--font-mono);
+}
+.legend-swatch {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.detail-controls {
+  padding: 1.25rem;
+  background: var(--surface2);
+}
+.controls-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+.ctrl-group { margin-bottom: 14px; }
+.ctrl-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 5px;
+}
+.ctrl-label-sym {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text);
+}
+.ctrl-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 1px 6px;
+  border-radius: 4px;
+  min-width: 40px;
+  text-align: right;
+}
+.cont .ctrl-val {
+  color: var(--teal);
+  background: var(--teal-light);
+}
+input[type=range] {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  appearance: none;
+  background: var(--border2);
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.add-curve-btn {
+  width: 100%;
+  padding: 7px;
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text3);
+  font-family: var(--font-body);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 8px;
+}
+.add-curve-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+.remove-curve-btn {
+  font-size: 11px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.1s;
+  white-space: nowrap;
+}
+.remove-curve-btn:hover { background: #fdeee9; border-color: #e8b4a0; color: var(--coral); }
+
+.curves-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.curve-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface);
+}
+.curve-item-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.curve-color-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.curve-item-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text2);
+  font-family: var(--font-mono);
+  flex: 1;
+}
+.curve-item-body { padding: 8px; }
+
+/* ─── STATS ROW ─── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+.stat-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.stat-box-label {
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+.stat-box-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+/* ─── FULL TABLE VIEW ─── */
+.full-table-wrap { overflow-x: auto; }
+.full-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.full-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.full-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  vertical-align: top;
+  background: var(--surface);
+}
+.full-table tr:hover td { background: var(--surface2); }
+.full-table td.formula-cell {
+  font-family: var(--font-body);
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text2);
+}
+.full-table td.mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text);
+}
+.full-table td.name-cell {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.type-pill {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.type-pill.disc { background: var(--accent-light); color: var(--accent); }
+.type-pill.cont { background: var(--teal-light); color: var(--teal); }
+
+/* ─── USE CASES ─── */
+.use-cases-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+.use-case-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.use-case-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.use-case-label.general  { color: var(--accent); }
+.use-case-label.business { color: var(--amber); }
+.use-case-label.bio      { color: var(--teal); }
+.use-case-text {
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* ─── VIEWS ─── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── MISC ─── */
+.hide { display: none !important; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="home-btn" onclick="resetView()" title="Back to overview">&#8592; All distributions</button>
+  <div class="header-title"><em>Probability</em> Distributions Reference</div>
+  <div class="header-nav">
+    <button class="nav-btn active" onclick="setView('grid')">Grid</button>
+    <button class="nav-btn" onclick="setView('table')">Table</button>
+  </div>
+</header>
+
+<div class="main">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Discrete (6)</div>
+      <div id="disc-nav"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Continuous (9)</div>
+      <div id="cont-nav"></div>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <!-- GRID VIEW -->
+    <div id="view-grid" class="view active">
+      <!-- Detail panel -->
+      <div id="detail-panel" class="detail-panel">
+        <div class="detail-header">
+          <div>
+            <div class="detail-title" id="detail-title">—</div>
+            <div class="detail-notation" id="detail-notation"></div>
+            <div class="detail-support" id="detail-support"></div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <div class="detail-chart-section">
+            <div class="detail-chart-label">Distribution shape — overlay multiple parameter sets</div>
+            <div class="detail-chart-wrap"><canvas id="detail-chart" role="img" aria-label="Detailed distribution plot"></canvas></div>
+            <div class="color-legend" id="detail-legend"></div>
+          </div>
+          <div class="detail-controls" id="detail-controls-wrap">
+            <div class="controls-title">Parameter sets</div>
+            <div class="curves-list" id="curves-list"></div>
+            <button class="add-curve-btn" id="add-curve-btn" onclick="addCurve()">+ Add parameter set</button>
+          </div>
+        </div>
+        <div class="stats-row" id="detail-stats"></div>
+        <div class="use-cases-row" id="detail-usecases"></div>
+      </div>
+
+      <!-- Discrete section -->
+      <div class="section-title">Discrete distributions</div>
+      <div class="section-sub">Probability mass functions — P(X = x)</div>
+      <div class="dist-grid" id="grid-discrete"></div>
+
+      <!-- Continuous section -->
+      <div class="section-title">Continuous distributions</div>
+      <div class="section-sub">Probability density functions — f(x)</div>
+      <div class="dist-grid" id="grid-continuous"></div>
+    </div>
+
+    <!-- TABLE VIEW -->
+    <div id="view-table" class="view">
+      <div class="section-title" style="margin-bottom:.4rem">All distributions</div>
+      <div class="section-sub">Full reference including formulas, moments, and MGFs</div>
+      <div class="full-table-wrap">
+        <table class="full-table" id="full-table"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── MATH HELPERS ────────────────────────────────────────────────────────────
+function factorial(n){if(n<=1)return 1;if(n>170)return Infinity;let r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+function comb(n,k){if(k<0||k>n)return 0;if(k===0||k===n)return 1;k=Math.min(k,n-k);let r=1;for(let i=0;i<k;i++){r=r*(n-i)/(i+1);}return r;}
+function gamma(n){
+  if(n<0.5)return Math.PI/(Math.sin(Math.PI*n)*gamma(1-n));
+  n-=1;const g=7,c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  let x=c[0];for(let i=1;i<g+2;i++)x+=c[i]/(n+i);
+  const t=n+g+0.5;return Math.sqrt(2*Math.PI)*Math.pow(t,n+0.5)*Math.exp(-t)*x;
+}
+function fmt(v,d=4){if(typeof v==='string')return v;if(v===null||v===undefined||isNaN(v)||!isFinite(v))return '—';return Math.abs(v)<0.001&&v!==0?v.toExponential(3):parseFloat(v.toFixed(d)).toString();}
+
+// ─── DISTRIBUTION DATA ───────────────────────────────────────────────────────
+const DISTS = {
+  Bernoulli: {
+    type:'disc', paramStr:'p',
+    support:'x ∈ {0, 1},  0 ≤ p ≤ 1',
+    notation:'pmf: \\(P(x) = p^x(1-p)^{1-x}\\)',
+    mgf:'\\(M_X(t) = (1-p)+pe^{t}\\)',
+    params:[{name:'p',label:'p',sym:'p',min:0.01,max:0.99,step:0.01,default:0.5}],
+    pmf:(x,{p})=>x===0?(1-p):x===1?p:0,
+    support_fn:()=>[0,1],
+    mean:({p})=>p,
+    variance:({p})=>p*(1-p),
+    meanStr:'p',varStr:'p(1−p)',mgfStr:'(1−p)+peᵗ',
+    example:'Indicator of success in a single trial (e.g. coin flip: heads=1, tails=0).',
+    useCases:{
+      general:'Any single binary outcome — coin flip, whether it rains today, pass/fail quality check on one unit.',
+      business:'Email click-through (clicked vs. not), ad conversion, customer churn flag (churned vs. retained) per user.',
+      biomedical:'Patient responds to treatment (yes/no), diagnostic test result (positive/negative), presence of a genetic variant.'
+    }
+  },
+  Binomial: {
+    type:'disc', paramStr:'n, p',
+    support:'x = 0,1,...,n;  0 ≤ p ≤ 1',
+    notation:'pmf: \\(P(x) = \\binom{n}{x}p^x(1-p)^{n-x}\\)',
+    mgf:'\\(M_X(t) = ((1-p)+pe^t)^n\\)',
+    params:[
+      {name:'n',label:'n',sym:'n',min:1,max:50,step:1,default:10},
+      {name:'p',label:'p',sym:'p',min:0.01,max:0.99,step:0.01,default:0.3}
+    ],
+    pmf:(x,{n,p})=>comb(n,x)*Math.pow(p,x)*Math.pow(1-p,n-x),
+    support_fn:({n})=>Array.from({length:n+1},(_,i)=>i),
+    mean:({n,p})=>n*p,
+    variance:({n,p})=>n*p*(1-p),
+    meanStr:'np',varStr:'np(1−p)',mgfStr:'((1−p)+peᵗ)ⁿ',
+    example:'Number of successes in n independent Bernoulli trials (e.g. # of heads in n flips).',
+    useCases:{
+      general:'Quality inspection: how many defective items in a batch of n. Surveys: how many respondents agree out of n polled.',
+      business:'Conversions out of n website visitors, A/B test success counts, number of defaulting loans in a portfolio of n.',
+      biomedical:'Patients responding to a drug out of n enrolled, number of positive PCR samples in a batch, adverse events in a trial arm.'
+    }
+  },
+  Geometric: {
+    type:'disc', paramStr:'p',
+    support:'x = 1,2,3,...;  0 ≤ p ≤ 1',
+    notation:'pmf: \\(P(x) = (1-p)^{x-1}\\cdot p\\)',
+    mgf:'\\(M_X(t) = \\dfrac{pe^t}{1-(1-p)e^t}\\)',
+    params:[{name:'p',label:'p',sym:'p',min:0.05,max:0.95,step:0.01,default:0.3}],
+    pmf:(x,{p})=>Math.pow(1-p,x-1)*p,
+    support_fn:()=>Array.from({length:25},(_,i)=>i+1),
+    mean:({p})=>1/p,
+    variance:({p})=>(1-p)/(p*p),
+    meanStr:'1/p',varStr:'(1−p)/p²',mgfStr:'peᵗ/(1−(1−p)eᵗ)',
+    example:'Number of trials required to obtain the first success (e.g. number of flips until first heads).',
+    useCases:{
+      general:'How many dice rolls until a 6, how many interviews until a job offer, retries until a network packet is delivered.',
+      business:'Sales calls needed to close the first deal, attempts until a customer completes checkout, cold emails until first reply.',
+      biomedical:'Number of screening tests until first positive detection, attempts until a successful surgery, trials until first drug-resistant mutation.'
+    }
+  },
+  Poisson: {
+    type:'disc', paramStr:'λ',
+    support:'x = 0,1,2,...;  0 ≤ λ',
+    notation:'pmf: \\(P(x) = \\dfrac{e^{-\\lambda}\\lambda^x}{x!}\\)',
+    mgf:'\\(M_X(t) = \\exp(\\lambda(e^t-1))\\)',
+    params:[{name:'lambda',label:'λ',sym:'λ',min:0.1,max:15,step:0.1,default:3}],
+    pmf:(x,{lambda})=>Math.exp(-lambda)*Math.pow(lambda,x)/factorial(x),
+    support_fn:({lambda})=>Array.from({length:Math.max(20,Math.ceil(lambda*3)+5)},(_,i)=>i),
+    mean:({lambda})=>lambda,
+    variance:({lambda})=>lambda,
+    meanStr:'λ',varStr:'λ',mgfStr:'exp(λ(eᵗ−1))',
+    example:'Number of events occurring in a fixed interval when events happen independently at a constant rate.',
+    useCases:{
+      general:'Meteor strikes per year, typos per page, cars passing a checkpoint per minute, radioactive decay counts.',
+      business:'Customer service calls per hour, website requests per second, insurance claims per month, fraud incidents per week.',
+      biomedical:'Mutations in a DNA strand per generation, bacterial colonies on a culture plate, rare disease cases per 100,000 population per year.'
+    }
+  },
+  NegBin: {
+    type:'disc', paramStr:'r, p',
+    support:'x = 0,1,2,...;  0 ≤ p ≤ 1',
+    notation:'pmf: \\(P(x) = \\binom{x+r-1}{x}(1-p)^x p^r\\)',
+    mgf:'\\(M_X(t) = \\left(\\dfrac{p}{1-(1-p)e^t}\\right)^r\\)',
+    params:[
+      {name:'r',label:'r',sym:'r',min:1,max:20,step:1,default:4},
+      {name:'p',label:'p',sym:'p',min:0.05,max:0.95,step:0.01,default:0.4}
+    ],
+    pmf:(x,{r,p})=>comb(x+r-1,x)*Math.pow(1-p,x)*Math.pow(p,r),
+    support_fn:()=>Array.from({length:35},(_,i)=>i),
+    mean:({r,p})=>r*(1-p)/p,
+    variance:({r,p})=>r*(1-p)/(p*p),
+    meanStr:'r(1−p)/p',varStr:'r(1−p)/p²',mgfStr:'(p/(1−(1−p)eᵗ))ʳ',
+    example:'Number of failures observed before achieving r successes in repeated Bernoulli trials.',
+    useCases:{
+      general:'Defective parts produced before r good ones pass QC, failed attempts before r successful deliveries.',
+      business:'Overdispersed customer count modeling, churn events before r renewals, aggregate insurance claim frequency.',
+      biomedical:'RNA-seq read counts per gene (handles overdispersion vs. Poisson), hospital readmissions before r stable discharges, disease recurrence episodes.'
+    }
+  },
+  DisUniform: {
+    type:'disc', paramStr:'N',
+    support:'x = 1,2,...,N;  N = 1,2,...',
+    notation:'pmf: \\(P(x) = 1/N\\)',
+    mgf:'\\(M_X(t) = \\dfrac{1}{N}\\sum_{i=1}^{N}e^{it}\\)',
+    params:[{name:'N',label:'N',sym:'N',min:2,max:20,step:1,default:6}],
+    pmf:(x,{N})=>(x>=1&&x<=N)?1/N:0,
+    support_fn:({N})=>Array.from({length:N},(_,i)=>i+1),
+    mean:({N})=>(N+1)/2,
+    variance:({N})=>(N+1)*(N-1)/12,
+    meanStr:'(N+1)/2',varStr:'(N²−1)/12',mgfStr:'(1/N)Σeⁱᵗ',
+    example:'All integers from 1 to N are equally likely.',
+    useCases:{
+      general:'Rolling a fair die, drawing a random card, random number generation between 1 and N.',
+      business:'Random audit selection, lottery draws, assigning customers to equally sized experiment buckets.',
+      biomedical:'Random allocation of patients to treatment arms, random selection of biopsy sites from a grid, random gene sampling.'
+    }
+  },
+  Normal: {
+    type:'cont', paramStr:'μ, σ²',
+    support:'−∞ < x < ∞,  −∞ < μ < ∞,  σ > 0',
+    notation:'pdf: \\(f(x) = \\dfrac{1}{\\sqrt{2\\pi\\sigma^2}}\\exp\\!\\left(-\\dfrac{(x-\\mu)^2}{2\\sigma^2}\\right)\\)',
+    mgf:'\\(M_X(t) = \\exp\\!\\left(\\mu t+\\tfrac{1}{2}\\sigma^2 t^2\\right)\\)',
+    params:[
+      {name:'mu',label:'μ',sym:'μ',min:-5,max:5,step:0.1,default:0},
+      {name:'sigma2',label:'σ²',sym:'σ²',min:0.1,max:9,step:0.1,default:1}
+    ],
+    pdf:(x,{mu,sigma2})=>{const s=Math.sqrt(sigma2);return Math.exp(-0.5*((x-mu)/s)**2)/(s*Math.sqrt(2*Math.PI));},
+    xRange:({mu,sigma2})=>{const s=Math.sqrt(sigma2);return[mu-4.5*s,mu+4.5*s];},
+    mean:({mu})=>mu,
+    variance:({sigma2})=>sigma2,
+    meanStr:'μ',varStr:'σ²',mgfStr:'exp(μt+½σ²t²)',
+    example:'Measurement errors, biological variation, test scores — the classic bell curve.',
+    useCases:{
+      general:'Heights, weights, exam scores, measurement errors — any quantity shaped by many small independent factors (Central Limit Theorem).',
+      business:'Manufacturing tolerance errors, stock return approximations, sales forecast residuals, customer lifetime value modeling.',
+      biomedical:'Blood pressure, cholesterol levels, birth weights, IQ scores, lab assay measurement errors in large population studies.'
+    }
+  },
+  Exponential: {
+    type:'cont', paramStr:'β',
+    support:'0 ≤ x < ∞,  β > 0',
+    notation:'pdf: \\(f(x) = \\dfrac{1}{\\beta}e^{-x/\\beta}\\)',
+    mgf:'\\(M_X(t) = \\dfrac{1}{1-\\beta t},\\; t < 1/\\beta\\)',
+    params:[{name:'beta',label:'β',sym:'β',min:0.1,max:5,step:0.1,default:1}],
+    pdf:(x,{beta})=>x<0?0:(1/beta)*Math.exp(-x/beta),
+    xRange:({beta})=>[0,beta*6],
+    mean:({beta})=>beta,
+    variance:({beta})=>beta*beta,
+    meanStr:'β',varStr:'β²',mgfStr:'1/(1−βt)',
+    example:'Waiting time until a Poisson event occurs.',
+    useCases:{
+      general:'Time between earthquakes, gaps between bus arrivals, radioactive decay inter-event times.',
+      business:'Time between customer arrivals at a store, equipment time-to-failure in reliability engineering, call center inter-arrival times.',
+      biomedical:'Time between ER patient arrivals, survival analysis with constant hazard rate, time to first adverse drug event.'
+    }
+  },
+  Gamma: {
+    type:'cont', paramStr:'α, β',
+    support:'0 ≤ x < ∞,  α, β > 0',
+    notation:'pdf: \\(f(x) = \\dfrac{x^{\\alpha-1}e^{-x/\\beta}}{\\Gamma(\\alpha)\\beta^{\\alpha}}\\)',
+    mgf:'\\(M_X(t) = \\left(\\dfrac{1}{1-\\beta t}\\right)^{\\alpha},\\; t < 1/\\beta\\)',
+    params:[
+      {name:'alpha',label:'α',sym:'α',min:0.5,max:10,step:0.1,default:2},
+      {name:'beta',label:'β',sym:'β',min:0.1,max:5,step:0.1,default:1}
+    ],
+    pdf:(x,{alpha,beta})=>{if(x<=0)return 0;return Math.pow(x,alpha-1)*Math.exp(-x/beta)/(gamma(alpha)*Math.pow(beta,alpha));},
+    xRange:({alpha,beta})=>[0,Math.max(1,(alpha*beta+4.5*Math.sqrt(alpha)*beta))],
+    mean:({alpha,beta})=>alpha*beta,
+    variance:({alpha,beta})=>alpha*beta*beta,
+    meanStr:'αβ',varStr:'αβ²',mgfStr:'(1−βt)⁻ᵅ',
+    example:'Includes the exponential distribution as a special case when α=1; widely used for waiting times and as a prior in Bayesian models.',
+    useCases:{
+      general:'Total waiting time for r Poisson events, rainfall amounts, file sizes, income distributions with positive skew.',
+      business:'Aggregate insurance claim amounts, project completion time with multiple sequential tasks, total loss modeling in actuarial science.',
+      biomedical:'Time to r-th cancer recurrence, hospital length-of-stay, pharmacokinetic drug clearance, conjugate prior for Poisson rate in Bayesian analysis.'
+    }
+  },
+  Uniform: {
+    type:'cont', paramStr:'a, b',
+    support:'a ≤ x ≤ b',
+    notation:'pdf: \\(f(x) = \\dfrac{1}{b-a}\\)',
+    mgf:'\\(M_X(t) = \\dfrac{e^{tb}-e^{ta}}{t(b-a)}\\)',
+    params:[
+      {name:'a',label:'a',sym:'a',min:-5,max:4,step:0.5,default:0},
+      {name:'b',label:'b',sym:'b',min:-4,max:5,step:0.5,default:1}
+    ],
+    pdf:(x,{a,b})=>{const lo=Math.min(a,b),hi=Math.max(a,b)+0.001;return(x>=lo&&x<=hi)?1/(hi-lo):0;},
+    xRange:({a,b})=>{const lo=Math.min(a,b),hi=Math.max(a,b)+0.001,pad=(hi-lo)*0.4;return[lo-pad,hi+pad];},
+    mean:({a,b})=>(a+b)/2,
+    variance:({a,b})=>Math.pow(Math.abs(b-a),2)/12,
+    meanStr:'(a+b)/2',varStr:'(b−a)²/12',mgfStr:'(eᵗᵇ−eᵗᵃ)/(t(b−a))',
+    example:'All values between a and b are equally likely.',
+    useCases:{
+      general:'Rounding errors, birth time within a day, random number generation when no prior knowledge of the distribution exists.',
+      business:'Simulation inputs when bounds are known but shape is unknown, random price fluctuations within a regulated band.',
+      biomedical:'Non-informative prior in Bayesian analysis, random timing of intervention within a window, uniform random assignment.'
+    }
+  },
+  Beta: {
+    type:'cont', paramStr:'α, β',
+    support:'0 ≤ x ≤ 1,  α, β > 0',
+    notation:'pdf: \\(f(x) = \\dfrac{x^{\\alpha-1}(1-x)^{\\beta-1}}{B(\\alpha,\\beta)}\\)',
+    mgf:'No closed form (series only)',
+    params:[
+      {name:'alpha',label:'α',sym:'α',min:0.1,max:10,step:0.1,default:2},
+      {name:'beta',label:'β',sym:'β',min:0.1,max:10,step:0.1,default:2}
+    ],
+    pdf:(x,{alpha,beta})=>{if(x<=0||x>=1)return 0;const B=gamma(alpha)*gamma(beta)/gamma(alpha+beta);return Math.pow(x,alpha-1)*Math.pow(1-x,beta-1)/B;},
+    xRange:()=>[0,1],
+    mean:({alpha,beta})=>alpha/(alpha+beta),
+    variance:({alpha,beta})=>alpha*beta/((alpha+beta)**2*(alpha+beta+1)),
+    meanStr:'α/(α+β)',varStr:'αβ/((α+β)²(α+β+1))',mgfStr:'Series only',
+    example:'Useful for modeling random probabilities and proportions; widely used as a prior in Bayesian inference.',
+    useCases:{
+      general:'Batting averages, survey response rates, proportion of time a system is busy — any proportion bounded in [0, 1].',
+      business:'Conversion rate modeling in A/B testing (conjugate prior/posterior), click-through rate estimation, Bayesian revenue-per-user.',
+      biomedical:'Proportion of patients responding to therapy, tumor purity in cancer genomics, allele frequency estimation, sensitivity/specificity of a diagnostic test.'
+    }
+  },
+  Cauchy: {
+    type:'cont', paramStr:'θ, σ',
+    support:'−∞ < x < ∞,  −∞ < θ < ∞,  σ > 0',
+    notation:'pdf: \\(f(x) = \\dfrac{1}{\\pi\\sigma\\!\\left(1+\\left(\\frac{x-\\theta}{\\sigma}\\right)^2\\right)}\\)',
+    mgf:'Does not exist',
+    params:[
+      {name:'theta',label:'θ',sym:'θ',min:-5,max:5,step:0.1,default:0},
+      {name:'sigma',label:'σ',sym:'σ',min:0.1,max:5,step:0.1,default:1}
+    ],
+    pdf:(x,{theta,sigma})=>1/(Math.PI*sigma*(1+((x-theta)/sigma)**2)),
+    xRange:({theta,sigma})=>[theta-8*sigma,theta+8*sigma],
+    mean:()=>'does not exist',
+    variance:()=>'does not exist',
+    meanStr:'does not exist',varStr:'does not exist',mgfStr:'does not exist',
+    example:'Special case of Student-t with df=1. If X,Y are independent N(0,1), then X/Y is Cauchy.',
+    useCases:{
+      general:'Ratio of two independent normals, Lorentzian spectral line shapes in physics, direction of a random walk in 2D.',
+      business:'Modeling extreme financial returns with fat tails, robust regression to down-weight outliers, high-frequency trading price impact.',
+      biomedical:'Spectroscopy and NMR resonance line widths (Lorentzian profile), robust statistical models for outlier-prone clinical measurements.'
+    }
+  },
+  ChiSquared: {
+    type:'cont', paramStr:'p',
+    support:'0 ≤ x < ∞,  p = 1,2,...',
+    notation:'pdf: \\(f(x) = \\dfrac{x^{p/2-1}e^{-x/2}}{2^{p/2}\\,\\Gamma(p/2)}\\)',
+    mgf:'\\(M_X(t) = \\left(\\dfrac{1}{1-2t}\\right)^{p/2},\\; t < 1/2\\)',
+    params:[{name:'p',label:'p (df)',sym:'p',min:1,max:20,step:1,default:3}],
+    pdf:(x,{p})=>{if(x<=0)return 0;return Math.pow(x,p/2-1)*Math.exp(-x/2)/(Math.pow(2,p/2)*gamma(p/2));},
+    xRange:({p})=>[0,Math.max(5,p*2.5+4*Math.sqrt(2*p))],
+    mean:({p})=>p,
+    variance:({p})=>2*p,
+    meanStr:'p',varStr:'2p',mgfStr:'(1−2t)⁻ᵖ/²',
+    example:'Special case of the gamma distribution. Sum of squares of independent standard Normal variables.',
+    useCases:{
+      general:'Goodness-of-fit tests, testing independence of categorical variables, variance estimation from normal samples.',
+      business:'Chi-squared test for independence in market research (e.g. age vs. product preference), quality control acceptance sampling.',
+      biomedical:'Genome-wide association studies (GWAS test statistics), testing independence of disease status and risk factor, variance components in mixed models.'
+    }
+  },
+  StudentT: {
+    type:'cont', paramStr:'ν',
+    support:'−∞ < x < ∞,  ν = 1,2,...',
+    notation:'pdf: \\(f(x) = \\dfrac{\\Gamma\\!\\left(\\frac{\\nu+1}{2}\\right)}{\\sqrt{\\nu\\pi}\\,\\Gamma\\!\\left(\\frac{\\nu}{2}\\right)}\\left(1+\\dfrac{x^2}{\\nu}\\right)^{-(\\nu+1)/2}\\)',
+    mgf:'Does not exist',
+    params:[{name:'nu',label:'ν',sym:'ν',min:1,max:30,step:1,default:5}],
+    pdf:(x,{nu})=>{const c=gamma((nu+1)/2)/(Math.sqrt(nu*Math.PI)*gamma(nu/2));return c*Math.pow(1+x*x/nu,-(nu+1)/2);},
+    xRange:()=>[-6,6],
+    mean:({nu})=>nu>1?0:'does not exist (ν≤1)',
+    variance:({nu})=>nu>2?nu/(nu-2):'does not exist (ν≤2)',
+    meanStr:'0  (ν > 1)',varStr:'ν/(ν−2)  (ν > 2)',mgfStr:'does not exist',
+    example:'Distribution of the standardized sample mean when the population variance is unknown.',
+    useCases:{
+      general:'Small-sample mean inference when population variance is unknown; converges to Normal for large n.',
+      business:'Comparing A/B test means with small samples, earnings estimate confidence intervals, financial return modeling with fat tails.',
+      biomedical:'Comparing treatment vs. control group means in small clinical trials, paired t-tests for before/after measurements, pilot study analysis.'
+    }
+  },
+  FDist: {
+    type:'cont', paramStr:'ν₁, ν₂',
+    support:'0 ≤ x < ∞,  ν₁, ν₂ = 1,2,...',
+    notation:'pdf: \\(\\dfrac{\\Gamma\\!\\left(\\frac{\\nu_1+\\nu_2}{2}\\right)}{\\Gamma(\\nu_1/2)\\,\\Gamma(\\nu_2/2)}\\!\\left(\\dfrac{\\nu_1}{\\nu_2}\\right)^{\\nu_1/2}\\!x^{\\nu_1/2-1}\\left(1+\\dfrac{\\nu_1 x}{\\nu_2}\\right)^{-(\\nu_1+\\nu_2)/2}\\)',
+    mgf:'Does not exist',
+    params:[
+      {name:'v1',label:'ν₁',sym:'ν₁',min:1,max:20,step:1,default:5},
+      {name:'v2',label:'ν₂',sym:'ν₂',min:3,max:30,step:1,default:10}
+    ],
+    pdf:(x,{v1,v2})=>{if(x<=0)return 0;const c=gamma((v1+v2)/2)/(gamma(v1/2)*gamma(v2/2))*Math.pow(v1/v2,v1/2);return c*Math.pow(x,v1/2-1)/Math.pow(1+v1*x/v2,(v1+v2)/2);},
+    xRange:()=>[0,5],
+    mean:({v2})=>v2>2?v2/(v2-2):'does not exist (ν₂≤2)',
+    variance:({v1,v2})=>v2>4?2*v2*v2*(v1+v2-2)/(v1*(v2-2)**2*(v2-4)):'does not exist (ν₂≤4)',
+    meanStr:'ν₂/(ν₂−2)  (ν₂>2)',varStr:'2ν₂²(ν₁+ν₂−2)/(ν₁(ν₂−2)²(ν₂−4))  (ν₂>4)',mgfStr:'does not exist',
+    example:'Ratio of scaled chi-squared variables; used in ANOVA and regression analysis.',
+    useCases:{
+      general:'Comparing two population variances, overall F-test significance in linear regression, ANOVA between-group vs. within-group variance.',
+      business:'ANOVA F-test comparing sales across regions or channels, testing overall significance of a marketing mix model.',
+      biomedical:'ANOVA comparing multiple treatment group outcomes, differential gene expression analysis, testing model fit in pharmacokinetic studies.'
+    }
+  }
+};
+
+// ─── COLORS ─────────────────────────────────────────────────────────────────
+const CURVE_COLORS = [
+  {line:'#4a3fbf',fill:'rgba(74,63,191,0.12)',label:'Indigo'},
+  {line:'#0d7f62',fill:'rgba(13,127,98,0.12)',label:'Teal'},
+  {line:'#c94d2a',fill:'rgba(201,77,42,0.12)',label:'Coral'},
+  {line:'#b85c00',fill:'rgba(184,92,0,0.12)',label:'Amber'},
+  {line:'#7b3fa0',fill:'rgba(123,63,160,0.12)',label:'Violet'},
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let currentView = 'grid';
+let selectedDist = null;
+let curves = []; // [{params:{...}, id:n}]
+let curveIdCounter = 0;
+let miniCharts = {};
+let detailChart = null;
+
+// ─── VIEW SWITCHING ──────────────────────────────────────────────────────────
+function resetView() {
+  if(selectedDist) {
+    document.getElementById(`card-${selectedDist}`)?.classList.remove('selected');
+    document.getElementById(`nav-${selectedDist}`)?.classList.remove('active');
+    selectedDist = null;
+  }
+  document.getElementById('detail-panel').classList.remove('visible');
+  setView('grid');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='grid')||(i===1&&v==='table')));
+  document.getElementById('view-grid').classList.toggle('active', v==='grid');
+  document.getElementById('view-table').classList.toggle('active', v==='table');
+  if(v==='table') buildFullTable();
+}
+
+// ─── SIDEBAR NAV ─────────────────────────────────────────────────────────────
+function buildSidebar() {
+  const discEl = document.getElementById('disc-nav');
+  const contEl = document.getElementById('cont-nav');
+  Object.entries(DISTS).forEach(([name, d]) => {
+    const el = document.getElementById(d.type==='disc'?'disc-nav':'cont-nav');
+    const btn = document.createElement('button');
+    btn.className = `dist-btn ${d.type}`;
+    btn.id = `nav-${name}`;
+    btn.innerHTML = `<span class="dist-dot"></span>${formatName(name)}`;
+    btn.onclick = () => selectDist(name);
+    el.appendChild(btn);
+  });
+}
+function formatName(name) {
+  const map = {DisUniform:'Dis Uniform',NegBin:'Neg Binomial',ChiSquared:'χ²',StudentT:'Student-t',FDist:'F Distribution'};
+  return map[name]||name;
+}
+
+// ─── MINI CARDS ──────────────────────────────────────────────────────────────
+function buildGrid() {
+  const discEl = document.getElementById('grid-discrete');
+  const contEl = document.getElementById('grid-continuous');
+  Object.entries(DISTS).forEach(([name, d]) => {
+    const el = d.type==='disc'?discEl:contEl;
+    const card = document.createElement('div');
+    card.className = `dist-card ${d.type}`;
+    card.id = `card-${name}`;
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <div class="card-name">${formatName(name)}<span style="font-size:.75rem;font-weight:300;color:#8a877e;font-style:italic"> (${d.paramStr})</span></div>
+          <div class="card-formula">${d.notation}</div>
+        </div>
+        <span class="card-type-badge">${d.type==='disc'?'Discrete':'Continuous'}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-chart-wrap"><canvas id="mini-${name}" role="img" aria-label="Mini plot of ${name}"></canvas></div>
+        <div class="card-stats">
+          <span>E[X] <strong id="card-mean-${name}">${d.meanStr}</strong></span>
+          <span>Var(X) <strong id="card-var-${name}">${d.varStr}</strong></span>
+          <span>Support <strong style="font-size:10px">${d.support.split(';')[0]}</strong></span>
+          <span>MGF <strong style="font-size:10px">${d.mgfStr}</strong></span>
+        </div>
+        <div class="card-example">${d.example}</div>
+      </div>
+    `;
+    renderMath(card);
+    card.onclick = () => selectDist(name);
+    el.appendChild(card);
+    drawMiniChart(name);
+  });
+}
+
+function drawMiniChart(name) {
+  const d = DISTS[name];
+  const p0 = {};
+  d.params.forEach(p => p0[p.name] = p.default);
+  const {labels, data} = getChartData(name, p0);
+  const color = d.type==='disc'?'rgba(74,63,191,0.75)':'#4a3fbf';
+  const fill = d.type!=='disc';
+  const ctx = document.getElementById(`mini-${name}`);
+  if(!ctx) return;
+  if(miniCharts[name]) miniCharts[name].destroy();
+  miniCharts[name] = new Chart(ctx, {
+    type: d.type==='disc'?'bar':'line',
+    data: {
+      labels: labels.map(l=>typeof l==='number'?parseFloat(l.toFixed(3)):l),
+      datasets:[{data, backgroundColor:color, borderColor:'#4a3fbf', borderWidth:d.type==='disc'?0:1.5, fill, pointRadius:0, tension:0.4, barPercentage:0.7}]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:{duration:0},
+      plugins:{legend:{display:false}, tooltip:{enabled:false}},
+      scales:{
+        x:{display:false},
+        y:{display:false, beginAtZero:true}
+      }
+    }
+  });
+}
+
+function getChartData(name, params) {
+  const d = DISTS[name];
+  let labels, data;
+  if(d.type==='disc') {
+    const supp = d.support_fn(params);
+    labels = supp;
+    data = supp.map(x=>d.pmf(x,params));
+  } else {
+    const [lo,hi] = d.xRange(params);
+    const n = 250;
+    labels = Array.from({length:n},(_,i)=>lo+(hi-lo)*i/(n-1));
+    data = labels.map(x=>d.pdf(x,params));
+  }
+  return {labels, data};
+}
+
+// ─── DETAIL PANEL ────────────────────────────────────────────────────────────
+function selectDist(name) {
+  // deselect previous
+  if(selectedDist) {
+    document.getElementById(`card-${selectedDist}`)?.classList.remove('selected');
+    document.getElementById(`nav-${selectedDist}`)?.classList.remove('active');
+  }
+  selectedDist = name;
+  document.getElementById(`card-${name}`)?.classList.add('selected');
+  document.getElementById(`nav-${name}`)?.classList.add('active');
+
+  const d = DISTS[name];
+  const panel = document.getElementById('detail-panel');
+  panel.classList.add('visible');
+  panel.className = `detail-panel visible ${d.type}`;
+
+  document.getElementById('detail-title').innerHTML = `${formatName(name)} <span class="param-hint">(${d.paramStr})</span>`;
+  document.getElementById('detail-notation').innerHTML = `${d.notation}<br>${d.support}<br>MGF: ${d.mgf}`;
+  renderMath(document.getElementById('detail-notation'));
+  document.getElementById('detail-support').textContent = '';
+
+  // init curves with default
+  curves = [{params: getDefaultParams(name), id: curveIdCounter++}];
+  renderCurvesList(name);
+  renderDetailChart(name);
+  renderStats(name);
+  renderUseCases(name);
+
+  // scroll panel into view
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function getDefaultParams(name) {
+  const d = DISTS[name];
+  const p = {};
+  d.params.forEach(q => p[q.name] = q.default);
+  return p;
+}
+
+function addCurve() {
+  if(curves.length >= 5) return;
+  curves.push({params: getDefaultParams(selectedDist), id: curveIdCounter++});
+  renderCurvesList(selectedDist);
+  renderDetailChart(selectedDist);
+  renderStats(selectedDist);
+}
+
+function removeCurve(idx) {
+  if(curves.length <= 1) return;
+  curves.splice(idx, 1);
+  renderCurvesList(selectedDist);
+  renderDetailChart(selectedDist);
+  renderStats(selectedDist);
+}
+
+function renderCurvesList(name) {
+  const d = DISTS[name];
+  const wrap = document.getElementById('curves-list');
+  wrap.innerHTML = '';
+  curves.forEach((curve, ci) => {
+    const col = CURVE_COLORS[ci % CURVE_COLORS.length];
+    const item = document.createElement('div');
+    item.className = 'curve-item';
+    const paramHTML = d.params.map(p => `
+      <div class="ctrl-group">
+        <div class="ctrl-label">
+          <span class="ctrl-label-sym">${p.sym}</span>
+          <span class="ctrl-val" id="cv-${ci}-${p.name}">${parseFloat(curve.params[p.name]).toFixed(p.step<1?2:0)}</span>
+        </div>
+        <input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${curve.params[p.name]}"
+          oninput="updateCurveParam(${ci},'${p.name}',parseFloat(this.value));document.getElementById('cv-${ci}-${p.name}').textContent=parseFloat(this.value).toFixed(${p.step<1?2:0})">
+      </div>
+    `).join('');
+    item.innerHTML = `
+      <div class="curve-item-header">
+        <div class="curve-color-dot" style="background:${col.line}"></div>
+        <span class="curve-item-label">Set ${ci+1}</span>
+        ${curves.length>1?`<button class="remove-curve-btn" onclick="removeCurve(${ci})">Remove</button>`:''}
+      </div>
+      <div class="curve-item-body">${paramHTML}</div>
+    `;
+    wrap.appendChild(item);
+  });
+  document.getElementById('add-curve-btn').style.opacity = curves.length>=5?'0.4':'1';
+}
+
+function updateCurveParam(ci, pname, val) {
+  curves[ci].params[pname] = val;
+  renderDetailChart(selectedDist);
+  renderStats(selectedDist);
+}
+
+function renderDetailChart(name) {
+  const d = DISTS[name];
+  const datasets = curves.map((curve, ci) => {
+    const col = CURVE_COLORS[ci % CURVE_COLORS.length];
+    const {labels, data} = getChartData(name, curve.params);
+    const paramLabel = d.params.map(p=>`${p.sym}=${parseFloat(curve.params[p.name]).toFixed(p.step<1?2:0)}`).join(', ');
+    return {
+      label: paramLabel,
+      data: d.type==='disc'? labels.map((l,i)=>({x:l,y:data[i]})) : labels.map((l,i)=>({x:l,y:data[i]})),
+      backgroundColor: col.fill,
+      borderColor: col.line,
+      borderWidth: d.type==='disc'?0:2,
+      fill: d.type!=='disc',
+      pointRadius: 0,
+      tension: 0.4,
+      barPercentage: 0.65,
+      _labels: labels,
+      _data: data
+    };
+  });
+
+  // build unified x labels for bar charts
+  if(d.type==='disc') {
+    const allX = new Set();
+    curves.forEach((curve)=>{const {labels}=getChartData(name,curve.params);labels.forEach(l=>allX.add(l));});
+    const sortedX = [...allX].sort((a,b)=>a-b);
+    datasets.forEach((ds, ci) => {
+      const {labels, data} = getChartData(name, curves[ci].params);
+      const map = {};
+      labels.forEach((l,i)=>map[l]=data[i]);
+      ds.data = sortedX.map(x=>map[x]??0);
+      delete ds._labels; delete ds._data;
+    });
+    // update chart with unified x
+    if(detailChart) detailChart.destroy();
+    detailChart = new Chart(document.getElementById('detail-chart'), {
+      type:'bar',
+      data:{labels:sortedX, datasets},
+      options:{responsive:true,maintainAspectRatio:false,animation:{duration:150},
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},maxTicksLimit:15},border:{display:false}},
+          y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},maxTicksLimit:6},border:{display:false},beginAtZero:true}
+        }
+      }
+    });
+  } else {
+    // line chart — all curves share their own x
+    const lineDatasets = curves.map((curve, ci) => {
+      const col = CURVE_COLORS[ci % CURVE_COLORS.length];
+      const {labels, data} = getChartData(name, curve.params);
+      const paramLabel = d.params.map(p=>`${p.sym}=${parseFloat(curve.params[p.name]).toFixed(p.step<1?2:0)}`).join(', ');
+      return {
+        label: paramLabel,
+        data: labels.map((l,i)=>({x:parseFloat(l.toFixed(4)),y:data[i]})),
+        borderColor: col.line,
+        backgroundColor: col.fill,
+        borderWidth: 2,
+        fill: ci===0,
+        pointRadius: 0,
+        tension: 0.4
+      };
+    });
+    if(detailChart) detailChart.destroy();
+    detailChart = new Chart(document.getElementById('detail-chart'), {
+      type:'line',
+      data:{datasets:lineDatasets},
+      options:{responsive:true,maintainAspectRatio:false,animation:{duration:150},
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{type:'linear',grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},maxTicksLimit:10,callback:v=>parseFloat(v.toFixed(2))},border:{display:false}},
+          y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},maxTicksLimit:6},border:{display:false},beginAtZero:true}
+        }
+      }
+    });
+  }
+
+  // legend
+  const legend = document.getElementById('detail-legend');
+  legend.innerHTML = '';
+  curves.forEach((curve, ci) => {
+    const col = CURVE_COLORS[ci % CURVE_COLORS.length];
+    const d2 = DISTS[name];
+    const paramLabel = d2.params.map(p=>`${p.sym}=${parseFloat(curve.params[p.name]).toFixed(p.step<1?2:0)}`).join(', ');
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-swatch" style="background:${col.line}"></span>${paramLabel}`;
+    legend.appendChild(item);
+  });
+}
+
+function renderUseCases(name) {
+  const d = DISTS[name];
+  const row = document.getElementById('detail-usecases');
+  if(!d.useCases) { row.innerHTML = ''; return; }
+  row.innerHTML = `
+    <div class="use-case-card">
+      <div class="use-case-label general">Real World</div>
+      <div class="use-case-text">${d.useCases.general}</div>
+    </div>
+    <div class="use-case-card">
+      <div class="use-case-label business">Business</div>
+      <div class="use-case-text">${d.useCases.business}</div>
+    </div>
+    <div class="use-case-card">
+      <div class="use-case-label bio">Biomedical</div>
+      <div class="use-case-text">${d.useCases.biomedical}</div>
+    </div>
+  `;
+}
+
+function statDisplay(formulaStr, val) {
+  if (typeof val === 'string') return val;
+  return `${formulaStr} = ${fmt(val)}`;
+}
+
+function renderStats(name) {
+  const d = DISTS[name];
+  const row = document.getElementById('detail-stats');
+  row.innerHTML = '';
+  // show stats for first curve
+  const p = curves[0].params;
+  const mean = d.mean(p);
+  const variance = d.variance(p);
+  const std = (typeof variance==='number'&&isFinite(variance))?Math.sqrt(variance):'—';
+  [
+    ['Distribution', `${formatName(name)}(${d.paramStr})`],
+    ['E[X]', statDisplay(d.meanStr, mean)],
+    ['Var(X)', statDisplay(d.varStr, variance)],
+    ['Std(X)', `${typeof std==='number'?fmt(std):'—'}`],
+  ].forEach(([label, val]) => {
+    const box = document.createElement('div');
+    box.className = 'stat-box';
+    box.innerHTML = `<div class="stat-box-label">${label}</div><div class="stat-box-val">${val}</div>`;
+    row.appendChild(box);
+  });
+}
+
+// ─── FULL TABLE ──────────────────────────────────────────────────────────────
+function buildFullTable() {
+  const table = document.getElementById('full-table');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Distribution</th>
+        <th>Type</th>
+        <th>pmf / pdf</th>
+        <th>Support</th>
+        <th>E[X]</th>
+        <th>Var(X)</th>
+        <th>MGF</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  `;
+  const body = document.getElementById('table-body');
+  Object.entries(DISTS).forEach(([name, d]) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="name-cell">${formatName(name)}<br><span style="font-size:10px;font-weight:400;color:#8a877e">(${d.paramStr})</span></td>
+      <td><span class="type-pill ${d.type}">${d.type==='disc'?'Discrete':'Continuous'}</span></td>
+      <td class="formula-cell">${d.notation.replace('pmf: ','').replace('pdf: ','')}</td>
+      <td class="formula-cell">${d.support}</td>
+      <td class="mono">${d.meanStr}</td>
+      <td class="mono" style="font-size:10px">${d.varStr}</td>
+      <td class="formula-cell" style="font-size:10px">${d.mgfStr}</td>
+      <td style="font-size:11px;color:#5a5750;font-style:italic;min-width:180px">${d.example}</td>
+    `;
+    renderMath(row);
+    body.appendChild(row);
+  });
+}
+
+// ─── MATH RENDERING ──────────────────────────────────────────────────────────
+function renderMath(el) {
+  if(window.renderMathInElement) {
+    renderMathInElement(el, {
+      delimiters:[{left:'\\(',right:'\\)',display:false}],
+      throwOnError:false
+    });
+  }
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+buildSidebar();
+buildGrid();
+</script>
+</body>
+</html>

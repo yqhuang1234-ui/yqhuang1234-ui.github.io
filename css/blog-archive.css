@@ -1,0 +1,118 @@
+/* ── Blog archive card grid — namespace: ba- ─────────────────────── */
+
+.ba-wrap {
+  margin: 0 0 2rem;
+}
+
+.ba-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.ba-card {
+  background: #fff;
+  border: 1px solid #E8E2D9;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  transition: transform 0.2s ease, border-color 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ba-card:hover {
+  transform: translateY(-5px);
+  border-color: #CC785C;
+  box-shadow: 0 8px 24px rgba(204,120,92,0.12);
+  text-decoration: none;
+  color: inherit;
+}
+
+.ba-card-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid #E8E2D9;
+}
+
+.ba-card-body {
+  padding: 1rem 1.2rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.ba-card-date {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #9B9288;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ba-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ba-card-desc {
+  font-size: 0.82rem;
+  color: #5F5F5F;
+  line-height: 1.55;
+  margin: 0;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ba-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+
+.ba-card-tag {
+  font-size: 0.73rem;
+  font-weight: 500;
+  padding: 0.15em 0.55em;
+  background: #F5EDE6;
+  color: #A85C42;
+  border-radius: 20px;
+}
+
+/* Single column on mobile */
+@media (max-width: 640px) {
+  .ba-grid { grid-template-columns: 1fr; }
+}
+
+/* Dark mode — auto */
+@media (prefers-color-scheme: dark) {
+  html:not([data-user-color-scheme]) .ba-card       { background: #242424; border-color: #363636; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+  html:not([data-user-color-scheme]) .ba-card:hover { border-color: #E8917A; box-shadow: 0 8px 24px rgba(232,145,122,0.15); color: inherit; }
+  html:not([data-user-color-scheme]) .ba-card-img   { border-bottom-color: #363636; }
+  html:not([data-user-color-scheme]) .ba-card-date  { color: #555555; }
+  html:not([data-user-color-scheme]) .ba-card-title { color: #E8E4DC; }
+  html:not([data-user-color-scheme]) .ba-card-desc  { color: #9B9288; }
+  html:not([data-user-color-scheme]) .ba-card-tag   { background: #2E2420; color: #E8917A; }
+}
+
+/* Dark mode — manual toggle */
+html[data-user-color-scheme="dark"] .ba-card       { background: #242424; border-color: #363636; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+html[data-user-color-scheme="dark"] .ba-card:hover { border-color: #E8917A; box-shadow: 0 8px 24px rgba(232,145,122,0.15); color: inherit; }
+html[data-user-color-scheme="dark"] .ba-card-img   { border-bottom-color: #363636; }
+html[data-user-color-scheme="dark"] .ba-card-date  { color: #555555; }
+html[data-user-color-scheme="dark"] .ba-card-title { color: #E8E4DC; }
+html[data-user-color-scheme="dark"] .ba-card-desc  { color: #9B9288; }
+html[data-user-color-scheme="dark"] .ba-card-tag   { background: #2E2420; color: #E8917A; }

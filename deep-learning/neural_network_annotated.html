@@ -1,0 +1,488 @@
+---
+layout: false
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Neural Network — Annotated</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #f0efe9;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1a1a1a;
+    --text2: #555550;
+    --text3: #888880;
+    --teal-fill: #E1F5EE;
+    --teal-stroke: #0F6E56;
+    --teal-text: #085041;
+    --purple-fill: #EEEDFE;
+    --purple-stroke: #534AB7;
+    --purple-text: #3C3489;
+    --amber-fill: #FAEEDA;
+    --amber-stroke: #854F0B;
+    --amber-text: #633806;
+    --green-edge: #9FE1CB;
+    --purple-edge: #AFA9EC;
+    --amber-edge: #FAC775;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #242422;
+      --bg3: #2c2c2a;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.18);
+      --text: #e8e8e0;
+      --text2: #aaa89e;
+      --text3: #6a6a60;
+      --teal-fill: #04342C;
+      --teal-stroke: #5DCAA5;
+      --teal-text: #9FE1CB;
+      --purple-fill: #26215C;
+      --purple-stroke: #AFA9EC;
+      --purple-text: #CECBF6;
+      --amber-fill: #412402;
+      --amber-stroke: #EF9F27;
+      --amber-text: #FAC775;
+      --green-edge: #1D9E75;
+      --purple-edge: #7F77DD;
+      --amber-edge: #BA7517;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 20px 40px;
+  }
+
+  h1 {
+    font-size: 20px;
+    font-weight: normal;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--text3);
+    font-family: 'Courier New', monospace;
+    margin-bottom: 20px;
+  }
+
+  #nn-svg { display: block; width: 100%; max-width: 760px; margin: 0 auto; }
+
+  .hint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'Courier New', monospace;
+    margin: 6px 0 14px;
+  }
+
+  .panels {
+    display: none;
+    gap: 12px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .panels.visible { display: flex; }
+
+  .panel {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    flex: 1;
+    min-width: 0;
+  }
+  .panel-title {
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+  }
+
+  .step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 5px 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .step-num {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    min-width: 16px;
+    padding-top: 2px;
+  }
+  .step-body { flex: 1; }
+
+  .k-block {
+    background: var(--bg3);
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin: 4px 0;
+    font-size: 13px;
+    overflow-x: auto;
+  }
+  .k-block.teal   { background: var(--teal-fill);   border-left: 3px solid var(--teal-stroke); }
+  .k-block.purple { background: var(--purple-fill);  border-left: 3px solid var(--purple-stroke); }
+  .k-block.amber  { background: var(--amber-fill);   border-left: 3px solid var(--amber-stroke); }
+
+  .note {
+    font-size: 12px;
+    color: var(--text2);
+    font-style: italic;
+    margin-top: 6px;
+  }
+
+  .node-btn { cursor: pointer; }
+  .node-btn:hover { opacity: 0.82; }
+
+  .layer-label-main { font-size: 12px; font-weight: bold; }
+  .layer-label-sub  { font-size: 11px; }
+
+  .legend {
+    max-width: 760px;
+    margin: 16px auto 0;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'Courier New', monospace;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot  { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid; }
+</style>
+</head>
+<body>
+
+<h1>Neural network — annotated</h1>
+<p class="subtitle">3 inputs → hidden(3) → hidden(2) → 1 output &nbsp;·&nbsp; click any node</p>
+
+<svg id="nn-svg" viewBox="0 0 760 320">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- layer label backgrounds -->
+<rect x="50" y="8" width="90" height="36" rx="6" fill="var(--teal-fill)" stroke="var(--teal-stroke)" stroke-width="0.5"/>
+<text x="95" y="22" text-anchor="middle" class="layer-label-main" fill="var(--teal-text)" font-family="Georgia,serif">Input layer</text>
+<text x="95" y="37" text-anchor="middle" class="layer-label-sub" fill="var(--teal-stroke)" font-family="'Courier New',monospace">layer 0  (x)</text>
+
+<rect x="230" y="8" width="100" height="36" rx="6" fill="var(--purple-fill)" stroke="var(--purple-stroke)" stroke-width="0.5"/>
+<text x="280" y="22" text-anchor="middle" class="layer-label-main" fill="var(--purple-text)" font-family="Georgia,serif">Hidden layer</text>
+<text x="280" y="37" text-anchor="middle" class="layer-label-sub" fill="var(--purple-stroke)" font-family="'Courier New',monospace">layer 1</text>
+
+<rect x="430" y="8" width="100" height="36" rx="6" fill="var(--purple-fill)" stroke="var(--purple-stroke)" stroke-width="0.5"/>
+<text x="480" y="22" text-anchor="middle" class="layer-label-main" fill="var(--purple-text)" font-family="Georgia,serif">Hidden layer</text>
+<text x="480" y="37" text-anchor="middle" class="layer-label-sub" fill="var(--purple-stroke)" font-family="'Courier New',monospace">layer 2</text>
+
+<rect x="630" y="8" width="100" height="36" rx="6" fill="var(--amber-fill)" stroke="var(--amber-stroke)" stroke-width="0.5"/>
+<text x="680" y="22" text-anchor="middle" class="layer-label-main" fill="var(--amber-text)" font-family="Georgia,serif">Output layer</text>
+<text x="680" y="37" text-anchor="middle" class="layer-label-sub" fill="var(--amber-stroke)" font-family="'Courier New',monospace">layer 3  (ŷ)</text>
+
+<!-- edges: input → layer 1 -->
+<line x1="117" y1="100" x2="257" y2="100" stroke="var(--green-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="117" y1="100" x2="257" y2="175" stroke="var(--green-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="117" y1="100" x2="257" y2="250" stroke="var(--green-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="117" y1="180" x2="257" y2="107" stroke="var(--green-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="117" y1="180" x2="257" y2="180" stroke="var(--green-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="117" y1="180" x2="257" y2="253" stroke="var(--green-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="117" y1="260" x2="257" y2="114" stroke="var(--green-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="117" y1="260" x2="257" y2="186" stroke="var(--green-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="117" y1="260" x2="257" y2="260" stroke="var(--green-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+
+<!-- W(1) label -->
+<text x="183" y="152" text-anchor="middle" font-size="12" font-family="Georgia,serif" fill="var(--teal-stroke)">W⁽¹⁾</text>
+
+<!-- edges: layer 1 → layer 2 -->
+<line x1="303" y1="100" x2="457" y2="137" stroke="var(--purple-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="303" y1="100" x2="457" y2="218" stroke="var(--purple-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="303" y1="180" x2="457" y2="145" stroke="var(--purple-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="303" y1="180" x2="457" y2="222" stroke="var(--purple-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="303" y1="260" x2="457" y2="153" stroke="var(--purple-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="303" y1="260" x2="457" y2="228" stroke="var(--purple-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+
+<!-- W(2) label -->
+<text x="383" y="152" text-anchor="middle" font-size="12" font-family="Georgia,serif" fill="var(--purple-stroke)">W⁽²⁾</text>
+
+<!-- edges: layer 2 → output -->
+<line x1="503" y1="140" x2="657" y2="173" stroke="var(--amber-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+<line x1="503" y1="220" x2="657" y2="188" stroke="var(--amber-edge)" stroke-width="0.9" marker-end="url(#arr)"/>
+
+<!-- W(3) label -->
+<text x="582" y="148" text-anchor="middle" font-size="12" font-family="Georgia,serif" fill="var(--amber-stroke)">W⁽³⁾</text>
+
+<!-- Input nodes -->
+<g class="node-btn" onclick="showNode('x1')">
+  <circle id="c-x1" cx="95" cy="100" r="22" fill="var(--teal-fill)" stroke="var(--teal-stroke)" stroke-width="1.2"/>
+  <text x="95" y="104" text-anchor="middle" font-size="13" font-family="Georgia,serif" fill="var(--teal-text)">x₁</text>
+</g>
+<g class="node-btn" onclick="showNode('x2')">
+  <circle id="c-x2" cx="95" cy="180" r="22" fill="var(--teal-fill)" stroke="var(--teal-stroke)" stroke-width="1.2"/>
+  <text x="95" y="184" text-anchor="middle" font-size="13" font-family="Georgia,serif" fill="var(--teal-text)">x₂</text>
+</g>
+<g class="node-btn" onclick="showNode('x3')">
+  <circle id="c-x3" cx="95" cy="260" r="22" fill="var(--teal-fill)" stroke="var(--teal-stroke)" stroke-width="1.2"/>
+  <text x="95" y="264" text-anchor="middle" font-size="13" font-family="Georgia,serif" fill="var(--teal-text)">x₃</text>
+</g>
+
+<!-- Hidden layer 1 nodes -->
+<g class="node-btn" onclick="showNode('h1_1')">
+  <circle id="c-h1_1" cx="280" cy="100" r="22" fill="var(--purple-fill)" stroke="var(--purple-stroke)" stroke-width="1.2"/>
+  <text x="280" y="96"  text-anchor="middle" font-size="11" font-family="Georgia,serif" fill="var(--purple-text)">a₁</text>
+  <text x="280" y="111" text-anchor="middle" font-size="10" font-family="'Courier New',monospace" fill="var(--purple-stroke)">[1]</text>
+</g>
+<g class="node-btn" onclick="showNode('h1_2')">
+  <circle id="c-h1_2" cx="280" cy="180" r="22" fill="var(--purple-fill)" stroke="var(--purple-stroke)" stroke-width="1.2"/>
+  <text x="280" y="176" text-anchor="middle" font-size="11" font-family="Georgia,serif" fill="var(--purple-text)">a₂</text>
+  <text x="280" y="191" text-anchor="middle" font-size="10" font-family="'Courier New',monospace" fill="var(--purple-stroke)">[1]</text>
+</g>
+<g class="node-btn" onclick="showNode('h1_3')">
+  <circle id="c-h1_3" cx="280" cy="260" r="22" fill="var(--purple-fill)" stroke="var(--purple-stroke)" stroke-width="1.2"/>
+  <text x="280" y="256" text-anchor="middle" font-size="11" font-family="Georgia,serif" fill="var(--purple-text)">a₃</text>
+  <text x="280" y="271" text-anchor="middle" font-size="10" font-family="'Courier New',monospace" fill="var(--purple-stroke)">[1]</text>
+</g>
+
+<!-- Hidden layer 2 nodes -->
+<g class="node-btn" onclick="showNode('h2_1')">
+  <circle id="c-h2_1" cx="480" cy="140" r="22" fill="var(--purple-fill)" stroke="var(--purple-stroke)" stroke-width="1.2"/>
+  <text x="480" y="136" text-anchor="middle" font-size="11" font-family="Georgia,serif" fill="var(--purple-text)">a₁</text>
+  <text x="480" y="151" text-anchor="middle" font-size="10" font-family="'Courier New',monospace" fill="var(--purple-stroke)">[2]</text>
+</g>
+<g class="node-btn" onclick="showNode('h2_2')">
+  <circle id="c-h2_2" cx="480" cy="220" r="22" fill="var(--purple-fill)" stroke="var(--purple-stroke)" stroke-width="1.2"/>
+  <text x="480" y="216" text-anchor="middle" font-size="11" font-family="Georgia,serif" fill="var(--purple-text)">a₂</text>
+  <text x="480" y="231" text-anchor="middle" font-size="10" font-family="'Courier New',monospace" fill="var(--purple-stroke)">[2]</text>
+</g>
+
+<!-- Output node -->
+<g class="node-btn" onclick="showNode('out')">
+  <circle id="c-out" cx="680" cy="180" r="22" fill="var(--amber-fill)" stroke="var(--amber-stroke)" stroke-width="1.2"/>
+  <text x="680" y="184" text-anchor="middle" font-size="14" font-family="Georgia,serif" fill="var(--amber-text)">ŷ</text>
+</g>
+
+<!-- hint text -->
+<text x="380" y="308" text-anchor="middle" font-size="11" font-family="'Courier New',monospace" fill="var(--text3)">click any node to see its notation and calculation</text>
+</svg>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--teal-fill);border-color:var(--teal-stroke)"></div> input (x)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--purple-fill);border-color:var(--purple-stroke)"></div> hidden neuron (a, z)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--amber-fill);border-color:var(--amber-stroke)"></div> output (ŷ)</div>
+</div>
+
+<div class="panels" id="panels">
+  <div class="panel" style="flex:1.15">
+    <div class="panel-title" id="panel-title">node</div>
+    <div id="panel-formula"></div>
+  </div>
+  <div class="panel" style="flex:0.85">
+    <div class="panel-title">numerical example</div>
+    <div id="panel-example"></div>
+  </div>
+</div>
+
+<script>
+function k(latex, display) {
+  const el = document.createElement(display ? 'div' : 'span');
+  katex.render(latex, el, { throwOnError: false, displayMode: !!display });
+  return el.outerHTML;
+}
+
+const nodes = {
+  x1: {
+    title: 'Input node  x\u2081  (layer 0)',
+    color: 'teal',
+    formula: [
+      { num: '', body: 'No computation — this is a raw input feature.' },
+      { num: '', body: k('a_1^{(0)} = x_1', false) + ' &nbsp;(passed straight through)', block: 'teal' }
+    ],
+    example: [
+      { num: '', body: 'e.g. pixel brightness or feature value', block: '' },
+      { num: '', body: k('x_1 = 0.5', false), block: 'teal' }
+    ]
+  },
+  x2: {
+    title: 'Input node  x\u2082  (layer 0)',
+    color: 'teal',
+    formula: [
+      { num: '', body: 'No computation — raw feature.', block: '' },
+      { num: '', body: k('a_2^{(0)} = x_2', false), block: 'teal' }
+    ],
+    example: [
+      { num: '', body: k('x_2 = 0.8', false), block: 'teal' }
+    ]
+  },
+  x3: {
+    title: 'Input node  x\u2083  (layer 0)',
+    color: 'teal',
+    formula: [
+      { num: '', body: 'No computation — raw feature.', block: '' },
+      { num: '', body: k('a_3^{(0)} = x_3', false), block: 'teal' }
+    ],
+    example: [
+      { num: '', body: k('x_3 = 0.2', false), block: 'teal' }
+    ]
+  },
+  h1_1: {
+    title: 'Hidden layer 1,  neuron 1  \u2192  a\u2081\u207D\u00B9\u207E',
+    color: 'purple',
+    formula: [
+      { num: '\u2460', body: 'Weighted sum (pre-activation):' },
+      { num: '',  body: k('z_1^{(1)} = w_{11}^{(1)}x_1 + w_{12}^{(1)}x_2 + w_{13}^{(1)}x_3 + b_1^{(1)}', false), block: 'purple' },
+      { num: '\u2461', body: 'Apply activation function:' },
+      { num: '',  body: k('a_1^{(1)} = g\\!\\left(z_1^{(1)}\\right)', false), block: 'purple' },
+      { num: '',  body: '<span style="color:var(--text3);font-size:12px">g = ReLU / tanh / sigmoid &nbsp;·&nbsp; row 1 of W\u207D\u00B9\u207E</span>' }
+    ],
+    example: [
+      { num: '', body: 'weights: <code>w = [0.5, 0.1, \u22120.3], b = 0.2</code>' },
+      { num: '', body: k('z_1^{(1)} = 0.5(0.5)+0.1(0.8)+(-0.3)(0.2)+0.2', false), block: 'purple' },
+      { num: '', body: k('\\phantom{z_1^{(1)}}= 0.25+0.08-0.06+0.2 = 0.47', false), block: 'purple' },
+      { num: '', body: 'Using ReLU: ' + k('\\max(0,\\,z)', false) },
+      { num: '', body: k('a_1^{(1)} = \\text{ReLU}(0.47) = 0.47', false), block: 'purple' }
+    ]
+  },
+  h1_2: {
+    title: 'Hidden layer 1,  neuron 2  \u2192  a\u2082\u207D\u00B9\u207E',
+    color: 'purple',
+    formula: [
+      { num: '\u2460', body: 'Weighted sum:' },
+      { num: '',  body: k('z_2^{(1)} = w_{21}^{(1)}x_1 + w_{22}^{(1)}x_2 + w_{23}^{(1)}x_3 + b_2^{(1)}', false), block: 'purple' },
+      { num: '\u2461', body: 'Apply activation function:' },
+      { num: '',  body: k('a_2^{(1)} = g\\!\\left(z_2^{(1)}\\right)', false), block: 'purple' },
+      { num: '',  body: '<span style="color:var(--text3);font-size:12px">Row 2 of W\u207D\u00B9\u207E \u2014 different weights \u2192 different feature</span>' }
+    ],
+    example: [
+      { num: '', body: 'weights: <code>w = [0.2, \u22120.4, 0.8], b = \u22120.1</code>' },
+      { num: '', body: k('z_2^{(1)} = 0.2(0.5)+(-0.4)(0.8)+0.8(0.2)-0.1', false), block: 'purple' },
+      { num: '', body: k('\\phantom{z_2^{(1)}}= 0.1-0.32+0.16-0.1 = -0.16', false), block: 'purple' },
+      { num: '', body: k('a_2^{(1)} = \\text{ReLU}(-0.16) = 0', false), block: 'purple' },
+      { num: '', body: '<span style="color:var(--text3);font-size:12px">ReLU kills negative values \u2192 neuron is silent</span>' }
+    ]
+  },
+  h1_3: {
+    title: 'Hidden layer 1,  neuron 3  \u2192  a\u2083\u207D\u00B9\u207E',
+    color: 'purple',
+    formula: [
+      { num: '\u2460', body: 'Weighted sum:' },
+      { num: '',  body: k('z_3^{(1)} = w_{31}^{(1)}x_1 + w_{32}^{(1)}x_2 + w_{33}^{(1)}x_3 + b_3^{(1)}', false), block: 'purple' },
+      { num: '\u2461', body: 'Apply activation function:' },
+      { num: '',  body: k('a_3^{(1)} = g\\!\\left(z_3^{(1)}\\right)', false), block: 'purple' },
+      { num: '',  body: '<span style="color:var(--text3);font-size:12px">Row 3 of W\u207D\u00B9\u207E \u2014 yet another independent set</span>' }
+    ],
+    example: [
+      { num: '', body: 'weights: <code>w = [\u22120.1, 0.6, 0.3], b = 0.0</code>' },
+      { num: '', body: k('z_3^{(1)} = -0.1(0.5)+0.6(0.8)+0.3(0.2)', false), block: 'purple' },
+      { num: '', body: k('\\phantom{z_3^{(1)}}= -0.05+0.48+0.06 = 0.49', false), block: 'purple' },
+      { num: '', body: k('a_3^{(1)} = \\text{ReLU}(0.49) = 0.49', false), block: 'purple' }
+    ]
+  },
+  h2_1: {
+    title: 'Hidden layer 2,  neuron 1  \u2192  a\u2081\u207D\u00B2\u207E',
+    color: 'purple',
+    formula: [
+      { num: '\u2460', body: 'Inputs are now <em>a</em>\u207D\u00B9\u207E, not x:' },
+      { num: '',  body: k('z_1^{(2)} = w_{11}^{(2)}a_1^{(1)} + w_{12}^{(2)}a_2^{(1)} + w_{13}^{(2)}a_3^{(1)} + b_1^{(2)}', false), block: 'purple' },
+      { num: '\u2461', body: 'Apply activation:' },
+      { num: '',  body: k('a_1^{(2)} = g\\!\\left(z_1^{(2)}\\right)', false), block: 'purple' },
+      { num: '',  body: '<span style="color:var(--text3);font-size:12px">W\u207D\u00B2\u207E shape: (2\u00D73) \u2014 2 output, 3 input neurons</span>' }
+    ],
+    example: [
+      { num: '', body: k('a^{(1)} = [0.47,\\; 0,\\; 0.49]', false) + ' (from layer 1)' },
+      { num: '', body: 'weights: <code>w = [0.3, \u22120.2, 0.5], b = 0.1</code>' },
+      { num: '', body: k('z_1^{(2)} = 0.3(0.47)+(-0.2)(0)+0.5(0.49)+0.1', false), block: 'purple' },
+      { num: '', body: k('\\phantom{z_1^{(2)}}= 0.14+0+0.245+0.1 = 0.485', false), block: 'purple' },
+      { num: '', body: k('a_1^{(2)} = \\text{ReLU}(0.485) = 0.485', false), block: 'purple' }
+    ]
+  },
+  h2_2: {
+    title: 'Hidden layer 2,  neuron 2  \u2192  a\u2082\u207D\u00B2\u207E',
+    color: 'purple',
+    formula: [
+      { num: '\u2460', body: 'Same inputs a\u207D\u00B9\u207E, different weights:' },
+      { num: '',  body: k('z_2^{(2)} = w_{21}^{(2)}a_1^{(1)} + w_{22}^{(2)}a_2^{(1)} + w_{23}^{(2)}a_3^{(1)} + b_2^{(2)}', false), block: 'purple' },
+      { num: '\u2461', body: 'Apply activation:' },
+      { num: '',  body: k('a_2^{(2)} = g\\!\\left(z_2^{(2)}\\right)', false), block: 'purple' },
+      { num: '',  body: '<span style="color:var(--text3);font-size:12px">Row 2 of W\u207D\u00B2\u207E \u2014 learns different combination</span>' }
+    ],
+    example: [
+      { num: '', body: k('a^{(1)} = [0.47,\\; 0,\\; 0.49]', false) + ' (from layer 1)' },
+      { num: '', body: 'weights: <code>w = [\u22120.4, 0.7, 0.1], b = 0.0</code>' },
+      { num: '', body: k('z_2^{(2)} = -0.4(0.47)+0.7(0)+0.1(0.49)', false), block: 'purple' },
+      { num: '', body: k('\\phantom{z_2^{(2)}}= -0.188+0+0.049 = -0.139', false), block: 'purple' },
+      { num: '', body: k('a_2^{(2)} = \\text{ReLU}(-0.139) = 0', false), block: 'purple' }
+    ]
+  },
+  out: {
+    title: 'Output neuron  \u2192  \u0177  (layer 3)',
+    color: 'amber',
+    formula: [
+      { num: '\u2460', body: 'Weighted sum:' },
+      { num: '',  body: k('z^{(3)} = w_1^{(3)}\\,a_1^{(2)} + w_2^{(3)}\\,a_2^{(2)} + b^{(3)}', false), block: 'amber' },
+      { num: '\u2461', body: 'Sigmoid (binary classification):' },
+      { num: '',  body: k('\\hat{y} = \\sigma\\!\\left(z^{(3)}\\right) = \\dfrac{1}{1+e^{-z^{(3)}}}', false), block: 'amber' },
+      { num: '',  body: '<span style="color:var(--text3);font-size:12px">Output \u2208 (0, 1) \u2014 interpreted as P(y=1 | x)</span>' }
+    ],
+    example: [
+      { num: '', body: k('a^{(2)} = [0.485,\\; 0]', false) + ' (from layer 2)' },
+      { num: '', body: 'weights: <code>w = [0.6, \u22120.3], b = \u22120.2</code>' },
+      { num: '', body: k('z^{(3)} = 0.6(0.485)+(-0.3)(0)-0.2 = 0.091', false), block: 'amber' },
+      { num: '', body: k('\\hat{y} = \\sigma(0.091) = \\dfrac{1}{1+e^{-0.091}}', false), block: 'amber' },
+      { num: '', body: k('\\hat{y} \\approx 0.523 \\quad \\Rightarrow \\quad 52.3\\%\\text{ chance } y=1', false), block: 'amber' }
+    ]
+  }
+};
+
+const allCircleIds = ['c-x1','c-x2','c-x3','c-h1_1','c-h1_2','c-h1_3','c-h2_1','c-h2_2','c-out'];
+
+function showNode(id) {
+  const d = nodes[id];
+  if (!d) return;
+
+  allCircleIds.forEach(cid => {
+    const c = document.getElementById(cid);
+    if (c) c.setAttribute('stroke-width','1.2');
+  });
+  const sel = document.getElementById('c-' + id);
+  if (sel) sel.setAttribute('stroke-width','3');
+
+  document.getElementById('panel-title').textContent = d.title;
+
+  function renderRows(rows) {
+    return rows.map(r => {
+      const blockClass = r.block ? ' k-block ' + r.block : '';
+      if (blockClass) {
+        return `<div class="k-block ${r.block}">${r.body}</div>`;
+      }
+      return `<div class="step-row"><span class="step-num">${r.num}</span><span class="step-body">${r.body}</span></div>`;
+    }).join('');
+  }
+
+  document.getElementById('panel-formula').innerHTML = renderRows(d.formula);
+  document.getElementById('panel-example').innerHTML = renderRows(d.example);
+  document.getElementById('panels').classList.add('visible');
+}
+</script>
+</body>
+</html>

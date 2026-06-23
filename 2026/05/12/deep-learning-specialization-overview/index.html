@@ -1,0 +1,1535 @@
+
+
+<!DOCTYPE html>
+<html lang="en" >
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1A1A1A">
+  <meta name="author" content="Yanqi Huang">
+  <meta name="keywords" content="biostatistics, statistics, PhD, causal inference, survival analysis">
+  
+    <meta name="description" content="Three courses down, one to go. A visual overview of how Courses 1–3 of Andrew Ng&#39;s Deep Learning Specialization connect — and a preview of Course 4 on Convolutional Neural Networks.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deep Learning Specialization — The Big Picture">
+<meta property="og:url" content="https://yqhuang1234-ui.github.io/2026/05/12/deep-learning-specialization-overview/index.html">
+<meta property="og:site_name" content="Yanqi Huang">
+<meta property="og:description" content="Three courses down, one to go. A visual overview of how Courses 1–3 of Andrew Ng&#39;s Deep Learning Specialization connect — and a preview of Course 4 on Convolutional Neural Networks.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://yqhuang1234-ui.github.io/img/posts/coursera-deep-learning-overview.svg">
+<meta property="article:published_time" content="2026-05-12T17:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-23T19:38:56.750Z">
+<meta property="article:author" content="Yanqi Huang">
+<meta property="article:tag" content="blog">
+<meta property="article:tag" content="deep-learning">
+<meta property="article:tag" content="learning-notes">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yqhuang1234-ui.github.io/img/posts/coursera-deep-learning-overview.svg">
+  
+  
+  
+  <title>Deep Learning Specialization — The Big Picture - Yanqi Huang</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yqhuang1234-ui.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":60,"cursorChar":"|","loop":false,"scope":["home"]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":2,"color":"#CC785C","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":false,"placement":"right","headingSelector":"h1,h2,h3,h4","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  <script src="/js/lock-color-scheme.js"></script><link rel="stylesheet" href="/css/home-explore.css"><link rel="stylesheet" href="/css/blog-archive.css">
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 55vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yanqi Huang</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/projects/" target="_self">
+                <i class="iconfont icon-briefcase"></i>
+                <span>Projects</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/blog/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Blog</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-list"></i>
+                <span>Categories</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/cv/" target="_self">
+                <i class="iconfont icon-cliplist"></i>
+                <span>CV</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>Home</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/about/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>About</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/projects/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-briefcase"></i>
+                  <span>Projects</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/blog/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>Blog</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-list"></i>
+                  <span>Categories</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/cv/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-cliplist"></i>
+                  <span>CV</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>Search</span>
+              </div>
+            </a>
+          </div>
+        
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.4)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle">Deep Learning Specialization — The Big Picture</span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Yanqi Huang
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-05-12 13:00" pubdate>
+          May 12, 2026
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          13k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          14 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Deep Learning Specialization — The Big Picture</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>Three courses down, one to go. Here’s how they build on each other and connect into a coherent progression — from building networks by hand, to making them train well, to making smart decisions about what to fix next.</p>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap');
+
+.dlo {
+  --dlo-bg2:          #F2F0EC;
+  --dlo-bg3:          #E8E5DF;
+  --dlo-surface:      #FFFFFF;
+  --dlo-border:       rgba(28,28,26,0.10);
+  --dlo-border2:      rgba(28,28,26,0.18);
+  --dlo-text:         #1C1C1A;
+  --dlo-text2:        #5C5B56;
+  --dlo-text3:        #9A9890;
+  --dlo-teal:         #0F6E56;
+  --dlo-teal-light:   #E1F5EE;
+  --dlo-teal-mid:     #C0EAD9;
+  --dlo-coral:        #D97B52;
+  --dlo-coral-light:  #FAECE7;
+  --dlo-coral-mid:    #F2CABC;
+  --dlo-purple:       #534AB7;
+  --dlo-purple-light: #ECEAFF;
+  --dlo-purple-mid:   #CEC9F5;
+  --dlo-amber:        #854F0B;
+  --dlo-amber-light:  #FEF3E2;
+  --dlo-amber-mid:    #F8D9A0;
+  --dlo-radius:       12px;
+  --dlo-radius-sm:    7px;
+  --dlo-shadow:       0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --dlo-shadow-md:    0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.dlo .dlo-hero {
+  text-align: center;
+  margin: 0.5rem 0 2.5rem;
+}
+.dlo .dlo-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dlo-text3);
+  margin-bottom: 0.5rem;
+}
+.dlo .dlo-sub {
+  font-size: 14px;
+  color: var(--dlo-text2);
+  margin-bottom: 1.5rem;
+}
+.dlo .dlo-progress-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.dlo .dlo-progress-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--dlo-text3);
+  letter-spacing: 0.05em;
+}
+.dlo .dlo-progress-track {
+  width: 260px;
+  height: 8px;
+  background: var(--dlo-bg3);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.dlo .dlo-progress-fill {
+  height: 100%;
+  width: 75%;
+  background: linear-gradient(90deg, var(--dlo-teal) 0%, var(--dlo-coral) 45%, var(--dlo-purple) 100%);
+  border-radius: 99px;
+}
+.dlo .dlo-progress-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.dlo .dlo-progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.dlo .dlo-progress-dot.done { background: var(--dlo-text); }
+.dlo .dlo-progress-dot.next { background: var(--dlo-bg3); border: 2px solid var(--dlo-border2); }
+
+.dlo .dlo-section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dlo-text3);
+  margin-bottom: 1.25rem;
+}
+
+.dlo .dlo-roadmap {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 3rem;
+}
+.dlo .dlo-course-card {
+  background: var(--dlo-surface);
+  border: 1.5px solid var(--dlo-border);
+  border-radius: var(--dlo-radius);
+  padding: 1.1rem 1.1rem 1rem;
+  box-shadow: var(--dlo-shadow);
+  transition: box-shadow 0.15s;
+}
+.dlo .dlo-course-card:hover { box-shadow: var(--dlo-shadow-md); }
+.dlo .dlo-course-card.teal   { border-top: 3px solid var(--dlo-teal); }
+.dlo .dlo-course-card.coral  { border-top: 3px solid var(--dlo-coral); }
+.dlo .dlo-course-card.purple { border-top: 3px solid var(--dlo-purple); }
+.dlo .dlo-course-card.amber  { border-top: 3px solid var(--dlo-amber-mid); opacity: 0.72; }
+
+.dlo .dlo-course-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 99px;
+  display: inline-block;
+  margin-bottom: 7px;
+}
+.dlo .dlo-course-card.teal   .dlo-course-badge { background: var(--dlo-teal-light);   color: var(--dlo-teal); }
+.dlo .dlo-course-card.coral  .dlo-course-badge { background: var(--dlo-coral-light);  color: var(--dlo-coral); }
+.dlo .dlo-course-card.purple .dlo-course-badge { background: var(--dlo-purple-light); color: var(--dlo-purple); }
+.dlo .dlo-course-card.amber  .dlo-course-badge { background: var(--dlo-amber-light);  color: var(--dlo-amber); }
+
+.dlo .dlo-course-title {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dlo-text);
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+.dlo .dlo-course-desc {
+  font-size: 11.5px;
+  color: var(--dlo-text2);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.dlo .dlo-status-chip {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 99px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.dlo .dlo-status-chip.done { background: #E6F4F0; color: #0A6648; }
+.dlo .dlo-status-chip.next { background: var(--dlo-bg2); color: var(--dlo-text3); }
+
+.dlo .dlo-card-link {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.75;
+  transition: opacity 0.12s;
+}
+.dlo .dlo-course-card.teal   .dlo-card-link { color: var(--dlo-teal); }
+.dlo .dlo-course-card.coral  .dlo-card-link { color: var(--dlo-coral); }
+.dlo .dlo-course-card.purple .dlo-card-link { color: var(--dlo-purple); }
+.dlo .dlo-card-link:hover { opacity: 1; }
+
+.dlo .dlo-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+}
+.dlo .dlo-connector-line {
+  width: 28px;
+  height: 2px;
+  background: var(--dlo-border2);
+  position: relative;
+}
+.dlo .dlo-connector-line::after {
+  content: '▸';
+  position: absolute;
+  right: -7px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--dlo-text3);
+  line-height: 1;
+}
+.dlo .dlo-connector-label {
+  font-size: 9.5px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--dlo-text3);
+  text-align: center;
+  white-space: nowrap;
+  max-width: 72px;
+  line-height: 1.4;
+}
+
+.dlo .dlo-panels-section { margin-bottom: 3rem; }
+.dlo .dlo-panel {
+  background: var(--dlo-surface);
+  border: 1px solid var(--dlo-border);
+  border-radius: var(--dlo-radius);
+  box-shadow: var(--dlo-shadow);
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+.dlo .dlo-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+.dlo .dlo-panel-header:hover { background: var(--dlo-bg2); }
+.dlo .dlo-panel-accent {
+  width: 4px;
+  height: 36px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.dlo .dlo-panel-accent.teal   { background: var(--dlo-teal); }
+.dlo .dlo-panel-accent.coral  { background: var(--dlo-coral); }
+.dlo .dlo-panel-accent.purple { background: var(--dlo-purple); }
+.dlo .dlo-panel-header-text { flex: 1; }
+.dlo .dlo-panel-course-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--dlo-text3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.dlo .dlo-panel-course-title {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dlo-text);
+  letter-spacing: -0.01em;
+}
+.dlo .dlo-panel-toggle {
+  font-size: 14px;
+  color: var(--dlo-text3);
+  transition: transform 0.2s;
+}
+.dlo .dlo-panel.open .dlo-panel-toggle { transform: rotate(180deg); }
+.dlo .dlo-panel-body {
+  display: none;
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid var(--dlo-border);
+}
+.dlo .dlo-panel.open .dlo-panel-body { display: block; }
+.dlo .dlo-panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  padding-top: 1.1rem;
+}
+.dlo .dlo-panel-section-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--dlo-text3);
+  margin-bottom: 0.6rem;
+}
+.dlo .dlo-weeks-list { list-style: none; padding: 0; margin: 0; }
+.dlo .dlo-weeks-list li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--dlo-text2);
+  padding: 5px 0;
+  border-bottom: 1px solid var(--dlo-border);
+  line-height: 1.4;
+}
+.dlo .dlo-weeks-list li:last-child { border-bottom: none; }
+.dlo .dlo-week-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.dlo .dlo-big-idea {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--dlo-text2);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.dlo .dlo-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+.dlo .dlo-chip {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid;
+}
+.dlo .dlo-chip.teal   { background: var(--dlo-teal-light);   color: var(--dlo-teal);   border-color: var(--dlo-teal-mid); }
+.dlo .dlo-chip.coral  { background: var(--dlo-coral-light);  color: var(--dlo-coral);  border-color: var(--dlo-coral-mid); }
+.dlo .dlo-chip.purple { background: var(--dlo-purple-light); color: var(--dlo-purple); border-color: var(--dlo-purple-mid); }
+
+.dlo .dlo-panel-links { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.9rem; }
+.dlo .dlo-panel-link {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: var(--dlo-radius-sm);
+  text-decoration: none;
+  transition: all 0.15s;
+  border: 1px solid;
+}
+.dlo .dlo-panel-link.primary.teal   { background: var(--dlo-teal);   color: #fff; border-color: var(--dlo-teal); }
+.dlo .dlo-panel-link.primary.coral  { background: var(--dlo-coral);  color: #fff; border-color: var(--dlo-coral); }
+.dlo .dlo-panel-link.primary.purple { background: var(--dlo-purple); color: #fff; border-color: var(--dlo-purple); }
+.dlo .dlo-panel-link.secondary { background: var(--dlo-bg2); color: var(--dlo-text2); border-color: var(--dlo-border2); }
+.dlo .dlo-panel-link.secondary:hover { background: var(--dlo-bg3); color: var(--dlo-text); }
+
+.dlo .dlo-preview-section { margin-bottom: 2rem; }
+.dlo .dlo-preview-card {
+  background: var(--dlo-surface);
+  border: 1.5px dashed var(--dlo-border2);
+  border-radius: var(--dlo-radius);
+  padding: 1.5rem 1.75rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  opacity: 0.8;
+}
+.dlo .dlo-preview-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--dlo-amber-light);
+  color: var(--dlo-amber);
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.dlo .dlo-preview-title {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--dlo-text);
+  margin-bottom: 6px;
+}
+.dlo .dlo-preview-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 0.75rem;
+}
+.dlo .dlo-preview-topic {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: var(--dlo-amber-light);
+  color: var(--dlo-amber);
+  border: 1px solid var(--dlo-amber-mid);
+}
+.dlo .dlo-preview-status { text-align: center; }
+.dlo .dlo-preview-status-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px dashed var(--dlo-amber-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dlo-amber);
+  margin: 0 auto 6px;
+}
+.dlo .dlo-preview-status-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--dlo-amber);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .dlo .dlo-roadmap {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .dlo .dlo-connector {
+    flex-direction: row;
+    padding: 0 0 0 1rem;
+    justify-content: flex-start;
+  }
+  .dlo .dlo-connector-line { width: 2px; height: 20px; }
+  .dlo .dlo-connector-line::after { display: none; }
+  .dlo .dlo-connector-label { display: none; }
+  .dlo .dlo-panel-grid { grid-template-columns: 1fr; }
+  .dlo .dlo-preview-card { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="dlo">
+
+<div class="dlo-hero">
+  <p class="dlo-eyebrow">Andrew Ng · Coursera · Deep Learning Specialization</p>
+  <p class="dlo-sub">How the four courses connect — and where I am in the journey.</p>
+  <div class="dlo-progress-wrap">
+    <div class="dlo-progress-track"><div class="dlo-progress-fill"></div></div>
+    <div class="dlo-progress-dots">
+      <span class="dlo-progress-dot done"></span>
+      <span class="dlo-progress-dot done"></span>
+      <span class="dlo-progress-dot done"></span>
+      <span class="dlo-progress-dot next"></span>
+    </div>
+    <div class="dlo-progress-label">3 of 4 courses complete · 75%</div>
+  </div>
+</div>
+
+<p class="dlo-section-label">Course roadmap</p>
+<div class="dlo-roadmap">
+
+  <div class="dlo-course-card teal">
+    <div class="dlo-course-badge">Course 1</div>
+    <div class="dlo-course-title">Neural Networks &amp; Deep Learning</div>
+    <div class="dlo-course-desc">Build networks from scratch. Forward pass, backprop, activation functions, L-layer architecture.</div>
+    <span class="dlo-status-chip done">✓ Complete</span><br>
+    <a class="dlo-card-link" href="/2026/04/14/neural-networks-deep-learning-coursera/">Blog post →</a>
+  </div>
+
+  <div class="dlo-connector">
+    <div class="dlo-connector-line"></div>
+    <div class="dlo-connector-label">Built it → make it train well</div>
+  </div>
+
+  <div class="dlo-course-card coral">
+    <div class="dlo-course-badge">Course 2</div>
+    <div class="dlo-course-title">Improving Deep Neural Networks</div>
+    <div class="dlo-course-desc">Regularization, optimization algorithms, hyperparameter tuning, batch normalization, TensorFlow.</div>
+    <span class="dlo-status-chip done">✓ Complete</span><br>
+    <a class="dlo-card-link" href="/2026/04/23/improving-deep-neural-networks-coursera/">Blog post →</a>
+  </div>
+
+  <div class="dlo-connector">
+    <div class="dlo-connector-line"></div>
+    <div class="dlo-connector-label">Tuned it → make smart decisions</div>
+  </div>
+
+  <div class="dlo-course-card purple">
+    <div class="dlo-course-badge">Course 3</div>
+    <div class="dlo-course-title">Structuring ML Projects</div>
+    <div class="dlo-course-desc">ML strategy, error analysis, bias-variance diagnosis, transfer learning, end-to-end deep learning.</div>
+    <span class="dlo-status-chip done">✓ Complete</span><br>
+    <a class="dlo-card-link" href="/2026/05/12/structuring-machine-learning-projects-coursera/">Blog post →</a>
+  </div>
+
+  <div class="dlo-connector">
+    <div class="dlo-connector-line"></div>
+    <div class="dlo-connector-label">Strategised → specialise to vision</div>
+  </div>
+
+  <div class="dlo-course-card amber">
+    <div class="dlo-course-badge">Course 4</div>
+    <div class="dlo-course-title">Convolutional Neural Networks</div>
+    <div class="dlo-course-desc">ConvNets, ResNets, object detection (YOLO), face recognition, neural style transfer.</div>
+    <span class="dlo-status-chip next">→ Next</span>
+  </div>
+
+</div>
+
+<p class="dlo-section-label">Course details</p>
+<div class="dlo-panels-section">
+
+  <div class="dlo-panel open" id="dlo-panel-c1">
+    <div class="dlo-panel-header" onclick="dloTogglePanel('dlo-panel-c1')">
+      <div class="dlo-panel-accent teal"></div>
+      <div class="dlo-panel-header-text">
+        <div class="dlo-panel-course-num">Course 1</div>
+        <div class="dlo-panel-course-title">Neural Networks &amp; Deep Learning</div>
+      </div>
+      <div class="dlo-panel-toggle">▾</div>
+    </div>
+    <div class="dlo-panel-body">
+      <div class="dlo-panel-grid">
+        <div>
+          <div class="dlo-panel-section-title">Week by week</div>
+          <ul class="dlo-weeks-list">
+            <li>
+              <span class="dlo-week-tag" style="background:var(--dlo-teal-light);color:var(--dlo-teal)">Wk 2</span>
+              Neural network programming basics — logistic regression, vectorization, forward &amp; backward propagation
+            </li>
+            <li>
+              <span class="dlo-week-tag" style="background:var(--dlo-teal-light);color:var(--dlo-teal)">Wk 3</span>
+              Shallow networks — tanh/ReLU activation functions, two-layer network, backprop by hand
+            </li>
+            <li>
+              <span class="dlo-week-tag" style="background:var(--dlo-teal-light);color:var(--dlo-teal)">Wk 4</span>
+              Deep networks — L-layer architecture, why depth matters, systematic forward/backward pass
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="dlo-panel-section-title">Big idea</div>
+          <p class="dlo-big-idea">"A neural network is just logistic regression stacked and made non-linear. Once you can derive backprop for two layers, generalising to L layers is notation, not new insight."</p>
+          <div class="dlo-panel-section-title">Key concepts</div>
+          <div class="dlo-chips">
+            <span class="dlo-chip teal">Forward pass</span>
+            <span class="dlo-chip teal">Backprop</span>
+            <span class="dlo-chip teal">ReLU / tanh</span>
+            <span class="dlo-chip teal">Vectorization</span>
+            <span class="dlo-chip teal">L-layer network</span>
+            <span class="dlo-chip teal">Computation graph</span>
+          </div>
+          <div class="dlo-panel-links">
+            <a class="dlo-panel-link primary teal" href="/2026/04/14/neural-networks-deep-learning-coursera/">Blog post</a>
+            <a class="dlo-panel-link secondary" href="https://yanqihuang.notion.site/Week-2-Basics-of-Neural-Network-Programming-Complete-Guide-32853115b8b8812cb7e3fe9e2f0136ed" target="_blank">Week 2 Notion</a>
+            <a class="dlo-panel-link secondary" href="https://www.notion.so/yanqihuang/Week-3-Shallow-Neural-Networks-Complete-Guide-32d53115b8b880dea091df09e8db5ebb" target="_blank">Week 3 Notion</a>
+            <a class="dlo-panel-link secondary" href="https://www.notion.so/yanqihuang/Week-4-deep-neural-networks-33d53115b8b880ad9434ffee80234d4c" target="_blank">Week 4 Notion</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dlo-panel" id="dlo-panel-c2">
+    <div class="dlo-panel-header" onclick="dloTogglePanel('dlo-panel-c2')">
+      <div class="dlo-panel-accent coral"></div>
+      <div class="dlo-panel-header-text">
+        <div class="dlo-panel-course-num">Course 2</div>
+        <div class="dlo-panel-course-title">Improving Deep Neural Networks</div>
+      </div>
+      <div class="dlo-panel-toggle">▾</div>
+    </div>
+    <div class="dlo-panel-body">
+      <div class="dlo-panel-grid">
+        <div>
+          <div class="dlo-panel-section-title">Week by week</div>
+          <ul class="dlo-weeks-list">
+            <li>
+              <span class="dlo-week-tag" style="background:var(--dlo-coral-light);color:var(--dlo-coral)">Wk 1</span>
+              Practical deep learning — train/dev/test splits, bias-variance, L2 regularization, dropout, gradient checking
+            </li>
+            <li>
+              <span class="dlo-week-tag" style="background:var(--dlo-coral-light);color:var(--dlo-coral)">Wk 2</span>
+              Optimization — mini-batch gradient descent, momentum, RMSprop, Adam optimizer
+            </li>
+            <li>
+              <span class="dlo-week-tag" style="background:var(--dlo-coral-light);color:var(--dlo-coral)">Wk 3</span>
+              Tuning &amp; frameworks — hyperparameter search, batch normalization, TensorFlow introduction
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="dlo-panel-section-title">Big idea</div>
+          <p class="dlo-big-idea">"Getting a network to converge is one problem; getting it to generalize well is another. Regularization and optimization are the two knobs that separate working models from great ones."</p>
+          <div class="dlo-panel-section-title">Key concepts</div>
+          <div class="dlo-chips">
+            <span class="dlo-chip coral">Bias-Variance</span>
+            <span class="dlo-chip coral">L2 / Dropout</span>
+            <span class="dlo-chip coral">Adam</span>
+            <span class="dlo-chip coral">Mini-batch GD</span>
+            <span class="dlo-chip coral">Batch Norm</span>
+            <span class="dlo-chip coral">Hyperparameter tuning</span>
+          </div>
+          <div class="dlo-panel-links">
+            <a class="dlo-panel-link primary coral" href="/2026/04/23/improving-deep-neural-networks-coursera/">Blog post</a>
+            <a class="dlo-panel-link secondary" href="https://yanqihuang.notion.site/C2W1-Regularizing-Your-Neural-Network-Complete-Guide-34653115b8b881fab896d19eb7e306dd?source=copy_link" target="_blank">Week 1 Notion</a>
+            <a class="dlo-panel-link secondary" href="https://www.notion.so/yanqihuang/Week-2-Optimization-Algorithms-Complete-Guide-35853115b8b880a3b46ad5003d1b8e7e?source=copy_link" target="_blank">Week 2 Notion</a>
+            <a class="dlo-panel-link secondary" href="https://www.notion.so/yanqihuang/Week-3-Hyperparameter-Tuning-Batch-Normalization-Frameworks-Complete-Guide-35953115b8b880558da1f226ead40cd7?source=copy_link" target="_blank">Week 3 Notion</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dlo-panel" id="dlo-panel-c3">
+    <div class="dlo-panel-header" onclick="dloTogglePanel('dlo-panel-c3')">
+      <div class="dlo-panel-accent purple"></div>
+      <div class="dlo-panel-header-text">
+        <div class="dlo-panel-course-num">Course 3</div>
+        <div class="dlo-panel-course-title">Structuring Machine Learning Projects</div>
+      </div>
+      <div class="dlo-panel-toggle">▾</div>
+    </div>
+    <div class="dlo-panel-body">
+      <div class="dlo-panel-grid">
+        <div>
+          <div class="dlo-panel-section-title">Week by week</div>
+          <ul class="dlo-weeks-list">
+            <li>
+              <span class="dlo-week-tag" style="background:var(--dlo-purple-light);color:var(--dlo-purple)">Wk 1</span>
+              ML strategy — orthogonalization, evaluation metrics, train/dev/test distributions, human-level performance, avoidable bias
+            </li>
+            <li>
+              <span class="dlo-week-tag" style="background:var(--dlo-purple-light);color:var(--dlo-purple)">Wk 2</span>
+              Strategy II — error analysis, mismatched distributions, transfer learning, multi-task learning, end-to-end deep learning
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="dlo-panel-section-title">Big idea</div>
+          <p class="dlo-big-idea">"Knowing how to build a model is not enough — you need a systematic framework for diagnosing what's wrong and deciding what to fix next. Strategy is what turns iteration into progress."</p>
+          <div class="dlo-panel-section-title">Key concepts</div>
+          <div class="dlo-chips">
+            <span class="dlo-chip purple">Orthogonalization</span>
+            <span class="dlo-chip purple">Avoidable bias</span>
+            <span class="dlo-chip purple">Error analysis</span>
+            <span class="dlo-chip purple">Transfer learning</span>
+            <span class="dlo-chip purple">Multi-task learning</span>
+            <span class="dlo-chip purple">End-to-end DL</span>
+          </div>
+          <div class="dlo-panel-links">
+            <a class="dlo-panel-link primary purple" href="/2026/05/12/structuring-machine-learning-projects-coursera/">Blog post</a>
+            <a class="dlo-panel-link secondary" href="https://yanqihuang.notion.site/Week-1-Introduction-to-ML-Strategy-Complete-Guide-35a53115b8b88018964ddbd90b92ec26?source=copy_link" target="_blank">Week 1 Notion</a>
+            <a class="dlo-panel-link secondary" href="https://yanqihuang.notion.site/week2-ML-Strategy-II-Complete-Guide-35d53115b8b881778572c364b7711ceb?source=copy_link" target="_blank">Week 2 Notion</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="dlo-section-label">What's next</p>
+<div class="dlo-preview-section">
+  <div class="dlo-preview-card">
+    <div>
+      <div class="dlo-preview-badge">Course 4 — Coming up</div>
+      <div class="dlo-preview-title">Convolutional Neural Networks</div>
+      <p style="font-size:13px;color:var(--dlo-text2);line-height:1.6;margin-bottom:0.5rem">
+        Courses 1–3 built the foundation — how networks learn, how to make them work well, and how to make good decisions. Course 4 applies all of that to computer vision: a domain where deep learning has been transformative.
+      </p>
+      <div class="dlo-preview-topics">
+        <span class="dlo-preview-topic">ConvNets</span>
+        <span class="dlo-preview-topic">Pooling</span>
+        <span class="dlo-preview-topic">ResNets</span>
+        <span class="dlo-preview-topic">Inception</span>
+        <span class="dlo-preview-topic">Object detection</span>
+        <span class="dlo-preview-topic">YOLO</span>
+        <span class="dlo-preview-topic">Face recognition</span>
+        <span class="dlo-preview-topic">Neural style transfer</span>
+      </div>
+    </div>
+    <div class="dlo-preview-status">
+      <div class="dlo-preview-status-ring">C4</div>
+      <div class="dlo-preview-status-label">Up next</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function dloTogglePanel(id) {
+  var panel = document.getElementById(id);
+  panel.classList.toggle('open');
+}
+</script>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Coursera-Deep-Learning-Specialization/" class="category-chain-item">Coursera Deep Learning Specialization</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/deep-learning/" class="print-no-link">#deep-learning</a>
+      
+        <a href="/tags/learning-notes/" class="print-no-link">#learning-notes</a>
+      
+        <a href="/tags/blog/" class="print-no-link">#blog</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Deep Learning Specialization — The Big Picture</div>
+      <div>https://yqhuang1234-ui.github.io/2026/05/12/deep-learning-specialization-overview/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yanqi Huang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>May 12, 2026</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/05/12/structuring-machine-learning-projects-coursera/" title="Coursera Course 3 - Structuring Machine Learning Projects">
+                        <span class="hidden-mobile">Coursera Course 3 - Structuring Machine Learning Projects</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'yqhuang1234-ui/yqhuang1234-ui.github.io');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <span>Yanqi Huang</span> &nbsp;·&nbsp; <a href="mailto:yqhuang1234@gmail.com">yqhuang1234@gmail.com</a> &nbsp;·&nbsp; <a href="https://github.com/yqhuang1234-ui" target="_blank" rel="noopener">GitHub</a> &nbsp;·&nbsp; <a href="https://hexo.io" target="_blank" rel="nofollow noopener">Hexo</a> + <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">Fluid</a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  <script src="/js/home-explore.js" defer></script><script src="/js/blog-archive.js" defer></script>
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

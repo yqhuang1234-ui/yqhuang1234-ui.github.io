@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FAF9F7"/>
+      <stop offset="100%" style="stop-color:#F2F0EC"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="420" fill="url(#bg)"/>
+
+  <!-- Card -->
+  <rect x="48" y="36" width="704" height="348" rx="12" fill="#ffffff" filter="url(#s)"/>
+  <defs>
+    <filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="8" flood-color="#1C1C1A14"/></filter>
+  </defs>
+
+  <!-- Hero section -->
+  <rect x="48" y="36" width="704" height="88" rx="12" fill="#FAF9F7"/>
+  <rect x="48" y="100" width="704" height="24" fill="#FAF9F7"/>
+  <text x="72" y="68" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#9A9890" letter-spacing="1.5">COURSERA DEEP LEARNING · WEEK 4</text>
+  <text x="72" y="94" font-family="Georgia,serif" font-size="20" font-weight="600" fill="#1C1C1A" letter-spacing="-0.3">Backpropagation — Code &amp; Implementation</text>
+  <text x="72" y="114" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#9A9890">every formula · every dimension · every index · Python &amp; NumPy</text>
+
+  <!-- Tab bar -->
+  <line x1="48" y1="134" x2="752" y2="134" stroke="#1C1C1A2E" stroke-width="0.5"/>
+  <!-- Active tab highlight -->
+  <rect x="72" y="118" width="72" height="17" rx="0" fill="none"/>
+  <line x1="72" y1="134" x2="144" y2="134" stroke="#D97B52" stroke-width="2"/>
+  <text x="78" y="130" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#D97B52">0 · Overview</text>
+  <text x="156" y="130" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#9A9890">1 · Notation</text>
+  <text x="240" y="130" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#9A9890">2 · Cheat Sheet</text>
+  <text x="346" y="130" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#9A9890">3 · Linear Backward</text>
+  <text x="466" y="130" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#9A9890">4 · Activation</text>
+  <text x="554" y="130" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#9A9890">5 · L-Model</text>
+  <text x="630" y="130" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#9A9890">6 · Index</text>
+  <text x="688" y="130" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#9A9890">7 · Update</text>
+
+  <!-- Forward/backward column labels -->
+  <text x="212" y="162" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#5DCAA5" letter-spacing="1">FORWARD PASS</text>
+  <text x="588" y="162" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#D97B52" letter-spacing="1">BACKWARD PASS</text>
+
+  <!-- Forward boxes -->
+  <rect x="100" y="170" width="224" height="38" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+  <text x="212" y="187" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#085041" font-weight="500">L_model_forward()</text>
+  <text x="212" y="201" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#0F6E56">builds caches list</text>
+
+  <rect x="100" y="224" width="224" height="38" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+  <text x="212" y="241" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#3C3489" font-weight="500">linear_activation_forward()</text>
+  <text x="212" y="255" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#534AB7">relu or sigmoid</text>
+
+  <rect x="100" y="278" width="224" height="38" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+  <text x="212" y="295" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#3C3489" font-weight="500">linear_forward()</text>
+  <text x="212" y="309" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#534AB7">Z = W @ A_prev + b</text>
+
+  <!-- Backward boxes -->
+  <rect x="476" y="170" width="224" height="38" rx="6" fill="#FAECE7" stroke="#D97B52" stroke-width="0.5"/>
+  <text x="588" y="187" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#993C1D" font-weight="500">L_model_backward()</text>
+  <text x="588" y="201" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#D97B52">consumes caches list</text>
+
+  <rect x="476" y="224" width="224" height="38" rx="6" fill="#FAECE7" stroke="#D97B52" stroke-width="0.5"/>
+  <text x="588" y="241" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#993C1D" font-weight="500">linear_activation_backward()</text>
+  <text x="588" y="255" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#D97B52">relu_bwd or sigmoid_bwd</text>
+
+  <rect x="476" y="278" width="224" height="38" rx="6" fill="#FAECE7" stroke="#D97B52" stroke-width="0.5"/>
+  <text x="588" y="295" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#993C1D" font-weight="500">linear_backward()</text>
+  <text x="588" y="309" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#D97B52">dW, db, dA_prev</text>
+
+  <!-- Cache arrow -->
+  <line x1="326" y1="189" x2="474" y2="189" stroke="#D97B52" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+  <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D97B52" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+  <text x="400" y="184" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#9A9890">caches</text>
+
+  <!-- Bottom note box -->
+  <rect x="72" y="334" width="656" height="32" rx="6" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+  <text x="86" y="354" font-family="Georgia,serif" font-size="12" fill="#633806"><tspan font-weight="600">8 tabs:</tspan> overview · notation · cheat sheet · linear bwd · activation bwd · L-model bwd · index confusion · update</text>
+</svg>

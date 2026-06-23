@@ -1,0 +1,773 @@
+---
+layout: false
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Activation Functions & Gradients</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --bg:        #0f0f11;
+    --bg2:       #17171a;
+    --bg3:       #1e1e23;
+    --border:    rgba(255,255,255,0.07);
+    --border2:   rgba(255,255,255,0.13);
+    --text:      #e8e6e0;
+    --text2:     #9a9890;
+    --text3:     #5a5855;
+    --accent:    #c9a96e;
+    --accent2:   #8b6f3e;
+
+    --sigmoid:   #7c9fd4;
+    --tanh:      #6dcfb0;
+    --relu:      #e07b6a;
+    --leaky:     #d4a96a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  header {
+    padding: 40px 48px 32px;
+    border-bottom: 0.5px solid var(--border);
+    background: var(--bg);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .header-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(201,169,110,0.1);
+    border: 0.5px solid rgba(201,169,110,0.25);
+    border-radius: 4px;
+    padding: 2px 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--text2);
+    font-weight: 300;
+  }
+
+  .main {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 113px);
+  }
+
+  .sidebar {
+    padding: 28px 20px;
+    border-right: 0.5px solid var(--border);
+    background: var(--bg2);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    padding-left: 4px;
+  }
+
+  .fn-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 0.5px solid transparent;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    transition: all 0.15s;
+    width: 100%;
+  }
+
+  .fn-btn:hover { background: var(--bg3); color: var(--text); }
+
+  .fn-btn.active {
+    background: var(--bg3);
+    border-color: var(--border2);
+    color: var(--text);
+  }
+
+  .fn-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .fn-btn .fn-name { font-weight: 500; font-size: 14px; }
+  .fn-btn .fn-range { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+  .sidebar-divider {
+    height: 0.5px;
+    background: var(--border);
+    margin: 8px 0;
+  }
+
+  .sidebar-info {
+    padding: 12px 14px;
+    background: rgba(201,169,110,0.06);
+    border: 0.5px solid rgba(201,169,110,0.15);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+    margin-top: auto;
+  }
+
+  .sidebar-info strong { color: var(--accent); font-weight: 500; }
+
+  .content {
+    padding: 28px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .fn-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .fn-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .fn-subtitle {
+    font-size: 13px;
+    color: var(--text2);
+    margin-top: 2px;
+    font-weight: 300;
+  }
+
+  .issue-badge {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 0.5px solid;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .issue-bad  { background: rgba(224,123,106,0.1); border-color: rgba(224,123,106,0.3); color: #e07b6a; }
+  .issue-good { background: rgba(109,207,176,0.1); border-color: rgba(109,207,176,0.3); color: #6dcfb0; }
+  .issue-mid  { background: rgba(212,169,106,0.1); border-color: rgba(212,169,106,0.3); color: #d4a96a; }
+
+  .formula-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .formula-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+
+  .formula-card .fc-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+  }
+
+  .formula-card .fc-math {
+    font-size: 14px;
+    line-height: 1.8;
+    overflow-x: auto;
+  }
+
+  .fc-math .katex { font-size: 1em; }
+
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .chart-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px 12px;
+  }
+
+  .chart-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .chart-card-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .chart-card-title {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text2);
+  }
+
+  .chart-wrap { position: relative; height: 200px; }
+
+  .probe-section {
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+
+  .probe-title {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
+  }
+
+  .probe-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .probe-z-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--text2);
+    min-width: 20px;
+  }
+
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border2);
+    outline: none;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+  }
+
+  input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+  }
+
+  .probe-z-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--accent);
+    min-width: 44px;
+    text-align: right;
+  }
+
+  .probe-results {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .probe-card {
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 12px 14px;
+    border: 0.5px solid var(--border);
+  }
+
+  .probe-card-label {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+
+  .probe-card-val {
+    font-size: 18px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .probe-card-val.accent { color: var(--accent); }
+
+  .grad-bar-wrap { margin-bottom: 10px; }
+
+  .grad-bar-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+
+  .grad-bar-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg3);
+    overflow: hidden;
+  }
+
+  .grad-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.2s ease, background 0.2s ease;
+  }
+
+  .warn-box {
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    line-height: 1.5;
+    min-height: 20px;
+    transition: opacity 0.2s;
+    border-left: 3px solid;
+  }
+
+  .warn-box.hidden { opacity: 0; pointer-events: none; }
+  .warn-bad  { background: rgba(224,123,106,0.08); border-color: #e07b6a; color: #e07b6a; }
+  .warn-good { background: rgba(109,207,176,0.08); border-color: #6dcfb0; color: #6dcfb0; }
+
+  .insight-section {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+
+  .insight-title {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+  }
+
+  .insight-text {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .insight-text strong { color: var(--text); font-weight: 500; }
+  .insight-text code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: var(--bg3);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--accent);
+  }
+
+  @media (max-width: 860px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { flex-direction: row; flex-wrap: wrap; gap: 6px; padding: 16px; border-right: none; border-bottom: 0.5px solid var(--border); }
+    .sidebar-label { width: 100%; }
+    .sidebar-info { display: none; }
+    .content { padding: 20px; }
+    .charts-row { grid-template-columns: 1fr; }
+    .formula-row { grid-template-columns: 1fr; }
+    .probe-results { grid-template-columns: 1fr 1fr; }
+    header { padding: 24px 20px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>Activation Functions</h1>
+    <span class="header-tag">deep learning / week 3</span>
+  </div>
+  <p class="header-sub">How each function transforms its input — and how its derivative controls gradient flow during backpropagation</p>
+</header>
+
+<div class="main">
+  <aside class="sidebar">
+    <div class="sidebar-label">Choose function</div>
+
+    <button class="fn-btn active" onclick="setFn('sigmoid', this)">
+      <div class="fn-dot" style="background:#7c9fd4"></div>
+      <div>
+        <div class="fn-name">Sigmoid</div>
+        <div class="fn-range">output: (0, 1)</div>
+      </div>
+    </button>
+
+    <button class="fn-btn" onclick="setFn('tanh', this)">
+      <div class="fn-dot" style="background:#6dcfb0"></div>
+      <div>
+        <div class="fn-name">Tanh</div>
+        <div class="fn-range">output: (−1, 1)</div>
+      </div>
+    </button>
+
+    <button class="fn-btn" onclick="setFn('relu', this)">
+      <div class="fn-dot" style="background:#e07b6a"></div>
+      <div>
+        <div class="fn-name">ReLU</div>
+        <div class="fn-range">output: [0, ∞)</div>
+      </div>
+    </button>
+
+    <button class="fn-btn" onclick="setFn('leaky', this)">
+      <div class="fn-dot" style="background:#d4a96a"></div>
+      <div>
+        <div class="fn-name">Leaky ReLU</div>
+        <div class="fn-range">output: (−∞, ∞)</div>
+      </div>
+    </button>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-info">
+      <strong>How gradients work:</strong><br>
+      During backprop, gradient flows backward through each neuron multiplied by that neuron's <em>derivative</em>. If the derivative is near 0, the gradient vanishes. If it is 1, the gradient passes through intact.
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <div class="fn-header">
+      <div>
+        <div class="fn-title" id="fn-title">Sigmoid</div>
+        <div class="fn-subtitle" id="fn-subtitle">Classic S-curve squashing function — maps any real number to (0, 1)</div>
+      </div>
+      <div class="issue-badge issue-bad" id="issue-badge">Vanishing gradient</div>
+    </div>
+
+    <div class="formula-row">
+      <div class="formula-card">
+        <div class="fc-label">Function  f(z)</div>
+        <div class="fc-math" id="formula-fn"></div>
+      </div>
+      <div class="formula-card">
+        <div class="fc-label">Derivative  f'(z)  —  the gradient signal</div>
+        <div class="fc-math" id="formula-deriv"></div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div class="chart-card-dot" id="dot-fn" style="background:#7c9fd4"></div>
+          <div class="chart-card-title">f(z) — activation output</div>
+        </div>
+        <div class="chart-wrap"><canvas id="c-fn"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div class="chart-card-dot" id="dot-grad" style="background:#7c9fd4"></div>
+          <div class="chart-card-title">f'(z) — gradient (how much backprop passes through)</div>
+        </div>
+        <div class="chart-wrap"><canvas id="c-grad"></canvas></div>
+      </div>
+    </div>
+
+    <div class="probe-section">
+      <div class="probe-title">Probe a specific z value</div>
+
+      <div class="probe-slider-row">
+        <span class="probe-z-label">z =</span>
+        <input type="range" id="probe" min="-6" max="6" step="0.1" value="0" oninput="updateProbe()"/>
+        <span class="probe-z-val" id="probe-val">0.0</span>
+      </div>
+
+      <div class="probe-results">
+        <div class="probe-card">
+          <div class="probe-card-label">f(z) output</div>
+          <div class="probe-card-val" id="p-fz">0.5000</div>
+        </div>
+        <div class="probe-card">
+          <div class="probe-card-label">f'(z) gradient</div>
+          <div class="probe-card-val accent" id="p-dfz">0.2500</div>
+        </div>
+        <div class="probe-card">
+          <div class="probe-card-label">gradient strength</div>
+          <div class="probe-card-val" id="p-pct">100%</div>
+        </div>
+      </div>
+
+      <div class="grad-bar-wrap">
+        <div class="grad-bar-top">
+          <span>gradient magnitude (relative to max)</span>
+          <span id="bar-pct-label">100%</span>
+        </div>
+        <div class="grad-bar-track">
+          <div class="grad-bar-fill" id="grad-bar" style="width:100%;background:#7c9fd4"></div>
+        </div>
+      </div>
+
+      <div class="warn-box hidden" id="warn-box"></div>
+    </div>
+
+    <div class="insight-section">
+      <div class="insight-title">Backprop insight</div>
+      <div class="insight-text" id="insight-text"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function katexRender(latex) {
+  const span = document.createElement('span');
+  katex.render(latex, span, { throwOnError: false, displayMode: false });
+  return span.outerHTML;
+}
+
+const fns = {
+  sigmoid: {
+    title: 'Sigmoid',
+    subtitle: 'Classic S-curve squashing function — maps any real number to (0, 1)',
+    color: '#7c9fd4',
+    badgeClass: 'issue-bad',
+    badgeText: 'Vanishing gradient',
+    formulaFn: '\\sigma(z) = \\dfrac{1}{1 + e^{-z}}',
+    formulaDeriv: "\\sigma'(z) = \\sigma(z)\\cdot\\bigl(1 - \\sigma(z)\\bigr)",
+    maxGrad: 0.25,
+    f:  z => 1 / (1 + Math.exp(-z)),
+    df: z => { const s = 1/(1+Math.exp(-z)); return s*(1-s); },
+    yFnMin: -0.05, yFnMax: 1.05,
+    yGrMin: -0.02, yGrMax: 0.3,
+    warnFn: z => Math.abs(z) > 3,
+    warnClass: 'warn-bad',
+    warnMsg: 'Saturation zone: |z| > 3 — gradient ≈ 0. The neuron is barely learning. This is the vanishing gradient problem.',
+    insight: `Sigmoid squashes every input into <strong>(0, 1)</strong>, which makes it great for output layers producing probabilities. But its derivative <strong>peaks at only 0.25</strong> — even at the best possible z=0. In a 5-layer network, backprop multiplies derivatives at every layer: <code>0.25 × 0.25 × 0.25 × 0.25 × 0.25 ≈ 0.001</code>. The gradient reaching the first layer is essentially zero. The network's early layers stop learning — this is the <strong>vanishing gradient problem</strong>.`,
+  },
+  tanh: {
+    title: 'Tanh',
+    subtitle: 'Zero-centered S-curve — maps any real number to (−1, 1)',
+    color: '#6dcfb0',
+    badgeClass: 'issue-mid',
+    badgeText: 'Vanishes at extremes',
+    formulaFn: '\\tanh(z) = \\dfrac{e^{z} - e^{-z}}{e^{z} + e^{-z}}',
+    formulaDeriv: "\\tanh'(z) = 1 - \\tanh^2(z)",
+    maxGrad: 1.0,
+    f:  z => Math.tanh(z),
+    df: z => 1 - Math.tanh(z)**2,
+    yFnMin: -1.1, yFnMax: 1.1,
+    yGrMin: -0.05, yGrMax: 1.1,
+    warnFn: z => Math.abs(z) > 2.5,
+    warnClass: 'warn-bad',
+    warnMsg: 'Saturation zone: |z| > 2.5 — gradient shrinks toward 0. Vanishing gradient applies here too.',
+    insight: `Tanh is strictly better than sigmoid for hidden layers. Its derivative <strong>peaks at 1.0</strong> (vs sigmoid's 0.25), so gradients flow much more strongly near z=0. It is also <strong>zero-centered</strong>: outputs range from −1 to 1 instead of 0 to 1, which avoids a systematic bias in weight updates. However, it still <strong>saturates</strong> for large |z| — drag the slider to ±4 to see the gradient collapse. The vanishing gradient problem still applies in very deep networks.`,
+  },
+  relu: {
+    title: 'ReLU',
+    subtitle: 'Rectified Linear Unit — the default choice for deep network hidden layers',
+    color: '#e07b6a',
+    badgeClass: 'issue-mid',
+    badgeText: 'Dying ReLU risk',
+    formulaFn: '\\text{ReLU}(z) = \\max(0,\\, z)',
+    formulaDeriv: "\\text{ReLU}'(z) = \\begin{cases} 1 & z > 0 \\\\ 0 & z \\leq 0 \\end{cases}",
+    maxGrad: 1.0,
+    f:  z => Math.max(0, z),
+    df: z => z > 0 ? 1 : 0,
+    yFnMin: -0.3, yFnMax: 6.2,
+    yGrMin: -0.1, yGrMax: 1.2,
+    warnFn: z => z <= 0,
+    warnClass: 'warn-bad',
+    warnMsg: 'Dead zone: z ≤ 0 — gradient = 0 exactly. If a neuron gets stuck here, it will NEVER update its weights again (dying ReLU).',
+    insight: `ReLU is the most widely used activation in deep networks. For <strong>z > 0</strong>, the derivative is exactly <strong>1</strong> — the gradient passes through completely unchanged, with no vanishing. This allows very deep networks to train successfully. The risk is the <strong>dying ReLU problem</strong>: if a neuron's z becomes negative (e.g. from bad initialization or a large learning rate), its gradient is exactly 0 and weight updates stop permanently. That neuron is "dead" — it contributes nothing to predictions ever again.`,
+  },
+  leaky: {
+    title: 'Leaky ReLU',
+    subtitle: 'Modified ReLU with a small slope for z < 0 — prevents dying neurons',
+    color: '#d4a96a',
+    badgeClass: 'issue-good',
+    badgeText: 'Recommended',
+    formulaFn: 'f(z) = \\begin{cases} z & z > 0 \\\\ 0.01z & z \\leq 0 \\end{cases}',
+    formulaDeriv: "f'(z) = \\begin{cases} 1 & z > 0 \\\\ 0.01 & z \\leq 0 \\end{cases}",
+    maxGrad: 1.0,
+    f:  z => z > 0 ? z : 0.01*z,
+    df: z => z > 0 ? 1 : 0.01,
+    yFnMin: -0.3, yFnMax: 6.2,
+    yGrMin: -0.05, yGrMax: 1.1,
+    warnFn: () => false,
+    warnClass: 'warn-good',
+    warnMsg: '',
+    insight: `Leaky ReLU fixes the dying neuron problem with one simple change: instead of <strong>0</strong> for z ≤ 0, use <strong>0.01×z</strong>. This tiny slope means the gradient is <code>0.01</code> even in the dead zone — small, but non-zero. A neuron that received a negative pre-activation can still receive a gradient signal and gradually recover. For z > 0, the gradient is still exactly 1, preserving all the benefits of ReLU. In practice, Leaky ReLU or its variants (ELU, SELU, GELU) are often preferred over plain ReLU in modern architectures.`,
+  },
+};
+
+let currentKey = 'sigmoid';
+let chartFn = null, chartGrad = null;
+
+const xs = [];
+for (let z = -6; z <= 6.01; z += 0.12) xs.push(parseFloat(z.toFixed(2)));
+
+const gridColor = 'rgba(255,255,255,0.06)';
+const tickColor = 'rgba(255,255,255,0.3)';
+const axisColor = 'rgba(255,255,255,0.1)';
+
+function buildChart(canvasId, data, color, yMin, yMax) {
+  return new Chart(document.getElementById(canvasId), {
+    type: 'line',
+    data: {
+      datasets: [
+        { data: data, borderColor: color, borderWidth: 2, fill: false, pointRadius: 0, tension: 0.3 },
+        { data: [], borderColor: 'rgba(255,255,255,0.2)', borderDash: [5,4], borderWidth: 1, fill: false, pointRadius: 0 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 250 },
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      scales: {
+        x: {
+          type: 'linear', min: -6, max: 6,
+          grid: { color: gridColor },
+          ticks: { color: tickColor, font: { size: 11, family: "'DM Mono', monospace" }, stepSize: 2 },
+          border: { color: axisColor },
+        },
+        y: {
+          min: yMin, max: yMax,
+          grid: { color: gridColor },
+          ticks: { color: tickColor, font: { size: 11, family: "'DM Mono', monospace" }, maxTicksLimit: 6 },
+          border: { color: axisColor },
+        }
+      },
+    }
+  });
+}
+
+function setFn(key, btn) {
+  currentKey = key;
+  const fn = fns[key];
+
+  document.querySelectorAll('.fn-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  document.getElementById('fn-title').textContent = fn.title;
+  document.getElementById('fn-subtitle').textContent = fn.subtitle;
+
+  const badge = document.getElementById('issue-badge');
+  badge.className = 'issue-badge ' + fn.badgeClass;
+  badge.textContent = fn.badgeText;
+
+  document.getElementById('formula-fn').innerHTML = katexRender(fn.formulaFn);
+  document.getElementById('formula-deriv').innerHTML = katexRender(fn.formulaDeriv);
+  document.getElementById('insight-text').innerHTML = fn.insight;
+
+  document.getElementById('dot-fn').style.background = fn.color;
+  document.getElementById('dot-grad').style.background = fn.color;
+  document.getElementById('grad-bar').style.background = fn.color;
+
+  const fnData  = xs.map(z => ({ x: z, y: fn.f(z) }));
+  const grData  = xs.map(z => ({ x: z, y: fn.df(z) }));
+
+  if (chartFn) chartFn.destroy();
+  if (chartGrad) chartGrad.destroy();
+
+  chartFn   = buildChart('c-fn',   fnData,  fn.color, fn.yFnMin, fn.yFnMax);
+  chartGrad = buildChart('c-grad', grData,  fn.color, fn.yGrMin, fn.yGrMax);
+
+  updateProbe();
+}
+
+function updateProbe() {
+  const z = parseFloat(document.getElementById('probe').value);
+  const fn = fns[currentKey];
+  const fz  = fn.f(z);
+  const dfz = fn.df(z);
+  const pct = Math.min(100, (Math.abs(dfz) / fn.maxGrad) * 100);
+
+  document.getElementById('probe-val').textContent = z.toFixed(1);
+  document.getElementById('p-fz').textContent  = fz.toFixed(4);
+  document.getElementById('p-dfz').textContent = dfz.toFixed(4);
+  document.getElementById('p-pct').textContent = pct.toFixed(1) + '%';
+  document.getElementById('bar-pct-label').textContent = pct.toFixed(1) + '%';
+  document.getElementById('grad-bar').style.width = pct.toFixed(1) + '%';
+
+  const showWarn = fn.warnFn(z);
+  const warnBox = document.getElementById('warn-box');
+  if (showWarn && fn.warnMsg) {
+    warnBox.className = 'warn-box ' + fn.warnClass;
+    warnBox.textContent = fn.warnMsg;
+  } else {
+    warnBox.className = 'warn-box hidden';
+  }
+
+  const probeLineData = [{ x: z, y: -100 }, { x: z, y: 100 }];
+  if (chartFn && chartGrad) {
+    chartFn.data.datasets[1].data = probeLineData;
+    chartGrad.data.datasets[1].data = probeLineData;
+    chartFn.update('none');
+    chartGrad.update('none');
+  }
+}
+
+setFn('sigmoid', document.querySelector('.fn-btn'));
+</script>
+</body>
+</html>

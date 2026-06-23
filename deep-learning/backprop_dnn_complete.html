@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Backpropagation — Code & Implementation · Deep Neural Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<style>
+:root {
+  --bg:#FAF9F7;--bg2:#F2F0EC;--bg3:#E8E5DF;--card:#FFFFFF;
+  --text:#1C1C1A;--text2:#5C5B56;--text3:#9A9890;
+  --border:rgba(28,28,26,0.10);--border2:rgba(28,28,26,0.18);
+  --coral:#D97B52;--coral-light:#FAECE7;--coral-mid:#F0997B;--coral-dark:#993C1D;
+  --teal:#0F6E56;--teal-light:#E1F5EE;--teal-mid:#5DCAA5;--teal-dark:#085041;
+  --purple:#534AB7;--purple-light:#EEEDFE;--purple-mid:#AFA9EC;--purple-dark:#3C3489;
+  --amber:#854F0B;--amber-light:#FAEEDA;--amber-mid:#EF9F27;--amber-dark:#633806;
+  --gray-light:#F1EFE8;--gray-mid:#B4B2A9;--gray-dark:#444441;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lora',Georgia,serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:16px;}
+.page{max-width:1100px;margin:0 auto;padding:48px 40px 80px;}
+.hero{margin-bottom:48px;border-bottom:0.5px solid var(--border2);padding-bottom:32px;}
+.hero h1{font-size:30px;font-weight:600;letter-spacing:-0.5px;margin-bottom:6px;}
+.hero .subtitle{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--text3);letter-spacing:0.5px;}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--border2);margin-bottom:40px;overflow-x:auto;}
+.tab-btn{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.5px;padding:11px 18px;border:none;background:transparent;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-0.5px;white-space:nowrap;transition:color 0.15s,border-color 0.15s;}
+.tab-btn:hover{color:var(--text2);}
+.tab-btn.active{color:var(--coral);border-bottom-color:var(--coral);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.section-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+h2{font-size:22px;font-weight:600;margin-bottom:8px;letter-spacing:-0.3px;}
+h3{font-size:18px;font-weight:600;margin-bottom:10px;}
+p{font-size:15px;color:var(--text2);margin-bottom:14px;}
+p.lead{color:var(--text);font-size:16px;}
+.card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px;}
+.card-teal{border-left:3px solid var(--teal);background:var(--teal-light);border-radius:0 8px 8px 0;}
+.card-coral{border-left:3px solid var(--coral);background:var(--coral-light);border-radius:0 8px 8px 0;}
+.card-purple{border-left:3px solid var(--purple);background:var(--purple-light);border-radius:0 8px 8px 0;}
+.card-amber{border-left:3px solid var(--amber);background:var(--amber-light);border-radius:0 8px 8px 0;}
+.card-gray{border-left:3px solid var(--gray-mid);background:var(--gray-light);border-radius:0 8px 8px 0;}
+.notation-table{width:100%;border-collapse:collapse;font-size:15px;}
+.notation-table th{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);text-align:left;padding:10px 14px;border-bottom:0.5px solid var(--border2);}
+.notation-table td{padding:12px 14px;border-bottom:0.5px solid var(--border);vertical-align:top;line-height:1.6;}
+.notation-table tr:last-child td{border-bottom:none;}
+.notation-table tr:hover td{background:var(--bg2);}
+.sym{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--coral);}
+.shape-badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:2px 9px;border-radius:4px;background:var(--bg3);color:var(--text2);}
+.shape-badge.teal{background:var(--teal-light);color:var(--teal-dark);}
+.shape-badge.coral{background:var(--coral-light);color:var(--coral-dark);}
+.shape-badge.purple{background:var(--purple-light);color:var(--purple-dark);}
+.shape-badge.amber{background:var(--amber-light);color:var(--amber-dark);}
+.stepper-controls{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+.step-dots{display:flex;gap:6px;flex:1;}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--bg3);cursor:pointer;transition:background 0.2s,transform 0.2s;}
+.step-dot.active{background:var(--coral);transform:scale(1.3);}
+.step-dot.done{background:var(--teal-mid);}
+.step-btn{font-family:'IBM Plex Mono',monospace;font-size:13px;padding:8px 18px;border:0.5px solid var(--border2);border-radius:6px;background:transparent;color:var(--text2);cursor:pointer;transition:background 0.15s,color 0.15s;}
+.step-btn:hover{background:var(--bg2);color:var(--text);}
+.step-btn.primary{background:var(--coral);color:white;border-color:var(--coral);}
+.step-btn.primary:hover{opacity:0.9;}
+.step-btn:disabled{opacity:0.35;cursor:not-allowed;}
+.step-counter{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text3);min-width:50px;text-align:right;}
+.step-content{display:none;}
+.step-content.active{display:block;}
+.formula-block{padding:18px 22px;border-radius:8px;margin:14px 0;overflow-x:auto;}
+.formula-block .katex{font-size:1.15em;}
+.formula-block.teal{background:var(--teal-light);}
+.formula-block.coral{background:var(--coral-light);}
+.formula-block.purple{background:var(--purple-light);}
+.formula-block.amber{background:var(--amber-light);}
+.formula-block.gray{background:var(--gray-light);}
+.dim-row{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap;}
+.dim-box{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid;border-radius:6px;padding:10px 16px;font-family:'IBM Plex Mono',monospace;font-size:13px;min-width:90px;line-height:1.3;}
+.dim-box .label{font-size:15px;font-weight:500;margin-bottom:2px;}
+.dim-box .shape{font-size:12px;opacity:0.75;}
+.dim-box.teal{border-color:var(--teal);background:var(--teal-light);color:var(--teal-dark);}
+.dim-box.coral{border-color:var(--coral);background:var(--coral-light);color:var(--coral-dark);}
+.dim-box.purple{border-color:var(--purple);background:var(--purple-light);color:var(--purple-dark);}
+.dim-box.amber{border-color:var(--amber);background:var(--amber-light);color:var(--amber-dark);}
+.dim-box.gray{border-color:var(--gray-mid);background:var(--gray-light);color:var(--gray-dark);}
+.op-sym{font-size:20px;color:var(--text3);}
+.eq-sym{font-size:20px;color:var(--text3);}
+.check{color:var(--teal);font-size:15px;margin-left:4px;}
+pre{font-family:'IBM Plex Mono',monospace;font-size:14px;background:var(--bg3);border-radius:8px;padding:18px 20px;overflow-x:auto;line-height:1.65;color:var(--text);margin:14px 0;border:0.5px solid var(--border);}
+.kw{color:var(--coral);}
+.cm{color:var(--text3);font-style:italic;}
+.fn{color:var(--teal);}
+.st{color:var(--purple);}
+.nm{color:var(--amber);}
+.layer-row{display:flex;gap:0;align-items:stretch;margin-bottom:16px;border-radius:10px;overflow:hidden;border:0.5px solid var(--border2);}
+.layer-tag{display:flex;flex-direction:column;align-items:center;justify-content:center;width:60px;min-width:60px;padding:16px 8px;font-family:'IBM Plex Mono',monospace;font-size:12px;text-align:center;line-height:1.4;cursor:pointer;transition:opacity 0.15s;}
+.layer-tag:hover{opacity:0.82;}
+.layer-body{flex:1;padding:18px 22px;background:var(--card);}
+.layer-body h4{font-size:14px;font-weight:600;margin-bottom:8px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.2px;}
+.layer-detail{display:none;}
+.layer-detail.open{display:block;margin-top:12px;border-top:0.5px solid var(--border);padding-top:12px;}
+.index-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;}
+@media(max-width:600px){.index-grid{grid-template-columns:1fr;}}
+.toggle-group{display:inline-flex;border:0.5px solid var(--border2);border-radius:8px;overflow:hidden;margin-bottom:20px;}
+.toggle-opt{padding:9px 22px;font-family:'IBM Plex Mono',monospace;font-size:13px;cursor:pointer;background:transparent;border:none;color:var(--text2);transition:background 0.15s,color 0.15s;}
+.toggle-opt.active{background:var(--coral);color:white;}
+.matrix-wrap{overflow-x:auto;margin:10px 0;}
+table.matrix{border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:14px;}
+table.matrix td{padding:7px 14px;text-align:right;border:0.5px solid var(--border);}
+table.matrix thead td{background:var(--bg3);color:var(--text3);font-size:12px;text-align:center;}
+table.matrix.teal td:first-child{background:var(--teal-light);color:var(--teal-dark);font-weight:500;}
+table.matrix.coral td:first-child{background:var(--coral-light);color:var(--coral-dark);font-weight:500;}
+table.matrix.purple td:first-child{background:var(--purple-light);color:var(--purple-dark);font-weight:500;}
+.update-slider-wrap{display:flex;gap:12px;align-items:center;margin:16px 0;}
+input[type=range]{flex:1;accent-color:var(--coral);}
+.update-preview{font-family:'IBM Plex Mono',monospace;font-size:14px;background:var(--bg3);padding:14px 18px;border-radius:8px;margin-top:12px;}
+@keyframes pop{0%{transform:scale(1)}30%{transform:scale(1.04)}100%{transform:scale(1)}}
+.pop{animation:pop 0.3s ease;}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:14px;}
+.muted{color:var(--text3);font-size:14px;}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.spacer{margin:20px 0;}
+.divider{border:none;border-top:0.5px solid var(--border);margin:28px 0;}
+strong{font-weight:600;}
+.note-box{background:var(--amber-light);border-left:3px solid var(--amber-mid);border-radius:0 8px 8px 0;padding:14px 18px;font-size:15px;margin:16px 0;color:var(--text);}
+.warn-box{background:var(--coral-light);border-left:3px solid var(--coral);border-radius:0 8px 8px 0;padding:14px 18px;font-size:15px;margin:16px 0;color:var(--text);}
+.insight-box{background:var(--teal-light);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:14px 18px;font-size:15px;margin:16px 0;color:var(--text);}
+.cs-section{margin-bottom:44px;}
+.cs-section-title{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);border-bottom:0.5px solid var(--border2);padding-bottom:8px;margin-bottom:16px;}
+.cs-row{display:grid;grid-template-columns:36px 1.4fr 1fr 1fr;gap:0;border-bottom:0.5px solid var(--border);align-items:start;}
+.cs-row:last-child{border-bottom:none;}
+.cs-row:hover{background:var(--bg2);}
+.cs-col{padding:14px 16px;font-size:14px;border-right:0.5px solid var(--border);min-width:0;}
+.cs-col:last-child{border-right:none;}
+.cs-col .katex{font-size:1em;}
+.cs-num{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text3);padding-top:18px;text-align:center;}
+.cs-header{display:grid;grid-template-columns:36px 1.4fr 1fr 1fr;gap:0;background:var(--bg3);border-radius:8px 8px 0 0;}
+.cs-header-col{padding:10px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);border-right:0.5px solid var(--border2);}
+.cs-header-col:last-child{border-right:none;}
+.cs-table{border:0.5px solid var(--border2);border-radius:0 0 8px 8px;overflow:hidden;margin-bottom:0;}
+.cs-fn{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--teal-dark);background:var(--teal-light);border-radius:4px;padding:2px 8px;display:inline-block;margin-bottom:4px;}
+.cs-fn-sig{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text3);line-height:1.7;margin-top:4px;}
+.cs-shape{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);margin-top:4px;line-height:1.7;}
+.cs-note{font-size:13px;color:var(--text3);font-style:italic;margin-top:4px;line-height:1.55;}
+.tag-fwd{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px;background:var(--teal-light);color:var(--teal-dark);letter-spacing:0.5px;margin-bottom:4px;}
+.tag-bwd{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px;background:var(--coral-light);color:var(--coral-dark);letter-spacing:0.5px;margin-bottom:4px;}
+.tag-both{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px;background:var(--purple-light);color:var(--purple-dark);letter-spacing:0.5px;margin-bottom:4px;}
+@media(max-width:900px){.cs-row,.cs-header{grid-template-columns:28px 1fr 1fr;}.cs-col:nth-child(4),.cs-header-col:nth-child(4){display:none;}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="hero">
+  <div class="section-label">COURSERA DEEP LEARNING · WEEK 4</div>
+  <h1>Backpropagation — Code & Implementation</h1>
+  <p class="subtitle">every formula · every dimension · every index · Python &amp; NumPy</p>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab(0)">0 · Overview</button>
+  <button class="tab-btn" onclick="switchTab(1)">1 · Notation</button>
+  <button class="tab-btn" onclick="switchTab(2)">2 · Cheat Sheet</button>
+  <button class="tab-btn" onclick="switchTab(3)">3 · Linear Backward</button>
+  <button class="tab-btn" onclick="switchTab(4)">4 · Activation Backward</button>
+  <button class="tab-btn" onclick="switchTab(5)">5 · L-Model Backward</button>
+  <button class="tab-btn" onclick="switchTab(6)">6 · Index Confusion</button>
+  <button class="tab-btn" onclick="switchTab(7)">7 · Update Parameters</button>
+</div>
+
+<!-- TAB 0: OVERVIEW -->
+<div class="tab-panel active" id="tab-0">
+<p class="lead">The full backprop module has exactly three layers of functions, each calling the one below it. Understanding the call stack is half the battle.</p>
+<div style="margin:24px 0;">
+<svg width="100%" viewBox="0 0 860 420" role="img"><title>Backprop call stack</title>
+<defs><marker id="arr0" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="200" y="28" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#5DCAA5" letter-spacing="1">FORWARD PASS</text>
+<text x="660" y="28" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#D97B52" letter-spacing="1">BACKWARD PASS</text>
+<rect x="60" y="44" width="280" height="52" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="200" y="67" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#085041" font-weight="500">L_model_forward()</text>
+<text x="200" y="85" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#0F6E56">builds caches list</text>
+<rect x="520" y="44" width="280" height="52" rx="8" fill="#FAECE7" stroke="#D97B52" stroke-width="0.5"/>
+<text x="520" y="44" width="280" height="52" rx="8" fill="#FAECE7" stroke="#D97B52" stroke-width="0.5"/>
+<text x="660" y="67" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#993C1D" font-weight="500">L_model_backward()</text>
+<text x="660" y="85" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#D97B52">consumes caches list</text>
+<line x1="340" y1="70" x2="518" y2="70" stroke="#D97B52" stroke-width="1" marker-end="url(#arr0)" stroke-dasharray="4 3"/>
+<text x="430" y="62" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#9A9890">caches</text>
+<rect x="60" y="148" width="280" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="200" y="171" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#3C3489" font-weight="500">linear_activation_forward()</text>
+<text x="200" y="189" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#534AB7">relu or sigmoid</text>
+<rect x="520" y="148" width="280" height="52" rx="8" fill="#FAECE7" stroke="#D97B52" stroke-width="0.5"/>
+<text x="660" y="171" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#993C1D" font-weight="500">linear_activation_backward()</text>
+<text x="660" y="189" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#D97B52">relu_bwd or sigmoid_bwd</text>
+<rect x="60" y="252" width="280" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="200" y="275" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#3C3489" font-weight="500">linear_forward()</text>
+<text x="200" y="293" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#534AB7">Z = W @ A_prev + b</text>
+<rect x="520" y="252" width="280" height="52" rx="8" fill="#FAECE7" stroke="#D97B52" stroke-width="0.5"/>
+<text x="660" y="275" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" fill="#993C1D" font-weight="500">linear_backward()</text>
+<text x="660" y="293" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#D97B52">dW, db, dA_prev</text>
+<rect x="60" y="356" width="280" height="44" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="200" y="375" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#444441" font-weight="500">sigmoid() / relu()</text>
+<text x="200" y="391" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#888780">provided for you</text>
+<rect x="520" y="356" width="280" height="44" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="660" y="375" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#444441" font-weight="500">sigmoid_backward() / relu_backward()</text>
+<text x="660" y="391" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#888780">provided for you</text>
+<line x1="200" y1="96" x2="200" y2="147" stroke="#534AB7" stroke-width="0.8" marker-end="url(#arr0)"/>
+<line x1="200" y1="200" x2="200" y2="251" stroke="#534AB7" stroke-width="0.8" marker-end="url(#arr0)"/>
+<line x1="200" y1="304" x2="200" y2="355" stroke="#B4B2A9" stroke-width="0.8" marker-end="url(#arr0)"/>
+<line x1="660" y1="399" x2="660" y2="307" stroke="#D97B52" stroke-width="0.8" marker-end="url(#arr0)"/>
+<line x1="660" y1="251" x2="660" y2="204" stroke="#D97B52" stroke-width="0.8" marker-end="url(#arr0)"/>
+<line x1="660" y1="148" x2="660" y2="99" stroke="#D97B52" stroke-width="0.8" marker-end="url(#arr0)"/>
+<text x="430" y="174" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#9A9890">cache[l]</text>
+<text x="430" y="278" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#9A9890">linear_cache</text>
+</svg>
+</div>
+<div class="note-box"><strong>Key insight:</strong> for every forward function there is a mirror backward function. Forward stores everything in a <span class="mono">cache</span>. Backward receives that cache and uses it to compute gradients — nothing is recomputed.</div>
+<h3>Example network used throughout</h3>
+<p>All concrete numbers use a 3-layer net: <strong>n⁰=2 inputs, n¹=3 hidden, n²=2 hidden, n³=1 output, m=2 examples</strong>.</p>
+<div class="card">
+  <div class="mono" style="font-size:13px;line-height:2;">
+    layer_dims = [2, 3, 2, 1]<br>
+    <span style="color:var(--teal)">W1</span>: (3,2) &nbsp; <span style="color:var(--teal)">b1</span>: (3,1) &nbsp;&nbsp;
+    <span style="color:var(--purple)">W2</span>: (2,3) &nbsp; <span style="color:var(--purple)">b2</span>: (2,1) &nbsp;&nbsp;
+    <span style="color:var(--coral)">W3</span>: (1,2) &nbsp; <span style="color:var(--coral)">b3</span>: (1,1)<br>
+    <span style="color:var(--amber)">X</span>: (2,2) &nbsp;&nbsp; <span style="color:var(--amber)">Y</span>: (1,2)
+  </div>
+</div>
+</div>
+
+<!-- TAB 1: NOTATION -->
+<div class="tab-panel" id="tab-1">
+<p class="lead">The hardest part of backprop is not the math — it's the notation. Here is every symbol, its shape, and exactly what layer index it belongs to.</p>
+<div class="warn-box"><strong>Critical rule:</strong> superscript <span class="mono">[l]</span> (square brackets) = layer index. Superscript <span class="mono">(i)</span> (round brackets) = training example index.</div>
+<div style="overflow-x:auto">
+<table class="notation-table">
+  <thead><tr><th>Symbol</th><th>Name</th><th>Shape</th><th>Description</th><th>Layer ref</th></tr></thead>
+  <tbody>
+    <tr><td><span class="sym">l</span></td><td>layer index</td><td><span class="shape-badge">scalar</span></td><td>Current layer number. Runs 1→L in loops.</td><td>—</td></tr>
+    <tr><td><span class="sym">L</span></td><td>total layers</td><td><span class="shape-badge">scalar</span></td><td>Total number of layers (not counting input layer 0).</td><td>—</td></tr>
+    <tr><td><span class="sym">n<sup>[l]</sup></span></td><td>units in layer l</td><td><span class="shape-badge">scalar</span></td><td>Number of neurons in layer l. e.g. n⁰=2, n¹=3, n²=2, n³=1.</td><td>layer l</td></tr>
+    <tr><td><span class="sym">m</span></td><td>examples</td><td><span class="shape-badge">scalar</span></td><td>Number of training examples. Columns in every matrix.</td><td>—</td></tr>
+    <tr><td><span class="sym">W<sup>[l]</sup></span></td><td>weight matrix</td><td><span class="shape-badge teal">n<sup>[l]</sup> × n<sup>[l-1]</sup></span></td><td>Connects layer l-1 to layer l. Always n[l] rows, n[l-1] cols.</td><td>layer l</td></tr>
+    <tr><td><span class="sym">b<sup>[l]</sup></span></td><td>bias vector</td><td><span class="shape-badge teal">n<sup>[l]</sup> × 1</span></td><td>One bias per neuron in layer l. Broadcasts across m examples.</td><td>layer l</td></tr>
+    <tr><td><span class="sym">Z<sup>[l]</sup></span></td><td>pre-activation</td><td><span class="shape-badge purple">n<sup>[l]</sup> × m</span></td><td>Z = W·A_prev + b. Cached as activation_cache.</td><td>layer l</td></tr>
+    <tr><td><span class="sym">A<sup>[l]</sup></span></td><td>activation</td><td><span class="shape-badge purple">n<sup>[l]</sup> × m</span></td><td>Post-activation output of layer l. A⁰ = X. A^L = Ŷ.</td><td>layer l</td></tr>
+    <tr><td><span class="sym">A<sup>[l-1]</sup></span></td><td>previous activation</td><td><span class="shape-badge amber">n<sup>[l-1]</sup> × m</span></td><td>The input to layer l. Stored in linear_cache as A_prev.</td><td>layer l-1</td></tr>
+    <tr><td><span class="sym">dZ<sup>[l]</sup></span></td><td>gradient of Z</td><td><span class="shape-badge coral">n<sup>[l]</sup> × m</span></td><td>∂J/∂Z[l]. Same shape as Z[l]. Starting point for linear_backward.</td><td>layer l</td></tr>
+    <tr><td><span class="sym">dW<sup>[l]</sup></span></td><td>gradient of W</td><td><span class="shape-badge coral">n<sup>[l]</sup> × n<sup>[l-1]</sup></span></td><td>∂J/∂W[l]. Same shape as W[l].</td><td>layer l</td></tr>
+    <tr><td><span class="sym">db<sup>[l]</sup></span></td><td>gradient of b</td><td><span class="shape-badge coral">n<sup>[l]</sup> × 1</span></td><td>∂J/∂b[l]. Same shape as b[l]. Sum of dZ across examples (axis=1).</td><td>layer l</td></tr>
+    <tr><td><span class="sym">dA<sup>[l-1]</sup></span></td><td>gradient flowing back</td><td><span class="shape-badge amber">n<sup>[l-1]</sup> × m</span></td><td>∂J/∂A[l-1]. Same shape as A[l-1]. Chains layers together.</td><td>layer l-1</td></tr>
+    <tr><td><span class="sym">caches</span></td><td>list of all caches</td><td><span class="shape-badge">list[L]</span></td><td>caches[0]=layer 1, caches[1]=layer 2, …, caches[L-1]=layer L.</td><td>all layers</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="spacer"></div>
+<div class="insight-box"><strong>Shape rule:</strong> Every gradient has the same shape as the thing it is the gradient of. dW[l] matches W[l], db[l] matches b[l], dA[l-1] matches A[l-1].</div>
+</div>
+
+<!-- TAB 2: CHEAT SHEET -->
+<div class="tab-panel" id="tab-2">
+<p class="lead">Every formula, shape, and Python call — forward and backward — on one page.</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;font-size:12px;font-family:'IBM Plex Mono',monospace;">
+  <span><span class="tag-fwd">FWD</span> forward pass</span>
+  <span><span class="tag-bwd">BWD</span> backward pass</span>
+  <span><span class="tag-both">BOTH</span> init / update</span>
+</div>
+<div class="cs-section">
+<div class="cs-section-title">1 · Initialization</div>
+<div class="cs-header"><div class="cs-header-col">#</div><div class="cs-header-col">Formula</div><div class="cs-header-col">Shapes &amp; notes</div><div class="cs-header-col">Python / NumPy</div></div>
+<div class="cs-table">
+  <div class="cs-row"><div class="cs-num">1</div><div class="cs-col"><span class="tag-both">BOTH</span><div id="cs-w-init"></div><div class="cs-note">Small random weights break symmetry</div></div><div class="cs-col"><div class="cs-shape">W<sup>[l]</sup>: <strong>(n[l], n[l-1])</strong><br>Must be random, not zeros</div></div><div class="cs-col"><span class="cs-fn">initialize_parameters_deep</span><div class="cs-fn-sig">W = np.random.randn(<br>&nbsp;&nbsp;n[l], n[l-1]) * 0.01<br>b = np.zeros((n[l], 1))</div></div></div>
+  <div class="cs-row"><div class="cs-num">2</div><div class="cs-col"><span class="tag-both">BOTH</span><div id="cs-b-init"></div><div class="cs-note">Zero bias fine — symmetry broken by W</div></div><div class="cs-col"><div class="cs-shape">b<sup>[l]</sup>: <strong>(n[l], 1)</strong><br>Broadcasts across m examples</div></div><div class="cs-col"><span class="cs-fn">initialize_parameters_deep</span><div class="cs-fn-sig">b = np.zeros((n[l], 1))</div></div></div>
+</div>
+</div>
+<div class="cs-section">
+<div class="cs-section-title">2 · Forward propagation — per layer l</div>
+<div class="cs-header"><div class="cs-header-col">#</div><div class="cs-header-col">Formula</div><div class="cs-header-col">Shapes &amp; notes</div><div class="cs-header-col">Python / NumPy</div></div>
+<div class="cs-table">
+  <div class="cs-row"><div class="cs-num">3</div><div class="cs-col"><span class="tag-fwd">FWD</span><div id="cs-z-fwd"></div><div class="cs-note">Linear step. Cached as linear_cache = (A_prev, W, b)</div></div><div class="cs-col"><div class="cs-shape">W<sup>[l]</sup>: (n[l], n[l-1])<br>A<sup>[l-1]</sup>: (n[l-1], m)<br>b<sup>[l]</sup>: (n[l], 1)<br>Z<sup>[l]</sup>: <strong>(n[l], m)</strong></div></div><div class="cs-col"><span class="cs-fn">linear_forward</span><div class="cs-fn-sig">Z = W @ A_prev + b<br>cache = (A_prev, W, b)</div></div></div>
+  <div class="cs-row"><div class="cs-num">4</div><div class="cs-col"><span class="tag-fwd">FWD</span><div id="cs-a-relu"></div><div class="cs-note">Hidden layers l=1…L-1. Cached Z as activation_cache</div></div><div class="cs-col"><div class="cs-shape">Z<sup>[l]</sup>: (n[l], m)<br>A<sup>[l]</sup>: <strong>(n[l], m)</strong></div></div><div class="cs-col"><span class="cs-fn">linear_activation_forward</span><div class="cs-fn-sig">A, act_cache = relu(Z)</div></div></div>
+  <div class="cs-row"><div class="cs-num">5</div><div class="cs-col"><span class="tag-fwd">FWD</span><div id="cs-a-sig"></div><div class="cs-note">Output layer l=L only.</div></div><div class="cs-col"><div class="cs-shape">Z<sup>[L]</sup>: (n[L], m)<br>A<sup>[L]</sup>=Ŷ: <strong>(n[L], m)</strong></div></div><div class="cs-col"><span class="cs-fn">linear_activation_forward</span><div class="cs-fn-sig">A, act_cache = sigmoid(Z)</div></div></div>
+</div>
+</div>
+<div class="cs-section">
+<div class="cs-section-title">3 · Cost function</div>
+<div class="cs-header"><div class="cs-header-col">#</div><div class="cs-header-col">Formula</div><div class="cs-header-col">Shapes &amp; notes</div><div class="cs-header-col">Python / NumPy</div></div>
+<div class="cs-table">
+  <div class="cs-row"><div class="cs-num">6</div><div class="cs-col"><span class="tag-both">BOTH</span><div id="cs-cost"></div><div class="cs-note">Binary cross-entropy. Averaged over m examples.</div></div><div class="cs-col"><div class="cs-shape">Y: (1,m), A<sup>[L]</sup>: (1,m)<br>J: <strong>scalar</strong></div></div><div class="cs-col"><span class="cs-fn">compute_cost</span><div class="cs-fn-sig">J = -np.mean(<br>&nbsp;&nbsp;Y*np.log(AL) +<br>&nbsp;&nbsp;(1-Y)*np.log(1-AL))</div></div></div>
+</div>
+</div>
+<div class="cs-section">
+<div class="cs-section-title">4 · Backward initialization</div>
+<div class="cs-header"><div class="cs-header-col">#</div><div class="cs-header-col">Formula</div><div class="cs-header-col">Shapes &amp; notes</div><div class="cs-header-col">Python / NumPy</div></div>
+<div class="cs-table">
+  <div class="cs-row"><div class="cs-num">7</div><div class="cs-col"><span class="tag-bwd">BWD</span><div id="cs-dal"></div><div class="cs-note">∂J/∂A[L]. Seed for the entire backward pass.</div></div><div class="cs-col"><div class="cs-shape">dA<sup>[L]</sup>: <strong>(1, m)</strong></div></div><div class="cs-col"><span class="cs-fn">L_model_backward</span><div class="cs-fn-sig">dAL = -(Y/AL - (1-Y)/(1-AL))</div></div></div>
+</div>
+</div>
+<div class="cs-section">
+<div class="cs-section-title">5 · Activation backward</div>
+<div class="cs-header"><div class="cs-header-col">#</div><div class="cs-header-col">Formula</div><div class="cs-header-col">Shapes &amp; notes</div><div class="cs-header-col">Python / NumPy</div></div>
+<div class="cs-table">
+  <div class="cs-row"><div class="cs-num">8</div><div class="cs-col"><span class="tag-bwd">BWD</span><div id="cs-relu-bwd"></div><div class="cs-note">Elementwise. Kills gradient where Z≤0.</div></div><div class="cs-col"><div class="cs-shape">dZ<sup>[l]</sup>: <strong>(n[l], m)</strong></div></div><div class="cs-col"><span class="cs-fn">relu_backward</span><div class="cs-fn-sig">dZ = dA * (Z &gt; 0)</div></div></div>
+  <div class="cs-row"><div class="cs-num">9</div><div class="cs-col"><span class="tag-bwd">BWD</span><div id="cs-sig-bwd"></div><div class="cs-note">Elementwise. σ′ ≤ 0.25 always.</div></div><div class="cs-col"><div class="cs-shape">dZ<sup>[L]</sup>: <strong>(n[L], m)</strong></div></div><div class="cs-col"><span class="cs-fn">sigmoid_backward</span><div class="cs-fn-sig">s = 1/(1+np.exp(-Z))<br>dZ = dA * s * (1-s)</div></div></div>
+</div>
+</div>
+<div class="cs-section">
+<div class="cs-section-title">6 · Linear backward</div>
+<div class="cs-header"><div class="cs-header-col">#</div><div class="cs-header-col">Formula</div><div class="cs-header-col">Shapes &amp; notes</div><div class="cs-header-col">Python / NumPy</div></div>
+<div class="cs-table">
+  <div class="cs-row"><div class="cs-num">10</div><div class="cs-col"><span class="tag-bwd">BWD</span><div id="cs-dw"></div><div class="cs-note">Averaged over m. Shape matches W[l].</div></div><div class="cs-col"><div class="cs-shape">dW<sup>[l]</sup>: <strong>(n[l], n[l-1])</strong></div></div><div class="cs-col"><span class="cs-fn">linear_backward</span><div class="cs-fn-sig">dW = dZ @ A_prev.T / m</div></div></div>
+  <div class="cs-row"><div class="cs-num">11</div><div class="cs-col"><span class="tag-bwd">BWD</span><div id="cs-db"></div><div class="cs-note">keepdims=True preserves (n[l],1) shape.</div></div><div class="cs-col"><div class="cs-shape">db<sup>[l]</sup>: <strong>(n[l], 1)</strong></div></div><div class="cs-col"><span class="cs-fn">linear_backward</span><div class="cs-fn-sig">db = np.sum(dZ, axis=1,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keepdims=True) / m</div></div></div>
+  <div class="cs-row"><div class="cs-num">12</div><div class="cs-col"><span class="tag-bwd">BWD</span><div id="cs-daprev"></div><div class="cs-note">No /m. Passes gradient to layer l-1.</div></div><div class="cs-col"><div class="cs-shape">dA<sup>[l-1]</sup>: <strong>(n[l-1], m)</strong></div></div><div class="cs-col"><span class="cs-fn">linear_backward</span><div class="cs-fn-sig">dA_prev = W.T @ dZ</div></div></div>
+</div>
+</div>
+<div class="cs-section">
+<div class="cs-section-title">7 · Parameter update</div>
+<div class="cs-header"><div class="cs-header-col">#</div><div class="cs-header-col">Formula</div><div class="cs-header-col">Shapes &amp; notes</div><div class="cs-header-col">Python / NumPy</div></div>
+<div class="cs-table">
+  <div class="cs-row"><div class="cs-num">13</div><div class="cs-col"><span class="tag-both">BOTH</span><div id="cs-upd-w"></div></div><div class="cs-col"><div class="cs-shape">W<sup>[l]</sup>: (n[l], n[l-1])</div></div><div class="cs-col"><span class="cs-fn">update_parameters</span><div class="cs-fn-sig">W[l] -= lr * grads["dW"+str(l)]</div></div></div>
+  <div class="cs-row"><div class="cs-num">14</div><div class="cs-col"><span class="tag-both">BOTH</span><div id="cs-upd-b"></div></div><div class="cs-col"><div class="cs-shape">b<sup>[l]</sup>: (n[l], 1)</div></div><div class="cs-col"><span class="cs-fn">update_parameters</span><div class="cs-fn-sig">b[l] -= lr * grads["db"+str(l)]</div></div></div>
+</div>
+</div>
+<div class="cs-section">
+<div class="cs-section-title">8 · Cache index mapping</div>
+<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:13px;"><thead><tr style="background:var(--bg3);"><th style="padding:10px 14px;border:0.5px solid var(--border2);text-align:left;font-size:10px;color:var(--text3);">Layer</th><th style="padding:10px 14px;border:0.5px solid var(--border2);text-align:left;font-size:10px;color:var(--text3);">caches index</th><th style="padding:10px 14px;border:0.5px solid var(--border2);text-align:left;font-size:10px;color:var(--text3);">linear_cache</th><th style="padding:10px 14px;border:0.5px solid var(--border2);text-align:left;font-size:10px;color:var(--text3);">activation_cache</th><th style="padding:10px 14px;border:0.5px solid var(--border2);text-align:left;font-size:10px;color:var(--text3);">Backward loop l</th></tr></thead><tbody><tr><td style="padding:10px 14px;border:0.5px solid var(--border);color:var(--teal-dark);">Layer 1</td><td style="padding:10px 14px;border:0.5px solid var(--border);color:var(--coral-dark);">caches[0]</td><td style="padding:10px 14px;border:0.5px solid var(--border);">(A[0]=X, W[1], b[1])</td><td style="padding:10px 14px;border:0.5px solid var(--border);">Z[1]</td><td style="padding:10px 14px;border:0.5px solid var(--border);color:var(--purple-dark);">l=0</td></tr><tr style="background:var(--bg2);"><td style="padding:10px 14px;border:0.5px solid var(--border);color:var(--teal-dark);">Layer 2</td><td style="padding:10px 14px;border:0.5px solid var(--border);color:var(--coral-dark);">caches[1]</td><td style="padding:10px 14px;border:0.5px solid var(--border);">(A[1], W[2], b[2])</td><td style="padding:10px 14px;border:0.5px solid var(--border);">Z[2]</td><td style="padding:10px 14px;border:0.5px solid var(--border);color:var(--purple-dark);">l=1</td></tr><tr><td style="padding:10px 14px;border:0.5px solid var(--border);color:var(--teal-dark);font-weight:600;">Layer L=3</td><td style="padding:10px 14px;border:0.5px solid var(--border);color:var(--coral-dark);font-weight:600;">caches[L-1]=caches[2]</td><td style="padding:10px 14px;border:0.5px solid var(--border);">(A[2], W[3], b[3])</td><td style="padding:10px 14px;border:0.5px solid var(--border);">Z[3]</td><td style="padding:10px 14px;border:0.5px solid var(--border);color:var(--purple-dark);">before loop</td></tr></tbody></table></div>
+<div class="insight-box" style="margin-top:14px;"><strong>Golden rule:</strong> <span class="mono">caches[k]</span> holds layer <span class="mono">k+1</span> data. In the backward loop at iteration <span class="mono">l</span>, you process layer <span class="mono">l+1</span>, so store as <span class="mono">dW[l+1]</span>, <span class="mono">db[l+1]</span>.</div>
+</div>
+<div class="cs-section">
+<div class="cs-section-title">9 · All shapes at a glance</div>
+<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:13px;"><thead><tr style="background:var(--bg3);"><th style="padding:10px 14px;border:0.5px solid var(--border2);text-align:left;font-size:10px;color:var(--text3);">Variable</th><th style="padding:10px 14px;border:0.5px solid var(--border2);text-align:left;font-size:10px;color:var(--text3);">Shape</th><th style="padding:10px 14px;border:0.5px solid var(--border2);text-align:left;font-size:10px;color:var(--text3);">In our [2,3,2,1] m=2</th><th style="padding:10px 14px;border:0.5px solid var(--border2);text-align:left;font-size:10px;color:var(--text3);">Direction</th></tr></thead><tbody id="shape-table-body"></tbody></table></div>
+</div>
+</div>
+
+<!-- TAB 3: LINEAR BACKWARD -->
+<div class="tab-panel" id="tab-3">
+<p class="lead"><code>linear_backward(dZ, cache)</code> is the core of backprop. Given dZ[l], it computes three gradients in one shot.</p>
+<div class="stepper-controls">
+  <div class="step-dots"><div class="step-dot active" onclick="goStep(3,0)"></div><div class="step-dot" onclick="goStep(3,1)"></div><div class="step-dot" onclick="goStep(3,2)"></div><div class="step-dot" onclick="goStep(3,3)"></div><div class="step-dot" onclick="goStep(3,4)"></div></div>
+  <span class="step-counter" id="ctr-3">1 / 5</span>
+  <button class="step-btn" onclick="prevStep(3)" id="prev-3" disabled>← Prev</button>
+  <button class="step-btn primary" onclick="nextStep(3)" id="next-3">Next →</button>
+</div>
+<div class="step-content active" id="tab3-step-0">
+  <h3>Setup: what we have and what we need</h3>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin:16px 0;">
+    <div class="card-coral" style="padding:12px 16px;flex:1;min-width:180px;"><div class="section-label">INPUTS</div><div class="mono">dZ<sup>[l]</sup> &nbsp;<span class="shape-badge coral">n[l] × m</span></div><div class="mono" style="margin-top:6px;">cache = (A_prev, W, b)</div></div>
+    <div class="card-teal" style="padding:12px 16px;flex:1;min-width:180px;"><div class="section-label">OUTPUTS</div><div class="mono">dW<sup>[l]</sup> &nbsp;<span class="shape-badge teal">n[l] × n[l-1]</span></div><div class="mono" style="margin-top:4px;">db<sup>[l]</sup> &nbsp;<span class="shape-badge teal">n[l] × 1</span></div><div class="mono" style="margin-top:4px;">dA<sup>[l-1]</sup> <span class="shape-badge amber">n[l-1] × m</span></div></div>
+  </div>
+  <div class="formula-block coral" id="f-setup"></div>
+  <pre><code><span class="kw">def</span> <span class="fn">linear_backward</span>(dZ, cache):
+    A_prev, W, b = cache
+    m = A_prev.shape[<span class="nm">1</span>]</code></pre>
+</div>
+<div class="step-content" id="tab3-step-1">
+  <h3>Computing dW<sup>[l]</sup></h3>
+  <div class="formula-block teal" id="f-dw"></div>
+  <div class="insight-box"><strong>Why this formula?</strong> In forward: Z[l] = W[l] @ A[l-1] + b. So ∂Z/∂W = A[l-1]^T. Chain rule: dW = (1/m)·dZ @ A_prev.T. We divide by m to average over all examples.</div>
+  <div class="dim-row"><div class="dim-box coral"><div class="label">dZ<sup>[l]</sup></div><div class="shape">n[l] × m</div></div><div class="op-sym">@</div><div class="dim-box amber"><div class="label">A<sup>[l-1]</sup>.T</div><div class="shape">m × n[l-1]</div></div><div class="eq-sym">=</div><div class="dim-box teal"><div class="label">dW<sup>[l]</sup></div><div class="shape">n[l] × n[l-1]</div></div><span class="check">✓ matches W[l]</span></div>
+  <pre><code>dW = dZ <span class="kw">@</span> A_prev.T / m</code></pre>
+</div>
+<div class="step-content" id="tab3-step-2">
+  <h3>Computing db<sup>[l]</sup></h3>
+  <div class="formula-block purple" id="f-db"></div>
+  <div class="insight-box"><strong>Why sum over axis=1?</strong> b broadcasts across m examples, so its gradient is the sum of dZ across the example axis. keepdims=True keeps shape (n[l],1) not (n[l],).</div>
+  <div class="warn-box"><strong>Common mistake:</strong> forgetting keepdims=True gives shape (n[l],) instead of (n[l],1), causing shape mismatches in the update step.</div>
+  <pre><code>db = np.sum(dZ, axis=<span class="nm">1</span>, keepdims=<span class="kw">True</span>) / m</code></pre>
+</div>
+<div class="step-content" id="tab3-step-3">
+  <h3>Computing dA<sup>[l-1]</sup></h3>
+  <div class="formula-block amber" id="f-da"></div>
+  <div class="insight-box"><strong>Why W.T?</strong> In forward: Z[l] = W[l] @ A[l-1]. So ∂Z/∂A_prev = W[l].T. This is the gradient that flows backwards to layer l-1.</div>
+  <div class="dim-row"><div class="dim-box teal"><div class="label">W<sup>[l]</sup>.T</div><div class="shape">n[l-1] × n[l]</div></div><div class="op-sym">@</div><div class="dim-box coral"><div class="label">dZ<sup>[l]</sup></div><div class="shape">n[l] × m</div></div><div class="eq-sym">=</div><div class="dim-box amber"><div class="label">dA<sup>[l-1]</sup></div><div class="shape">n[l-1] × m</div></div><span class="check">✓ matches A[l-1]</span></div>
+  <pre><code>dA_prev = W.T <span class="kw">@</span> dZ   <span class="cm"># NOTE: no /m</span></code></pre>
+</div>
+<div class="step-content" id="tab3-step-4">
+  <h3>Complete linear_backward()</h3>
+  <pre><code><span class="kw">def</span> <span class="fn">linear_backward</span>(dZ, cache):
+    A_prev, W, b = cache
+    m = A_prev.shape[<span class="nm">1</span>]
+
+    dW      = dZ <span class="kw">@</span> A_prev.T / m
+    db      = np.sum(dZ, axis=<span class="nm">1</span>, keepdims=<span class="kw">True</span>) / m
+    dA_prev = W.T <span class="kw">@</span> dZ
+
+    <span class="kw">return</span> dA_prev, dW, db</code></pre>
+</div>
+</div>
+
+<!-- TAB 4: ACTIVATION BACKWARD -->
+<div class="tab-panel" id="tab-4">
+<p class="lead"><code>linear_activation_backward</code> wraps the activation step before calling <code>linear_backward</code>.</p>
+<div class="toggle-group">
+  <button class="toggle-opt active" onclick="setActivation('relu')">ReLU</button>
+  <button class="toggle-opt" onclick="setActivation('sigmoid')">Sigmoid</button>
+</div>
+<div id="act-relu">
+  <h3>Step 1 — dZ via relu_backward</h3>
+  <div class="formula-block teal" id="f-relu-dz"></div>
+  <div class="insight-box"><strong>What relu_backward does:</strong> ReLU is g(Z)=max(0,Z). Its derivative is 1 where Z&gt;0, 0 elsewhere. If a neuron was dead (Z≤0) in forward, its gradient is zero.</div>
+  <div class="formula-block gray" id="f-relu-elem"></div>
+</div>
+<div id="act-sigmoid" style="display:none;">
+  <h3>Step 1 — dZ via sigmoid_backward</h3>
+  <div class="formula-block coral" id="f-sig-dz"></div>
+  <div class="insight-box"><strong>What sigmoid_backward does:</strong> σ(Z) has derivative σ(Z)·(1−σ(Z)). We cached Z during forward so we recompute σ(Z) and multiply.</div>
+  <div class="formula-block gray" id="f-sig-deriv"></div>
+</div>
+<hr class="divider"/>
+<h3>Step 2 — Call linear_backward (same for both)</h3>
+<pre><code><span class="kw">def</span> <span class="fn">linear_activation_backward</span>(dA, cache, activation):
+    linear_cache, activation_cache = cache
+
+    <span class="kw">if</span> activation == <span class="st">"relu"</span>:
+        dZ = <span class="fn">relu_backward</span>(dA, activation_cache)
+    <span class="kw">elif</span> activation == <span class="st">"sigmoid"</span>:
+        dZ = <span class="fn">sigmoid_backward</span>(dA, activation_cache)
+
+    dA_prev, dW, db = <span class="fn">linear_backward</span>(dZ, linear_cache)
+    <span class="kw">return</span> dA_prev, dW, db</code></pre>
+</div>
+
+<!-- TAB 5: L-MODEL BACKWARD -->
+<div class="tab-panel" id="tab-5">
+<p class="lead">The full backward pass over all L layers. Click each layer card to see exactly what goes in and out.</p>
+<div class="note-box"><strong>Cache indexing:</strong> Layer l's cache is at <code>caches[l-1]</code>. Layer 3's cache = caches[2], layer 2's = caches[1], layer 1's = caches[0].</div>
+<div class="layer-row">
+  <div class="layer-tag" style="background:var(--coral-light);color:var(--coral-dark);" onclick="toggleLayer('lL')"><div style="font-size:14px;font-weight:600;">L=3</div><div style="font-size:10px;margin-top:2px;">sigmoid</div><div style="font-size:9px;margin-top:4px;color:var(--coral);">click</div></div>
+  <div class="layer-body">
+    <h4>Layer 3 — output layer (sigmoid)</h4>
+    <div class="row"><span class="shape-badge coral">dAL → input</span><span class="shape-badge">caches[L-1]=caches[2]</span><span class="shape-badge teal">→ grads["dA2","dW3","db3"]</span></div>
+    <div class="layer-detail" id="lL">
+      <div class="formula-block coral" id="f-dal"></div>
+      <pre><code>current_cache = caches[L-<span class="nm">1</span>]
+dA_prev, dW, db = <span class="fn">linear_activation_backward</span>(dAL, current_cache, <span class="st">"sigmoid"</span>)
+grads[<span class="st">"dA"</span>+str(L-<span class="nm">1</span>)] = dA_prev
+grads[<span class="st">"dW"</span>+str(L)]   = dW
+grads[<span class="st">"db"</span>+str(L)]   = db</code></pre>
+      <div class="warn-box"><strong>Index trap:</strong> caches[L-1] not caches[L]!</div>
+    </div>
+  </div>
+</div>
+<div class="layer-row">
+  <div class="layer-tag" style="background:var(--purple-light);color:var(--purple-dark);" onclick="toggleLayer('l2')"><div style="font-size:14px;font-weight:600;">l=1</div><div style="font-size:10px;margin-top:2px;">relu</div><div style="font-size:9px;margin-top:4px;color:var(--purple);">click</div></div>
+  <div class="layer-body">
+    <h4>Loop l=1 — processing hidden layer 2</h4>
+    <div class="row"><span class="shape-badge purple">grads["dA2"] → input</span><span class="shape-badge">caches[1]</span><span class="shape-badge teal">→ grads["dA1","dW2","db2"]</span></div>
+    <div class="layer-detail" id="l2">
+      <div class="note-box"><strong>Why dW[l+1] not dW[l]?</strong> At l=1, caches[1] holds layer 2's data. The weights we're differentiating are W[2]. So keys use l+1.</div>
+    </div>
+  </div>
+</div>
+<div class="layer-row">
+  <div class="layer-tag" style="background:var(--teal-light);color:var(--teal-dark);" onclick="toggleLayer('l1')"><div style="font-size:14px;font-weight:600;">l=0</div><div style="font-size:10px;margin-top:2px;">relu</div><div style="font-size:9px;margin-top:4px;color:var(--teal);">click</div></div>
+  <div class="layer-body">
+    <h4>Loop l=0 — processing hidden layer 1</h4>
+    <div class="row"><span class="shape-badge teal">grads["dA1"] → input</span><span class="shape-badge">caches[0]</span><span class="shape-badge amber">→ grads["dA0","dW1","db1"]</span></div>
+    <div class="layer-detail" id="l1"><p style="margin-top:10px;">Last iteration. caches[0] = layer 1's cache. A_prev inside is X.</p></div>
+  </div>
+</div>
+<hr class="divider"/>
+<h3>Full L_model_backward</h3>
+<pre><code><span class="kw">def</span> <span class="fn">L_model_backward</span>(AL, Y, caches):
+    grads = {}
+    L = len(caches)
+    Y = Y.reshape(AL.shape)
+
+    dAL = -(np.divide(Y, AL) - np.divide(<span class="nm">1</span>-Y, <span class="nm">1</span>-AL))
+
+    current_cache = caches[L-<span class="nm">1</span>]
+    dA_prev, dW, db = <span class="fn">linear_activation_backward</span>(dAL, current_cache, <span class="st">"sigmoid"</span>)
+    grads[<span class="st">"dA"</span>+str(L-<span class="nm">1</span>)] = dA_prev
+    grads[<span class="st">"dW"</span>+str(L)]   = dW
+    grads[<span class="st">"db"</span>+str(L)]   = db
+
+    <span class="kw">for</span> l <span class="kw">in</span> reversed(range(L-<span class="nm">1</span>)):
+        current_cache = caches[l]
+        dA_prev, dW, db = <span class="fn">linear_activation_backward</span>(
+            grads[<span class="st">"dA"</span>+str(l+<span class="nm">1</span>)], current_cache, <span class="st">"relu"</span>
+        )
+        grads[<span class="st">"dA"</span>+str(l)]   = dA_prev
+        grads[<span class="st">"dW"</span>+str(l+<span class="nm">1</span>)] = dW
+        grads[<span class="st">"db"</span>+str(l+<span class="nm">1</span>)] = db
+
+    <span class="kw">return</span> grads</code></pre>
+</div>
+
+<!-- TAB 6: INDEX CONFUSION -->
+<div class="tab-panel" id="tab-6">
+<p class="lead">Why does <code>caches[l]</code> hold layer l+1 data? Why does the loop variable not match the layer number?</p>
+<h2>The caches list vs layer numbers</h2>
+<div style="overflow-x:auto;margin:20px 0;"><table style="border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:13px;min-width:500px;"><thead><tr><th style="padding:10px 16px;background:var(--bg3);border:0.5px solid var(--border2);text-align:center;">Forward loop</th><th style="padding:10px 16px;background:var(--teal-light);border:0.5px solid var(--border2);text-align:center;color:var(--teal-dark);">Layer processed</th><th style="padding:10px 16px;background:var(--coral-light);border:0.5px solid var(--border2);text-align:center;color:var(--coral-dark);">caches index</th><th style="padding:10px 16px;background:var(--purple-light);border:0.5px solid var(--border2);text-align:center;color:var(--purple-dark);">Activation</th></tr></thead><tbody><tr><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;">for l=1</td><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;color:var(--teal-dark);">layer 1</td><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;color:var(--coral-dark);">caches[0]</td><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;">relu</td></tr><tr style="background:var(--bg2);"><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;">for l=2</td><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;color:var(--teal-dark);">layer 2</td><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;color:var(--coral-dark);">caches[1]</td><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;">relu</td></tr><tr><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;">after loop</td><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;color:var(--teal-dark);font-weight:600;">layer L=3</td><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;color:var(--coral-dark);font-weight:600;">caches[L-1]=caches[2]</td><td style="padding:10px 16px;border:0.5px solid var(--border);text-align:center;font-weight:600;">sigmoid</td></tr></tbody></table></div>
+<div class="insight-box"><strong>Rule:</strong> Layer number = cache index + 1.</div>
+<hr class="divider"/>
+<h2>The backward loop: why dW[l+1] not dW[l]?</h2>
+<div class="index-grid">
+  <div class="card-coral" style="padding:14px 16px;"><div class="section-label">LOOP l=1</div><div class="mono" style="font-size:13px;line-height:1.9;">caches[1] = layer <strong>2</strong>'s cache<br>→ store as dW<strong>[2]</strong> = dW[l+1]</div></div>
+  <div class="card-teal" style="padding:14px 16px;"><div class="section-label">LOOP l=0</div><div class="mono" style="font-size:13px;line-height:1.9;">caches[0] = layer <strong>1</strong>'s cache<br>→ store as dW<strong>[1]</strong> = dW[l+1]</div></div>
+</div>
+<div class="warn-box"><strong>Why l is always one less than the layer being processed:</strong> range(L-1) generates 0,1,…,L-2. At iteration l, caches[l] holds layer l+1's data.</div>
+</div>
+
+<!-- TAB 7: UPDATE PARAMETERS -->
+<div class="tab-panel" id="tab-7">
+<p class="lead">Once you have all gradients, parameter update is simple: subtract a small step in the gradient direction.</p>
+<div class="formula-block teal" id="f-update-W"></div>
+<div class="formula-block purple" id="f-update-b" style="margin-top:-4px;"></div>
+<div class="insight-box"><strong>Why subtract?</strong> Gradients point in the direction of steepest <em>increase</em> of J. We want to decrease J, so we subtract. α controls step size.</div>
+<h3>Interactive: see the update in action</h3>
+<div class="update-slider-wrap">
+  <span class="mono" style="min-width:20px;">α =</span>
+  <input type="range" min="0.001" max="0.5" step="0.001" value="0.1" id="lr-slider" oninput="updateLR(this.value)"/>
+  <span class="mono" id="lr-val" style="min-width:44px;">0.100</span>
+</div>
+<div class="update-preview" id="update-preview"></div>
+<hr class="divider"/>
+<pre><code><span class="kw">def</span> <span class="fn">update_parameters</span>(params, grads, learning_rate):
+    parameters = copy.deepcopy(params)
+    L = len(parameters) // <span class="nm">2</span>
+
+    <span class="kw">for</span> l <span class="kw">in</span> range(L):
+        parameters[<span class="st">"W"</span>+str(l+<span class="nm">1</span>)] -= learning_rate * grads[<span class="st">"dW"</span>+str(l+<span class="nm">1</span>)]
+        parameters[<span class="st">"b"</span>+str(l+<span class="nm">1</span>)] -= learning_rate * grads[<span class="st">"db"</span>+str(l+<span class="nm">1</span>)]
+
+    <span class="kw">return</span> parameters</code></pre>
+</div>
+
+</div><!-- /page -->
+
+<script>
+window.addEventListener('load', () => {
+  function k(id, latex, display) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    katex.render(latex, el, { throwOnError: false, displayMode: !!display });
+  }
+  k('f-setup', 'dZ^{[l]} \\in \\mathbb{R}^{n^{[l]} \\times m},\\quad A^{[l-1]} \\in \\mathbb{R}^{n^{[l-1]} \\times m},\\quad W^{[l]} \\in \\mathbb{R}^{n^{[l]} \\times n^{[l-1]}}', true);
+  k('f-dw',    'dW^{[l]} = \\dfrac{1}{m}\\,dZ^{[l]} A^{[l-1]\\,T}', true);
+  k('f-db',    'db^{[l]} = \\dfrac{1}{m}\\sum_{i=1}^{m} dZ^{[l](i)}', true);
+  k('f-da',    'dA^{[l-1]} = W^{[l]\\,T}\\, dZ^{[l]}', true);
+  k('f-relu-dz',   'dZ^{[l]} = dA^{[l]} * g\'(Z^{[l]}) \\quad\\text{where }g\'(z)=\\mathbf{1}[z>0]', true);
+  k('f-relu-elem', 'dZ^{[l]}_{ij} = dA^{[l]}_{ij}\\cdot\\begin{cases}1&Z^{[l]}_{ij}>0\\\\0&Z^{[l]}_{ij}\\leq0\\end{cases}', true);
+  k('f-sig-dz',    'dZ^{[l]} = dA^{[l]} * \\sigma(Z^{[l]})\\cdot\\bigl(1-\\sigma(Z^{[l]})\\bigr)', true);
+  k('f-sig-deriv', "\\sigma'(z)=\\sigma(z)(1-\\sigma(z))", true);
+  k('f-dal', 'dA^{[L]} = -\\left(\\dfrac{Y}{A^{[L]}} - \\dfrac{1-Y}{1-A^{[L]}}\\right)', true);
+  k('f-update-W', 'W^{[l]} := W^{[l]} - \\alpha\\cdot dW^{[l]}', true);
+  k('f-update-b', 'b^{[l]} := b^{[l]} - \\alpha\\cdot db^{[l]}', true);
+  function ki(id, latex) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    katex.render(latex, el, { throwOnError: false, displayMode: false });
+  }
+  ki('cs-w-init',  'W^{[l]} = \\texttt{np.random.randn}(n^{[l]},n^{[l-1]})\\times 0.01');
+  ki('cs-b-init',  'b^{[l]} = \\texttt{np.zeros}((n^{[l]},1))');
+  ki('cs-z-fwd',   'Z^{[l]} = W^{[l]} A^{[l-1]} + b^{[l]}');
+  ki('cs-a-relu',  'A^{[l]} = \\max(0,\\,Z^{[l]})');
+  ki('cs-a-sig',   'A^{[L]} = \\sigma(Z^{[L]})');
+  ki('cs-cost',    'J = -\\dfrac{1}{m}\\sum_{i=1}^{m}\\!\\bigl[y^{(i)}\\log a^{[L](i)}+(1-y^{(i)})\\log(1-a^{[L](i)})\\bigr]');
+  ki('cs-dal',     'dA^{[L]} = -\\bigl(\\tfrac{Y}{A^{[L]}}-\\tfrac{1-Y}{1-A^{[L]}}\\bigr)');
+  ki('cs-relu-bwd','dZ^{[l]} = dA^{[l]}*\\mathbf{1}[Z^{[l]}>0]');
+  ki('cs-sig-bwd', 'dZ^{[l]} = dA^{[l]}*\\sigma(Z^{[l]})(1-\\sigma(Z^{[l]}))');
+  ki('cs-dw',      'dW^{[l]} = \\dfrac{1}{m}\\,dZ^{[l]} A^{[l-1]\\,T}');
+  ki('cs-db',      'db^{[l]} = \\dfrac{1}{m}\\sum_{i=1}^{m} dZ^{[l](i)}');
+  ki('cs-daprev',  'dA^{[l-1]} = W^{[l]\\,T} dZ^{[l]}');
+  ki('cs-upd-w',   'W^{[l]} := W^{[l]} - \\alpha\\,dW^{[l]}');
+  ki('cs-upd-b',   'b^{[l]} := b^{[l]} - \\alpha\\,db^{[l]}');
+  const rows = [
+    ['X = A[0]','(n[0], m)','(2, 2)','input'],
+    ['W[l]','(n[l], n[l-1])','W1:(3,2) W2:(2,3) W3:(1,2)','fwd+bwd'],
+    ['b[l]','(n[l], 1)','b1:(3,1) b2:(2,1) b3:(1,1)','fwd+bwd'],
+    ['Z[l]','(n[l], m)','Z1:(3,2) Z2:(2,2) Z3:(1,2)','fwd (cached)'],
+    ['A[l]','(n[l], m)','A1:(3,2) A2:(2,2) AL:(1,2)','fwd'],
+    ['Y','(n[L], m)','(1, 2)','label'],
+    ['dAL','(n[L], m)','(1, 2)','bwd seed'],
+    ['dZ[l]','(n[l], m)','same as Z[l]','bwd'],
+    ['dW[l]','(n[l], n[l-1])','same as W[l]','bwd'],
+    ['db[l]','(n[l], 1)','same as b[l]','bwd'],
+    ['dA[l-1]','(n[l-1], m)','same as A[l-1]','bwd → flows left'],
+  ];
+  const tbody = document.getElementById('shape-table-body');
+  if (tbody) rows.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    if (i % 2 === 1) tr.style.background = 'var(--bg2)';
+    tr.innerHTML = `<td style="padding:9px 14px;border:0.5px solid var(--border);color:var(--coral-dark);font-weight:500;">${r[0]}</td><td style="padding:9px 14px;border:0.5px solid var(--border);color:var(--teal-dark);">${r[1]}</td><td style="padding:9px 14px;border:0.5px solid var(--border);color:var(--text2);">${r[2]}</td><td style="padding:9px 14px;border:0.5px solid var(--border);color:var(--text3);">${r[3]}</td>`;
+    tbody.appendChild(tr);
+  });
+  updateLR(0.1);
+});
+
+function switchTab(idx) {
+  document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+
+const stepperState = { 3: 0 };
+const stepperMax   = { 3: 4 };
+
+function updateStepperUI(tab) {
+  const cur = stepperState[tab], max = stepperMax[tab];
+  const ctr = document.getElementById('ctr-'+tab);
+  if (ctr) ctr.textContent = (cur+1)+' / '+(max+1);
+  document.querySelectorAll('[id^="tab'+tab+'-step-"]').forEach((el,i) => el.classList.toggle('active', i===cur));
+  document.querySelectorAll('#tab-'+tab+' .step-dot').forEach((d,i) => { d.classList.toggle('active', i===cur); d.classList.toggle('done', i<cur); });
+  const pb = document.getElementById('prev-'+tab);
+  const nb = document.getElementById('next-'+tab);
+  if (pb) pb.disabled = cur===0;
+  if (nb) nb.disabled = cur===max;
+}
+
+function goStep(tab, step) { stepperState[tab]=step; updateStepperUI(tab); }
+function nextStep(tab) { if(stepperState[tab]<stepperMax[tab]){stepperState[tab]++;updateStepperUI(tab);} }
+function prevStep(tab) { if(stepperState[tab]>0){stepperState[tab]--;updateStepperUI(tab);} }
+
+function setActivation(type) {
+  document.getElementById('act-relu').style.display    = type==='relu'    ? 'block' : 'none';
+  document.getElementById('act-sigmoid').style.display = type==='sigmoid' ? 'block' : 'none';
+  document.querySelectorAll('.toggle-opt').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase()===type));
+}
+
+function toggleLayer(id) { document.getElementById(id).classList.toggle('open'); }
+
+function updateLR(val) {
+  const alpha = parseFloat(val).toFixed(3);
+  const lv = document.getElementById('lr-val');
+  if (lv) lv.textContent = alpha;
+  const W_ex=0.52, dW_ex=0.14, b_ex=-0.08, db_ex=0.06;
+  const newW=(W_ex-alpha*dW_ex).toFixed(4);
+  const newB=(b_ex-alpha*db_ex).toFixed(4);
+  const prev=document.getElementById('update-preview');
+  if (prev) prev.innerHTML=`<div style="line-height:2.0;font-family:'IBM Plex Mono',monospace;font-size:13px;"><span style="color:var(--text3)">W[1][0,0]=${W_ex}  dW[1][0,0]=${dW_ex}  b[1][0]=${b_ex}  db[1][0]=${db_ex}</span><br>W[1][0,0] = ${W_ex} − ${alpha} × ${dW_ex} = <strong style="color:var(--teal)">${newW}</strong><br>b[1][0]   = ${b_ex} − ${alpha} × ${db_ex} &nbsp;= <strong style="color:var(--purple)">${newB}</strong></div>`;
+}
+</script>
+</body>
+</html>

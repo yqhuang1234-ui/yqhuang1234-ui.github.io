@@ -1,0 +1,1380 @@
+---
+layout: false
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Backpropagation — Math & Intuition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Nunito+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<style>
+:root {
+  --bg:        #0d0d10;
+  --bg2:       #141418;
+  --bg3:       #1c1c22;
+  --bg4:       #22222a;
+  --border:    rgba(255,255,255,0.06);
+  --border2:   rgba(255,255,255,0.12);
+  --text:      #e8e6e2;
+  --text2:     #989690;
+  --text3:     #5a5856;
+  --gold:      #d4a84b;
+  --gold-dim:  rgba(212,168,75,0.15);
+  --gold-bd:   rgba(212,168,75,0.3);
+  --fwd:       #4a9eff;
+  --fwd-dim:   rgba(74,158,255,0.12);
+  --fwd-bd:    rgba(74,158,255,0.3);
+  --bwd:       #ff6b6b;
+  --bwd-dim:   rgba(255,107,107,0.12);
+  --bwd-bd:    rgba(255,107,107,0.3);
+  --green:     #4ecb8d;
+  --green-dim: rgba(78,203,141,0.12);
+  --green-bd:  rgba(78,203,141,0.3);
+  --purple:    #a78bfa;
+  --purple-dim:rgba(167,139,250,0.12);
+  --purple-bd: rgba(167,139,250,0.3);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:'Nunito Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.7;
+}
+
+/* ─── HEADER ─── */
+.hero{
+  padding:52px 60px 44px;
+  border-bottom:1px solid var(--border);
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:-60px;right:-60px;
+  width:400px;height:400px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(212,168,75,0.06) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:var(--gold);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.hero h1{
+  font-family:'Lora',serif;
+  font-size:32px;
+  font-weight:400;
+  color:var(--text);
+  margin-bottom:8px;
+  letter-spacing:-0.5px;
+}
+.hero p{
+  font-size:15px;
+  color:var(--text2);
+  max-width:600px;
+  font-weight:300;
+}
+
+/* ─── NAV STEPPER ─── */
+.stepper{
+  display:flex;
+  gap:0;
+  border-bottom:1px solid var(--border);
+  background:var(--bg2);
+  overflow-x:auto;
+  padding:0 40px;
+}
+.step-tab{
+  padding:14px 20px;
+  font-size:13px;
+  font-weight:400;
+  color:var(--text3);
+  cursor:pointer;
+  border:none;
+  background:transparent;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  transition:all 0.2s;
+  font-family:'Nunito Sans',sans-serif;
+  position:relative;
+}
+.step-tab:hover{color:var(--text2);}
+.step-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.step-tab .tab-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--text3);
+  display:block;
+  margin-bottom:2px;
+}
+.step-tab.active .tab-num{color:var(--gold);opacity:0.7;}
+
+/* ─── MAIN CONTENT ─── */
+.page{display:none;}
+.page.active{display:block;}
+
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 400px;
+  min-height:calc(100vh - 160px);
+}
+.main-col{padding:36px 48px;border-right:1px solid var(--border);}
+.side-col{padding:28px 28px;background:var(--bg2);}
+
+/* ─── SECTION HEADERS ─── */
+.section-title{
+  font-family:'Lora',serif;
+  font-size:22px;
+  font-weight:400;
+  color:var(--text);
+  margin-bottom:6px;
+}
+.section-sub{
+  font-size:14px;
+  color:var(--text2);
+  margin-bottom:24px;
+  font-weight:300;
+}
+
+/* ─── PROSE ─── */
+.prose{
+  font-size:14px;
+  color:var(--text2);
+  line-height:1.8;
+  margin-bottom:16px;
+  font-weight:300;
+}
+.prose strong{color:var(--text);font-weight:600;}
+.prose em{color:var(--gold);font-style:italic;}
+.prose code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  background:var(--bg3);
+  border-radius:3px;
+  padding:1px 5px;
+  color:var(--gold);
+}
+
+/* ─── FORMULA BLOCKS ─── */
+.formula-block{
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:16px 20px;
+  margin:12px 0;
+  overflow-x:auto;
+}
+.formula-block.fwd{border-left:3px solid var(--fwd);}
+.formula-block.bwd{border-left:3px solid var(--bwd);}
+.formula-block.chain{border-left:3px solid var(--gold);}
+.formula-block.green{border-left:3px solid var(--green);}
+.formula-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:8px;
+}
+.formula-content{font-size:15px;overflow-x:auto;}
+.katex{font-size:1em;}
+
+/* ─── INSIGHT BOXES ─── */
+.insight{
+  border-radius:8px;
+  padding:14px 16px;
+  margin:12px 0;
+  font-size:13px;
+  line-height:1.7;
+}
+.insight.gold  {background:var(--gold-dim);  border:1px solid var(--gold-bd);  color:#d4b870;}
+.insight.blue  {background:var(--fwd-dim);   border:1px solid var(--fwd-bd);   color:#7ab8ff;}
+.insight.red   {background:var(--bwd-dim);   border:1px solid var(--bwd-bd);   color:#ff9090;}
+.insight.green {background:var(--green-dim); border:1px solid var(--green-bd); color:#70d8a0;}
+.insight.purple{background:var(--purple-dim);border:1px solid var(--purple-bd);color:#c0aaff;}
+.insight strong{color:inherit;font-weight:700;}
+
+/* ─── NETWORK SVG CANVAS ─── */
+.net-wrap{
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  border-radius:12px;
+  padding:16px;
+  margin:16px 0;
+}
+canvas.net-canvas{display:block;width:100%;border-radius:6px;}
+
+/* ─── COMPUTATION GRAPH ─── */
+.comp-graph-wrap{
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  border-radius:12px;
+  padding:12px;
+  margin:12px 0;
+}
+
+/* ─── STEP CARDS ─── */
+.step-cards{display:flex;flex-direction:column;gap:10px;margin:16px 0;}
+.step-card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 16px;
+  display:grid;
+  grid-template-columns:32px 1fr;
+  gap:12px;
+  align-items:start;
+}
+.step-card-num{
+  width:32px;height:32px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  font-weight:500;
+  flex-shrink:0;
+}
+.num-fwd{background:var(--fwd-dim);color:var(--fwd);border:1px solid var(--fwd-bd);}
+.num-bwd{background:var(--bwd-dim);color:var(--bwd);border:1px solid var(--bwd-bd);}
+.num-gold{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-bd);}
+.step-card-body .card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.step-card-body .card-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.step-card-body .card-text code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  background:var(--bg4);
+  border-radius:3px;
+  padding:1px 4px;
+  color:var(--gold);
+}
+
+/* ─── CONTROLS ─── */
+.ctrl-bar{
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.ctrl-btn{
+  padding:7px 16px;
+  border-radius:6px;
+  border:1px solid var(--border2);
+  background:transparent;
+  color:var(--text2);
+  font-family:'Nunito Sans',sans-serif;
+  font-size:13px;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.ctrl-btn:hover{background:var(--bg3);color:var(--text);}
+.ctrl-btn.primary{background:var(--gold-dim);color:var(--gold);border-color:var(--gold-bd);}
+.ctrl-btn.primary:hover{background:rgba(212,168,75,0.25);}
+
+.slider-row{
+  display:flex;align-items:center;gap:10px;
+  font-size:13px;color:var(--text2);
+}
+.slider-row input[type=range]{
+  flex:1;
+  -webkit-appearance:none;
+  height:3px;
+  border-radius:2px;
+  background:var(--border2);
+  outline:none;
+}
+.slider-row input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:16px;height:16px;
+  border-radius:50%;
+  background:var(--gold);
+  cursor:pointer;
+  border:2px solid var(--bg);
+}
+.slider-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  color:var(--gold);
+  min-width:40px;text-align:right;
+}
+
+/* ─── LIVE NUMBERS ─── */
+.live-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:12px 0;
+}
+.live-card{
+  background:var(--bg4);
+  border-radius:8px;
+  padding:10px 12px;
+  border:1px solid var(--border);
+}
+.live-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin-bottom:4px;
+}
+.live-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:16px;
+  font-weight:500;
+  color:var(--text);
+}
+.live-val.red{color:var(--bwd);}
+.live-val.blue{color:var(--fwd);}
+.live-val.green{color:var(--green);}
+.live-val.gold{color:var(--gold);}
+
+/* ─── CHAIN RULE VISUAL ─── */
+.chain-visual{
+  display:flex;
+  align-items:center;
+  gap:0;
+  margin:16px 0;
+  flex-wrap:wrap;
+  gap:2px;
+}
+.chain-node{
+  padding:10px 14px;
+  border-radius:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  text-align:center;
+  flex:1;
+  min-width:80px;
+}
+.chain-arrow{
+  font-size:18px;
+  color:var(--text3);
+  padding:0 4px;
+  flex-shrink:0;
+}
+.cn-gold  {background:var(--gold-dim);  color:var(--gold);  border:1px solid var(--gold-bd);}
+.cn-blue  {background:var(--fwd-dim);   color:var(--fwd);   border:1px solid var(--fwd-bd);}
+.cn-red   {background:var(--bwd-dim);   color:var(--bwd);   border:1px solid var(--bwd-bd);}
+.cn-green {background:var(--green-dim); color:var(--green); border:1px solid var(--green-bd);}
+.cn-purple{background:var(--purple-dim);color:var(--purple);border:1px solid var(--purple-bd);}
+
+/* ─── SIDEBAR CARDS ─── */
+.side-card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px 18px;
+  margin-bottom:14px;
+}
+.side-card h4{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:10px;
+}
+.side-card p{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px;}
+.side-card p:last-child{margin-bottom:0;}
+.side-card p strong{color:var(--text);font-weight:600;}
+.side-card p code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  background:var(--bg4);
+  border-radius:3px;
+  padding:1px 4px;
+  color:var(--gold);
+}
+
+/* ─── GRADIENT DESCENT CANVAS ─── */
+.gd-wrap{
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  border-radius:12px;
+  overflow:hidden;
+  margin:12px 0;
+}
+
+/* ─── ANNOTATED TABLE ─── */
+.ann-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;}
+.ann-table th{
+  text-align:left;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  padding:6px 10px;
+  border-bottom:1px solid var(--border2);
+}
+.ann-table td{
+  padding:10px 10px;
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
+  color:var(--text2);
+  line-height:1.5;
+}
+.ann-table td:first-child{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  font-weight:500;
+  color:var(--text);
+  white-space:nowrap;
+}
+.ann-table td strong{color:var(--text);font-weight:600;}
+.tag{
+  display:inline-block;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  padding:1px 6px;
+  border-radius:4px;
+  margin-right:4px;
+}
+.tag-fwd{background:var(--fwd-dim);color:var(--fwd);}
+.tag-bwd{background:var(--bwd-dim);color:var(--bwd);}
+
+@media(max-width:900px){
+  .two-col{grid-template-columns:1fr;}
+  .side-col{border-top:1px solid var(--border);}
+  .hero{padding:32px 24px;}
+  .main-col{padding:24px 20px;}
+  .stepper{padding:0 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <div class="hero-tag">Deep Learning · Intuition + Math</div>
+  <h1>Backpropagation</h1>
+  <p>From the intuition of "blame assignment" to the full chain rule derivation — step by step, with live numbers and visualizations</p>
+</div>
+
+<!-- ─── NAV ─── -->
+<div class="stepper">
+  <button class="step-tab active" onclick="goPage(0,this)">
+    <span class="tab-num">01</span>The big idea
+  </button>
+  <button class="step-tab" onclick="goPage(1,this)">
+    <span class="tab-num">02</span>Chain rule
+  </button>
+  <button class="step-tab" onclick="goPage(2,this)">
+    <span class="tab-num">03</span>Forward pass
+  </button>
+  <button class="step-tab" onclick="goPage(3,this)">
+    <span class="tab-num">04</span>Backward pass
+  </button>
+  <button class="step-tab" onclick="goPage(4,this)">
+    <span class="tab-num">05</span>All 6 equations
+  </button>
+  <button class="step-tab" onclick="goPage(5,this)">
+    <span class="tab-num">06</span>Live playground
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════ PAGE 0: BIG IDEA ═══ -->
+<div class="page active" id="page-0">
+<div class="two-col">
+<div class="main-col">
+  <div class="section-title">The big idea: blame assignment</div>
+  <div class="section-sub">Backprop answers one question — which weights caused the error, and by how much?</div>
+
+  <p class="prose">Imagine you made a bad prediction. The loss is large. You need to update your weights. But there are hundreds of thousands of them — <strong>which ones are responsible?</strong></p>
+
+  <p class="prose">Backpropagation is simply the systematic answer. It traces the error <em>backwards</em> through the network, assigning a "blame score" (gradient) to every single weight. The bigger the gradient, the more that weight contributed to the error, and the more we should adjust it.</p>
+
+  <div class="insight gold">
+    <strong>Core intuition:</strong> The gradient dL/dW tells you — "if I increase W by a tiny amount ε, how much does the loss increase?" A large positive gradient means that weight is making things worse. We subtract it (gradient descent) to make things better.
+  </div>
+
+  <div class="net-wrap">
+    <canvas id="canvas-intro" class="net-canvas" height="200"></canvas>
+  </div>
+  <div class="insight blue" style="font-size:12px;">
+    The <span style="color:var(--fwd);font-weight:700;">blue arrows</span> show the forward pass — data flows left to right, building a prediction.
+    The <span style="color:var(--bwd);font-weight:700;">red arrows</span> show backprop — the error gradient flows right to left, blaming each weight.
+  </div>
+
+  <p class="prose" style="margin-top:16px;">Think of it like a chain of dominoes. When the last domino (output) falls the wrong way, you trace back through each domino to figure out which earlier ones were misaligned. Each domino's contribution is its <strong>local derivative</strong> — the chain rule multiplies them all together.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num num-fwd">1</div>
+      <div class="step-card-body">
+        <div class="card-title">Forward pass — make a prediction</div>
+        <div class="card-text">Feed input X through the network layer by layer. Store every intermediate value Z and A — you'll need them in the backward pass.</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num num-bwd">2</div>
+      <div class="step-card-body">
+        <div class="card-title">Compute loss — measure the error</div>
+        <div class="card-text">Compare prediction Ŷ to true label Y. Loss L is a single number measuring how wrong you are. Backprop's entire job is to reduce L.</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num num-bwd">3</div>
+      <div class="step-card-body">
+        <div class="card-title">Backward pass — trace the blame</div>
+        <div class="card-text">Use the chain rule to compute <code>dL/dW</code> for every weight W. This tells each weight "how much did you contribute to the error?"</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num num-gold">4</div>
+      <div class="step-card-body">
+        <div class="card-title">Gradient descent — fix the weights</div>
+        <div class="card-text">Update: <code>W := W − α · dL/dW</code>. Subtract the blame. Repeat thousands of times until the loss is small.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="side-col">
+  <div class="side-card">
+    <h4>Why not just try all weight combinations?</h4>
+    <p>A network with 1 million parameters has 10^1,000,000 possible combinations to try. Backprop computes the exact direction to move every weight simultaneously in one backward pass. It's the only practical way to train deep networks.</p>
+  </div>
+  <div class="side-card">
+    <h4>What "gradient" means geometrically</h4>
+    <p>The loss surface is a high-dimensional landscape. The gradient is a vector pointing <strong>uphill</strong> — in the direction of steepest increase. We <strong>subtract</strong> it to go downhill (minimize loss).</p>
+    <p>The learning rate α controls <strong>step size</strong>: too large → overshoot the valley, too small → takes forever.</p>
+  </div>
+  <div class="side-card">
+    <h4>Notation reminder</h4>
+    <p><code>dL/dW</code> = "derivative of Loss with respect to W"</p>
+    <p>In code we write <code>dW</code> as shorthand for <code>dL/dW</code>.</p>
+    <p>Same for <code>dZ</code> = <code>dL/dZ</code>, <code>dA</code> = <code>dL/dA</code>. The "dL/" part is always implied.</p>
+  </div>
+  <div class="side-card">
+    <h4>Key prerequisite: calculus chain rule</h4>
+    <p>If <code>L = f(g(x))</code>, then <code>dL/dx = (dL/dg) · (dg/dx)</code>.</p>
+    <p>Backprop is just this rule applied many times through many layers. Head to the Chain Rule tab to see it visually.</p>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════ PAGE 1: CHAIN RULE ═══ -->
+<div class="page" id="page-1">
+<div class="two-col">
+<div class="main-col">
+  <div class="section-title">The chain rule — backprop's engine</div>
+  <div class="section-sub">Every gradient in backprop is a product of local derivatives chained together</div>
+
+  <p class="prose">Suppose you have a simple chain: <strong>x → z → a → L</strong>. Each arrow is a function. To find how x affects L, you multiply the local derivatives along the chain.</p>
+
+  <div class="formula-block chain">
+    <div class="formula-label">Chain rule — scalar version</div>
+    <div class="formula-content" id="f-chain1"></div>
+  </div>
+
+  <div class="chain-visual">
+    <div class="chain-node cn-blue">x<br><small>input</small></div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-node cn-gold">z = wx+b<br><small>linear</small></div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-node cn-purple">a = g(z)<br><small>activation</small></div>
+    <div class="chain-arrow">→</div>
+    <div class="chain-node cn-red">L<br><small>loss</small></div>
+  </div>
+
+  <div class="formula-block chain">
+    <div class="formula-label">Unrolled chain rule for one neuron</div>
+    <div class="formula-content" id="f-chain2"></div>
+  </div>
+
+  <div class="insight gold">
+    <strong>The key insight:</strong> each factor is a <em>local derivative</em> — it only involves variables directly connected to that node. Backprop computes them one at a time and multiplies them as it walks backwards. No single step requires knowing the whole network.
+  </div>
+
+  <p class="prose" style="margin-top:16px;">Let's work through each local derivative concretely:</p>
+
+  <div class="formula-block bwd">
+    <div class="formula-label">Local derivative 1 — loss w.r.t. output a (for binary cross-entropy)</div>
+    <div class="formula-content" id="f-local1"></div>
+  </div>
+  <div class="prose" style="font-size:13px;">This is the "starting gradient" — how much the loss changes when the output changes. Large when prediction is wrong (far from y), near zero when correct.</div>
+
+  <div class="formula-block bwd">
+    <div class="formula-label">Local derivative 2 — activation w.r.t. pre-activation z (for sigmoid)</div>
+    <div class="formula-content" id="f-local2"></div>
+  </div>
+  <div class="prose" style="font-size:13px;">This is the activation function's derivative. For ReLU it's 1 (z>0) or 0 (z≤0). For sigmoid it's σ(1−σ). <strong>This is why dying neurons have zero gradient — this factor kills the whole chain.</strong></div>
+
+  <div class="formula-block bwd">
+    <div class="formula-label">Local derivative 3 — pre-activation z w.r.t. weight w</div>
+    <div class="formula-content" id="f-local3"></div>
+  </div>
+  <div class="prose" style="font-size:13px;">Since z = wx + b, dz/dw = x. <strong>This is why inputs that are zero produce zero weight gradients</strong> — even if the error is large, the weight can't be blamed if its input was zero.</div>
+
+  <div class="insight blue">
+    <strong>Putting it together:</strong> dL/dw = (dL/da) · (da/dz) · (dz/dw) = (loss sensitivity) × (activation slope) × (input value). Every backprop formula is just this pattern expanded to matrices.
+  </div>
+
+  <p class="prose" style="margin-top:16px;"><strong>Why transpose in the matrix version?</strong></p>
+  <p class="prose">In the scalar case we just multiply derivatives. In the matrix case, the chain rule involves the <em>Jacobian</em> — a matrix of all partial derivatives. Working it out, the Jacobian of the linear transformation z = Wa is Wᵀ. So when we propagate gradients backward through a linear layer, we multiply by Wᵀ instead of W.</p>
+
+  <div class="formula-block chain">
+    <div class="formula-label">Matrix chain rule — propagating gradient through a linear layer</div>
+    <div class="formula-content" id="f-matrix-chain"></div>
+  </div>
+</div>
+<div class="side-col">
+  <div class="side-card">
+    <h4>Worked scalar example</h4>
+    <p>Let: <code>w=0.5, x=2, b=0, y=1</code></p>
+    <p>Forward: <code>z = 0.5×2 = 1.0</code><br>
+    <code>a = σ(1.0) = 0.731</code><br>
+    <code>L = −log(0.731) = 0.313</code></p>
+    <p>Backward:<br>
+    <code>dL/da = −1/0.731 = −1.368</code><br>
+    <code>da/dz = 0.731×(1−0.731) = 0.197</code><br>
+    <code>dz/dw = x = 2</code><br>
+    <code>dL/dw = −1.368 × 0.197 × 2 = −0.539</code></p>
+    <p>Update: <code>w := 0.5 − 0.1×(−0.539) = 0.554</code></p>
+    <p><strong>w increased</strong> because increasing w makes the prediction closer to 1 (=y).</p>
+  </div>
+  <div class="side-card">
+    <h4>Why does dL/dw = dZ/dw · dL/dZ?</h4>
+    <p>Because z = wx+b, we have ∂z/∂w = x. And dL/dZ is the gradient coming back from the next step. Multiplying them gives: "how much does L change when w changes, via the path through z?"</p>
+    <p>Every weight gradient follows this same pattern — it's always (incoming gradient) × (local input).</p>
+  </div>
+  <div class="side-card">
+    <h4>Intuition for Wᵀ in backprop</h4>
+    <p>Forward: <code>z = Wa</code> — W transforms the space from input-dim to output-dim.</p>
+    <p>Backward: we need to transform the gradient from output-dim back to input-dim. The inverse of a linear map uses the transpose: <code>dA = Wᵀ · dZ</code>.</p>
+    <p>Think of it as "undoing" the forward transformation to route the gradient back to where it came from.</p>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════ PAGE 2: FORWARD ═══ -->
+<div class="page" id="page-2">
+<div class="two-col">
+<div class="main-col">
+  <div class="section-title">Forward pass — building the computation graph</div>
+  <div class="section-sub">Every value you compute and store will be needed in the backward pass</div>
+
+  <p class="prose">The forward pass does two things: produces a prediction, and <strong>caches intermediate values</strong> (Z⁽ˡ⁾, A⁽ˡ⁾) that backprop will reuse. Think of it as leaving a trail of breadcrumbs.</p>
+
+  <div class="comp-graph-wrap">
+    <canvas id="canvas-fwd" class="net-canvas" height="240"></canvas>
+  </div>
+
+  <table class="ann-table">
+    <thead><tr><th>Step</th><th>Formula</th><th>What it computes & why</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="tag tag-fwd">F1</span> Layer ℓ pre-activation</td>
+        <td id="t-f1"></td>
+        <td><strong>Weighted sum.</strong> Each neuron takes a dot product of its weights with the previous layer's activations, plus a bias. Result Z⁽ˡ⁾ is (n⁽ˡ⁾, m) — one number per neuron per example.</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-fwd">F2</span> Layer ℓ activation</td>
+        <td id="t-f2"></td>
+        <td><strong>Non-linearity.</strong> Applied element-wise — shape unchanged. Without this, stacking layers = one big linear layer = no expressive power.</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-fwd">F3</span> Output activation</td>
+        <td id="t-f3"></td>
+        <td><strong>Sigmoid for binary classification.</strong> Squashes to (0,1) so output = probability. For multi-class, use softmax instead.</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-fwd">F4</span> Loss</td>
+        <td id="t-f4"></td>
+        <td><strong>Binary cross-entropy.</strong> Measures how wrong the prediction is. −log(ŷ) when y=1 (want ŷ→1), −log(1−ŷ) when y=0 (want ŷ→0). Averaged over m examples.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="insight blue">
+    <strong>Cache everything!</strong> During backprop, computing dW⁽ˡ⁾ requires A⁽ˡ⁻¹⁾ (stored from forward pass). Computing dZ⁽ˡ⁾ requires Z⁽ˡ⁾ (to evaluate g'). If you don't cache them, you'd have to recompute them — doubling your work.
+  </div>
+</div>
+<div class="side-col">
+  <div class="side-card">
+    <h4>Why store Z and A separately?</h4>
+    <p>You need <strong>Z</strong> to compute g'(Z) in the backward pass (the activation derivative needs the pre-activation value).</p>
+    <p>You need <strong>A</strong> from layer ℓ−1 to compute dW⁽ˡ⁾ (it's the "input" to that layer's weights).</p>
+    <p>Storing both doubles memory usage but avoids expensive recomputation.</p>
+  </div>
+  <div class="side-card">
+    <h4>Why binary cross-entropy?</h4>
+    <p>Cross-entropy comes from maximum likelihood estimation (MLE). If we assume outputs are Bernoulli probabilities, the log-likelihood of the training data under the model is exactly −J (the negative loss). Maximizing likelihood = minimizing cross-entropy loss.</p>
+    <p>It's also <strong>convex in the output</strong> (unlike squared error with sigmoid), making optimization well-behaved.</p>
+  </div>
+  <div class="side-card">
+    <h4>What if we used squared error instead?</h4>
+    <p>With sigmoid + squared error, the loss surface becomes non-convex and gradients near saturation become extremely small (the sigmoid derivative multiplies in). Cross-entropy avoids this — its gradient <code>ŷ − y</code> is large even when the sigmoid is saturated.</p>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════ PAGE 3: BACKWARD ═══ -->
+<div class="page" id="page-3">
+<div class="two-col">
+<div class="main-col">
+  <div class="section-title">Backward pass — tracing the gradient</div>
+  <div class="section-sub">The error flows right to left, each layer computing its own gradient using the chain rule</div>
+
+  <p class="prose">Backprop starts at the output and works backwards. At each layer it asks: <em>"given the gradient coming from the right, what is the gradient for my weights, my bias, and what gradient do I pass to the left?"</em></p>
+
+  <div class="comp-graph-wrap">
+    <canvas id="canvas-bwd" class="net-canvas" height="240"></canvas>
+  </div>
+
+  <p class="prose"><strong>The key backward pass pattern</strong> — every layer does exactly three things:</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num num-bwd">①</div>
+      <div class="step-card-body">
+        <div class="card-title">Compute dZ — pass gradient through activation</div>
+        <div class="card-text">
+          <code>dZ⁽ˡ⁾ = dA⁽ˡ⁾ ∗ g'(Z⁽ˡ⁾)</code><br>
+          Element-wise multiply (Hadamard product). The activation's local derivative g'(Z) "gates" how much of the incoming gradient passes through. A saturated sigmoid → g'≈0 → gradient killed.
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num num-bwd">②</div>
+      <div class="step-card-body">
+        <div class="card-title">Compute dW and db — gradients for this layer's parameters</div>
+        <div class="card-text">
+          <code>dW⁽ˡ⁾ = (1/m) · dZ⁽ˡ⁾ · A⁽ˡ⁻¹⁾ᵀ</code><br>
+          <code>db⁽ˡ⁾ = (1/m) · sum(dZ⁽ˡ⁾, axis=1)</code><br>
+          dW is the gradient used for gradient descent. The 1/m averages over all training examples.
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num num-bwd">③</div>
+      <div class="step-card-body">
+        <div class="card-title">Compute dA⁽ˡ⁻¹⁾ — gradient to pass to the previous layer</div>
+        <div class="card-text">
+          <code>dA⁽ˡ⁻¹⁾ = W⁽ˡ⁾ᵀ · dZ⁽ˡ⁾</code><br>
+          Wᵀ reverses the forward linear transformation. This is the "message" sent leftward. The previous layer receives it as its incoming gradient.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight red">
+    <strong>Why Wᵀ and not W?</strong> In the forward pass, W⁽ˡ⁾ has shape (n⁽ˡ⁾, n⁽ˡ⁻¹⁾). It maps from n⁽ˡ⁻¹⁾ dimensions to n⁽ˡ⁾ dimensions. In the backward pass, we need to map a gradient of shape (n⁽ˡ⁾, m) back to shape (n⁽ˡ⁻¹⁾, m). Transposing W gives (n⁽ˡ⁻¹⁾, n⁽ˡ⁾), and the multiply works: (n⁽ˡ⁻¹⁾, n⁽ˡ⁾)·(n⁽ˡ⁾, m) = (n⁽ˡ⁻¹⁾, m) ✓
+  </div>
+
+  <div class="insight green">
+    <strong>Why dW = dZ · Aᵀ?</strong> From the chain rule: since Z = W·A + b, we have ∂Z/∂W = A (the input). The gradient w.r.t. W is (incoming dZ) combined with (the input A). Matrix calculus gives exactly dZ·Aᵀ — the transpose makes dimensions work out to match W's shape (n⁽ˡ⁾, n⁽ˡ⁻¹⁾).
+  </div>
+</div>
+<div class="side-col">
+  <div class="side-card">
+    <h4>Why * (Hadamard) for dZ but · (matmul) for dA?</h4>
+    <p><code>dZ = dA ∗ g'(Z)</code> uses element-wise multiply because g is applied element-wise — every neuron independently applies its activation. The chain rule for element-wise functions is element-wise.</p>
+    <p><code>dA⁽ˡ⁻¹⁾ = Wᵀ · dZ</code> uses matrix multiply because Z = WA mixes neurons together — each element of Z depends on ALL elements of A through W. The chain rule for a linear mix is a matrix multiply.</p>
+  </div>
+  <div class="side-card">
+    <h4>Why 1/m for dW and db?</h4>
+    <p>The cost function J is the <strong>average</strong> loss over m examples: J = (1/m)·ΣL⁽ⁱ⁾. Taking the derivative of an average introduces a 1/m factor. Without it, the gradient magnitude would depend on dataset size, making the learning rate meaningless.</p>
+  </div>
+  <div class="side-card">
+    <h4>Why sum for db but not dW?</h4>
+    <p>The bias b has shape (n, 1) — one value per neuron. Its gradient over m examples must be summed (and divided by m) to collapse the m-column matrix to a single column. dW already has the right shape from dZ·Aᵀ, so no explicit sum is needed.</p>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════ PAGE 4: 6 EQUATIONS ═══ -->
+<div class="page" id="page-4">
+<div class="two-col">
+<div class="main-col">
+  <div class="section-title">All 6 backprop equations</div>
+  <div class="section-sub">The complete set — with derivation reasoning for each one</div>
+
+  <p class="prose">For a 2-layer network (or any layer ℓ in a deeper network), backprop is described by exactly 6 equations. They always come in the same order.</p>
+
+  <table class="ann-table">
+    <thead><tr><th>#</th><th>Equation</th><th>Why this formula?</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="tag tag-bwd">1</span> dZ⁽ˡ⁾</td>
+        <td id="eq1"></td>
+        <td>
+          <strong>Chain rule through the activation.</strong> dA⁽ˡ⁾ is the gradient coming in. g'(Z⁽ˡ⁾) is the local slope of the activation at each neuron. Element-wise multiply because g is applied element-wise. For the output layer with sigmoid + cross-entropy, this simplifies beautifully to just <strong>Ŷ − Y</strong>.
+        </td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-bwd">2</span> dW⁽ˡ⁾</td>
+        <td id="eq2"></td>
+        <td>
+          <strong>Gradient of the loss w.r.t. weights.</strong> Since Z⁽ˡ⁾ = W⁽ˡ⁾·A⁽ˡ⁻¹⁾ + b, and dL/dW = dL/dZ · dZ/dW, and dZ/dW = A⁽ˡ⁻¹⁾ (the input), we get dZ · Aᵀ. Transpose makes the dimensions produce the same shape as W. Divide by m to average across examples.
+        </td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-bwd">3</span> db⁽ˡ⁾</td>
+        <td id="eq3"></td>
+        <td>
+          <strong>Gradient of the loss w.r.t. bias.</strong> Since dZ/db = 1 (bias adds linearly), dL/db = dL/dZ · 1 = dZ. But dZ has m columns (one per example). Sum across examples (axis=1, keepdims=True) and divide by m. Result: same shape as b, which is (n⁽ˡ⁾, 1).
+        </td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-bwd">4</span> dA⁽ˡ⁻¹⁾</td>
+        <td id="eq4"></td>
+        <td>
+          <strong>Gradient to pass to the previous layer.</strong> The Jacobian of Z = WA w.r.t. A is Wᵀ (from matrix calculus). So dL/dA = Wᵀ · dL/dZ. This is the gradient message sent left — the previous layer receives this as its incoming dA.
+        </td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-bwd">5</span> dA⁽ˡ⁾ output</td>
+        <td id="eq5"></td>
+        <td>
+          <strong>Special case: starting gradient at the output.</strong> For binary cross-entropy loss L = −[y·log(ŷ) + (1−y)·log(1−ŷ)], differentiating w.r.t. ŷ = A⁽L⁾ gives −y/ŷ + (1−y)/(1−ŷ). This is the gradient at the very start of backprop.
+        </td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-bwd">6</span> dZ⁽L⁾ simplified</td>
+        <td id="eq6"></td>
+        <td>
+          <strong>The beautiful simplification.</strong> When you combine equations 4 and 5 (dA⁽L⁾ × sigmoid derivative), the messy fractions cancel completely, leaving just Ŷ − Y. This is why the output layer's gradient is so simple — sigmoid + cross-entropy are mathematically matched to produce this clean result.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="insight gold">
+    <strong>The simplification in equation 6:</strong> dL/dA × da/dZ = [−y/ŷ + (1−y)/(1−ŷ)] × ŷ(1−ŷ) = −y(1−ŷ) + (1−y)ŷ = ŷ − y. The sigmoid and cross-entropy are designed as a pair — together they produce the cleanest possible gradient.
+  </div>
+</div>
+<div class="side-col">
+  <div class="side-card">
+    <h4>Gradient descent update rule</h4>
+    <p>After computing all gradients, update every parameter:</p>
+    <p><code>W⁽ˡ⁾ := W⁽ˡ⁾ − α · dW⁽ˡ⁾</code></p>
+    <p><code>b⁽ˡ⁾ := b⁽ˡ⁾ − α · db⁽ˡ⁾</code></p>
+    <p>α (learning rate) is a hyperparameter you choose. Typical values: 0.01 to 0.001.</p>
+  </div>
+  <div class="side-card">
+    <h4>Order matters — why right to left?</h4>
+    <p>Computing dW⁽¹⁾ requires dZ⁽¹⁾. Computing dZ⁽¹⁾ requires dA⁽¹⁾. Computing dA⁽¹⁾ requires dZ⁽²⁾ from the next layer. So you must compute later layers first — hence right to left.</p>
+    <p>This is also why it's called <strong>back</strong>propagation.</p>
+  </div>
+  <div class="side-card">
+    <h4>Generalization to L layers</h4>
+    <p>For any L-layer network, apply equations 1–4 starting from layer L down to layer 1. At each layer, receive dA from the right, compute dZ, dW, db (for gradient descent), then compute dA to pass left.</p>
+    <p>The pattern is completely uniform — every hidden layer does the same four steps.</p>
+  </div>
+  <div class="side-card">
+    <h4>What if we use ReLU instead of sigmoid?</h4>
+    <p>Equation 1 changes: <code>dZ = dA ∗ (Z > 0)</code>. The ReLU derivative is 1 where Z>0 and 0 elsewhere. This acts as a binary mask — neurons that were active pass the gradient, dead neurons block it completely.</p>
+    <p>Equations 2, 3, 4 stay exactly the same.</p>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════ PAGE 5: PLAYGROUND ═══ -->
+<div class="page" id="page-5">
+<div class="two-col">
+<div class="main-col">
+  <div class="section-title">Live playground</div>
+  <div class="section-sub">Trace one complete forward + backward pass with real numbers</div>
+
+  <div class="ctrl-bar">
+    <div class="slider-row" style="flex:1">
+      <span>w₁ =</span>
+      <input type="range" id="sl-w1" min="-3" max="3" step="0.1" value="0.5" oninput="updatePlay()"/>
+      <span class="slider-val" id="sv-w1">0.5</span>
+    </div>
+    <div class="slider-row" style="flex:1">
+      <span>w₂ =</span>
+      <input type="range" id="sl-w2" min="-3" max="3" step="0.1" value="-0.3" oninput="updatePlay()"/>
+      <span class="slider-val" id="sv-w2">-0.3</span>
+    </div>
+  </div>
+  <div class="ctrl-bar">
+    <div class="slider-row" style="flex:1">
+      <span>b =</span>
+      <input type="range" id="sl-b" min="-2" max="2" step="0.1" value="0.1" oninput="updatePlay()"/>
+      <span class="slider-val" id="sv-b">0.1</span>
+    </div>
+    <div class="slider-row" style="flex:1">
+      <span>α =</span>
+      <input type="range" id="sl-lr" min="0.01" max="1" step="0.01" value="0.1" oninput="updatePlay()"/>
+      <span class="slider-val" id="sv-lr">0.1</span>
+    </div>
+  </div>
+  <div class="ctrl-bar">
+    <div class="slider-row" style="flex:0.5">
+      <span>x₁ =</span>
+      <input type="range" id="sl-x1" min="-2" max="2" step="0.1" value="1.0" oninput="updatePlay()"/>
+      <span class="slider-val" id="sv-x1">1.0</span>
+    </div>
+    <div class="slider-row" style="flex:0.5">
+      <span>x₂ =</span>
+      <input type="range" id="sl-x2" min="-2" max="2" step="0.1" value="0.5" oninput="updatePlay()"/>
+      <span class="slider-val" id="sv-x2">0.5</span>
+    </div>
+    <div class="slider-row" style="flex:0.3">
+      <span>y =</span>
+      <select id="sl-y" onchange="updatePlay()" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;">
+        <option value="1">1</option>
+        <option value="0">0</option>
+      </select>
+    </div>
+    <button class="ctrl-btn primary" onclick="runStep()">Run one gradient step →</button>
+  </div>
+
+  <div class="net-wrap" style="margin-bottom:8px;">
+    <canvas id="canvas-play" class="net-canvas" height="180"></canvas>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--fwd);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">— Forward pass</div>
+      <div class="live-grid" id="live-fwd"></div>
+    </div>
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--bwd);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">— Backward pass</div>
+      <div class="live-grid" id="live-bwd"></div>
+    </div>
+  </div>
+
+  <div id="update-row" style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text2);line-height:2;">
+  </div>
+
+  <div class="gd-wrap" style="margin-top:12px;">
+    <canvas id="canvas-loss" height="160"></canvas>
+  </div>
+  <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px;font-family:'JetBrains Mono',monospace;">loss over gradient descent steps — click "Run one gradient step" repeatedly</div>
+</div>
+<div class="side-col">
+  <div class="side-card">
+    <h4>What you're seeing</h4>
+    <p>A single neuron with 2 inputs. Adjust the sliders to change the weights, inputs, and learning rate. Click "Run one gradient step" to perform one iteration of backprop + update.</p>
+    <p>Watch the loss chart — it should decrease each time (if α is not too large).</p>
+  </div>
+  <div class="side-card">
+    <h4>Try these experiments</h4>
+    <p><strong>1. Large learning rate:</strong> Set α=0.9. Watch the loss bounce or diverge instead of decreasing smoothly.</p>
+    <p><strong>2. Zero input:</strong> Set x₁=0 and x₂=0. Notice dw₁ and dw₂ become 0 — weights can't update when inputs are zero!</p>
+    <p><strong>3. Correct prediction:</strong> Set w₁, w₂, b so ŷ≈y. The loss is near 0 and gradients are small — the network has "learned".</p>
+    <p><strong>4. Flip y:</strong> Change y from 1 to 0 with the same weights. The gradient flips sign — the network now wants to push ŷ down.</p>
+  </div>
+  <div class="side-card" id="step-log-card">
+    <h4>Step log</h4>
+    <div id="step-log" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);line-height:1.8;max-height:180px;overflow-y:auto;"></div>
+  </div>
+</div>
+</div>
+</div>
+
+<script>
+/* ── page navigation ── */
+function goPage(i, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.step-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+i).classList.add('active');
+  btn.classList.add('active');
+  if (i===2) drawFwd();
+  if (i===3) drawBwd();
+  if (i===5) { updatePlay(); drawLossChart(); }
+}
+
+/* ── KaTeX helpers ── */
+function K(s, display=false) {
+  const el = document.createElement(display?'div':'span');
+  katex.render(s, el, {throwOnError:false, displayMode:display});
+  return el.outerHTML;
+}
+function setK(id, latex, display=false) {
+  const el = document.getElementById(id);
+  if(el) el.innerHTML = K(latex, display);
+}
+
+/* ── render all formulas ── */
+function renderFormulas() {
+  // Chain rule page
+  setK('f-chain1', '\\dfrac{dL}{dx} = \\dfrac{dL}{da} \\cdot \\dfrac{da}{dz} \\cdot \\dfrac{dz}{dx}', true);
+  setK('f-chain2', '\\dfrac{dL}{dw} = \\underbrace{\\dfrac{dL}{da}}_{\\text{loss sensitivity}} \\cdot \\underbrace{\\dfrac{da}{dz}}_{g\'(z)\\text{ — activation slope}} \\cdot \\underbrace{\\dfrac{dz}{dw}}_{x\\text{ — the input}}', true);
+  setK('f-local1', '\\dfrac{dL}{da} = -\\dfrac{y}{\\hat{y}} + \\dfrac{1-y}{1-\\hat{y}}', true);
+  setK('f-local2', '\\dfrac{da}{dz} = \\sigma(z)\\,(1-\\sigma(z)) = a\\,(1-a)', true);
+  setK('f-local3', '\\dfrac{dz}{dw} = \\dfrac{d(wx+b)}{dw} = x', true);
+  setK('f-matrix-chain', 'dA^{(\\ell-1)} = W^{(\\ell)\\top} \\cdot dZ^{(\\ell)}', true);
+
+  // Forward table
+  setK('t-f1', 'Z^{(\\ell)} = W^{(\\ell)} A^{(\\ell-1)} + b^{(\\ell)}');
+  setK('t-f2', 'A^{(\\ell)} = g\\!\\left(Z^{(\\ell)}\\right)');
+  setK('t-f3', '\\hat{Y} = \\sigma\\!\\left(Z^{(L)}\\right) = \\tfrac{1}{1+e^{-Z^{(L)}}}');
+  setK('t-f4', 'J = -\\tfrac{1}{m}\\sum\\!\\left[Y\\log\\hat{Y} + (1-Y)\\log(1-\\hat{Y})\\right]');
+
+  // 6 equations
+  setK('eq1', 'dZ^{(\\ell)} = dA^{(\\ell)} * g\'(Z^{(\\ell)})');
+  setK('eq2', 'dW^{(\\ell)} = \\tfrac{1}{m}\\,dZ^{(\\ell)}\\,A^{(\\ell-1)\\top}');
+  setK('eq3', 'db^{(\\ell)} = \\tfrac{1}{m}\\,\\text{sum}(dZ^{(\\ell)},\\,\\text{axis}=1)');
+  setK('eq4', 'dA^{(\\ell-1)} = W^{(\\ell)\\top} \\cdot dZ^{(\\ell)}');
+  setK('eq5', '\\dfrac{\\partial L}{\\partial \\hat{y}} = -\\dfrac{y}{\\hat{y}} + \\dfrac{1-y}{1-\\hat{y}}');
+  setK('eq6', 'dZ^{(L)} = \\hat{Y} - Y \\quad \\text{(sigmoid + cross-entropy)}');
+}
+
+/* ── intro network canvas ── */
+function drawIntro() {
+  const c = document.getElementById('canvas-intro');
+  if(!c) return;
+  const W = c.offsetWidth||600; c.width=W; c.height=200;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,W,200);
+
+  const layers = [[0.15,0.5,0.85],[0.38,0.62],[0.5],[0.73]];
+  const xPos = [W*0.12, W*0.38, W*0.62, W*0.85];
+  const nodes = layers.map((ys,li) => ys.map(y => ({x:xPos[li],y:y*200})));
+  const colors = ['#4a9eff','#a78bfa','#a78bfa','#ff6b6b'];
+
+  // Draw forward edges
+  for(let l=0;l<nodes.length-1;l++) {
+    for(let i=0;i<nodes[l].length;i++) {
+      for(let j=0;j<nodes[l+1].length;j++) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[l][i].x+14, nodes[l][i].y);
+        ctx.lineTo(nodes[l+1][j].x-14, nodes[l+1][j].y);
+        ctx.strokeStyle = l<2 ? 'rgba(74,158,255,0.25)' : 'rgba(255,107,107,0.25)';
+        ctx.lineWidth=1;
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Animated arrows
+  const t = (Date.now()/1000)%3;
+  for(let l=0;l<nodes.length-1;l++) {
+    const a = nodes[l][0], b2 = nodes[l+1][0];
+    const phase = (t - l*0.4 + 3) % 3;
+    const pt = phase/3;
+    const px = a.x+14 + (b2.x-14-a.x-14)*pt;
+    const py = a.y + (b2.y-a.y)*pt;
+    ctx.beginPath();
+    ctx.arc(px,py,3,0,Math.PI*2);
+    ctx.fillStyle = l<2 ? '#4a9eff' : '#ff6b6b';
+    ctx.fill();
+  }
+
+  // Layer labels
+  const lbls = ['Input','Hidden 1','Hidden 2','Output'];
+  lbls.forEach((lbl,li) => {
+    ctx.fillStyle = colors[li];
+    ctx.font = '11px JetBrains Mono';
+    ctx.textAlign='center';
+    ctx.fillText(lbl, xPos[li], 14);
+  });
+
+  // Nodes
+  nodes.forEach((ns,li) => {
+    ns.forEach(n => {
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,13,0,Math.PI*2);
+      ctx.fillStyle = colors[li]+'22';
+      ctx.fill();
+      ctx.strokeStyle = colors[li];
+      ctx.lineWidth=1.5;
+      ctx.stroke();
+    });
+  });
+
+  requestAnimationFrame(drawIntro);
+}
+
+/* ── forward pass computation graph ── */
+function drawFwd() {
+  const c = document.getElementById('canvas-fwd');
+  if(!c) return;
+  const W = c.offsetWidth||600; c.width=W; c.height=240;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,W,240);
+
+  const nodes2 = [
+    {x:W*0.1, y:120, label:'X', sub:'(nₓ,m)', col:'#4a9eff'},
+    {x:W*0.3, y:80,  label:'W⁽¹⁾', sub:'(n¹,nₓ)', col:'#4a9eff'},
+    {x:W*0.3, y:155, label:'b⁽¹⁾', sub:'(n¹,1)', col:'#4ecb8d'},
+    {x:W*0.5, y:120, label:'Z⁽¹⁾', sub:'(n¹,m)', col:'#a78bfa'},
+    {x:W*0.65,y:120, label:'A⁽¹⁾', sub:'(n¹,m)', col:'#a78bfa'},
+    {x:W*0.82,y:80,  label:'W⁽²⁾', sub:'(n²,n¹)', col:'#4a9eff'},
+    {x:W*0.82,y:155, label:'b⁽²⁾', sub:'(n²,1)', col:'#4ecb8d'},
+    {x:W*0.95,y:120, label:'Z⁽²⁾→Ŷ', sub:'(n²,m)', col:'#d4a84b'},
+  ];
+
+  const edges = [[0,3],[1,3],[2,3],[3,4],[4,7],[5,7],[6,7]];
+  const edgeLabel = {3:'z=Wa+b', 5:'g(z)', 12:''};
+
+  edges.forEach(([a,b2]) => {
+    const na=nodes2[a], nb=nodes2[b2];
+    ctx.beginPath();
+    ctx.moveTo(na.x+22,na.y); ctx.lineTo(nb.x-22,nb.y);
+    ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=1;ctx.stroke();
+    // arrow
+    const ex=nb.x-22,ey=nb.y;
+    ctx.beginPath();ctx.moveTo(ex-6,ey-4);ctx.lineTo(ex,ey);ctx.lineTo(ex-6,ey+4);
+    ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.stroke();
+  });
+
+  // Operation labels on edges
+  ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillStyle='rgba(212,168,75,0.7)';
+  ctx.fillText('Z=W·X+b', W*0.4, 100);
+  ctx.fillText('A=g(Z)', W*0.575, 100);
+  ctx.fillText('Z=W·A+b', W*0.88, 100);
+
+  nodes2.forEach(n => {
+    ctx.beginPath();ctx.arc(n.x,n.y,20,0,Math.PI*2);
+    ctx.fillStyle=n.col+'1a';ctx.fill();
+    ctx.strokeStyle=n.col;ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=n.col;ctx.font='bold 11px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(n.label,n.x,n.y+1);
+    ctx.font='9px JetBrains Mono';ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.fillText(n.sub,n.x,n.y+33);
+  });
+}
+
+/* ── backward pass computation graph ── */
+function drawBwd() {
+  const c = document.getElementById('canvas-bwd');
+  if(!c) return;
+  const W = c.offsetWidth||600; c.width=W; c.height=240;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,W,240);
+
+  const bNodes = [
+    {x:W*0.05,y:120, label:'dZ⁽¹⁾',  sub:'(n¹,m)', col:'#ff6b6b'},
+    {x:W*0.22,y:80,  label:'dW⁽¹⁾',  sub:'(n¹,nₓ)', col:'#ff6b6b'},
+    {x:W*0.22,y:160, label:'db⁽¹⁾',  sub:'(n¹,1)', col:'#ff6b6b'},
+    {x:W*0.4, y:120, label:'dA⁽¹⁾',  sub:'(n¹,m)', col:'#ff6b6b'},
+    {x:W*0.55,y:120, label:'dZ⁽²⁾',  sub:'(n²,m)', col:'#ff6b6b'},
+    {x:W*0.72,y:80,  label:'dW⁽²⁾',  sub:'(n²,n¹)', col:'#ff6b6b'},
+    {x:W*0.72,y:160, label:'db⁽²⁾',  sub:'(n²,1)', col:'#ff6b6b'},
+    {x:W*0.9, y:120, label:'Ŷ−Y',     sub:'start', col:'#d4a84b'},
+  ];
+
+  const bEdges = [[7,4],[4,3],[4,5],[4,6],[3,0],[0,1],[0,2]];
+  bEdges.forEach(([a,b2]) => {
+    const na=bNodes[a],nb=bNodes[b2];
+    ctx.beginPath();ctx.moveTo(na.x-22,na.y);ctx.lineTo(nb.x+22,nb.y);
+    ctx.strokeStyle='rgba(255,107,107,0.2)';ctx.lineWidth=1;ctx.stroke();
+    const ex=nb.x+22,ey=nb.y;
+    ctx.beginPath();ctx.moveTo(ex+6,ey-4);ctx.lineTo(ex,ey);ctx.lineTo(ex+6,ey+4);
+    ctx.strokeStyle='rgba(255,107,107,0.3)';ctx.stroke();
+  });
+
+  ctx.font='9px JetBrains Mono';ctx.textAlign='center';ctx.fillStyle='rgba(255,107,107,0.6)';
+  ctx.fillText('Wᵀ·dZ', W*0.48, 100);
+  ctx.fillText('dZ·Aᵀ÷m', W*0.27, 62);
+  ctx.fillText('sum÷m', W*0.27, 145);
+  ctx.fillText('Wᵀ·dZ', W*0.32, 100);
+  ctx.fillText('dZ·Aᵀ÷m', W*0.63, 62);
+  ctx.fillText('sum÷m', W*0.63, 145);
+
+  bNodes.forEach(n => {
+    ctx.beginPath();ctx.arc(n.x,n.y,20,0,Math.PI*2);
+    ctx.fillStyle=n.col+'1a';ctx.fill();
+    ctx.strokeStyle=n.col;ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=n.col;ctx.font='bold 10px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(n.label,n.x,n.y+1);
+    ctx.font='9px JetBrains Mono';ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.fillText(n.sub,n.x,n.y+33);
+  });
+}
+
+/* ── playground ── */
+const sig = z => 1/(1+Math.exp(-z));
+let playState = {w1:0.5,w2:-0.3,b:0.1,lossHist:[]};
+
+function liveCard(label, val, cls='') {
+  return `<div class="live-card"><div class="live-label">${label}</div><div class="live-val ${cls}">${val}</div></div>`;
+}
+
+function updatePlay() {
+  const w1=parseFloat(document.getElementById('sl-w1').value);
+  const w2=parseFloat(document.getElementById('sl-w2').value);
+  const b =parseFloat(document.getElementById('sl-b').value);
+  const x1=parseFloat(document.getElementById('sl-x1').value);
+  const x2=parseFloat(document.getElementById('sl-x2').value);
+  const y =parseFloat(document.getElementById('sl-y').value);
+  const lr =parseFloat(document.getElementById('sl-lr').value);
+
+  document.getElementById('sv-w1').textContent=w1.toFixed(1);
+  document.getElementById('sv-w2').textContent=w2.toFixed(1);
+  document.getElementById('sv-b').textContent=b.toFixed(1);
+  document.getElementById('sv-lr').textContent=lr.toFixed(2);
+  document.getElementById('sv-x1').textContent=x1.toFixed(1);
+  document.getElementById('sv-x2').textContent=x2.toFixed(1);
+
+  const z = w1*x1 + w2*x2 + b;
+  const yhat = sig(z);
+  const loss = -(y*Math.log(yhat+1e-9)+(1-y)*Math.log(1-yhat+1e-9));
+  const dz = yhat - y;
+  const dw1 = dz*x1, dw2 = dz*x2, db_g = dz;
+
+  document.getElementById('live-fwd').innerHTML =
+    liveCard('z = w₁x₁+w₂x₂+b', z.toFixed(4), 'blue') +
+    liveCard('ŷ = σ(z)', yhat.toFixed(4), 'blue') +
+    liveCard('y (true)', y.toFixed(0)) +
+    liveCard('Loss L', loss.toFixed(4), loss>0.5?'red':'green');
+
+  document.getElementById('live-bwd').innerHTML =
+    liveCard('dZ = ŷ−y', dz.toFixed(4), 'red') +
+    liveCard('dw₁ = dZ·x₁', dw1.toFixed(4), 'red') +
+    liveCard('dw₂ = dZ·x₂', dw2.toFixed(4), 'red') +
+    liveCard('db = dZ', db_g.toFixed(4), 'red');
+
+  document.getElementById('update-row').innerHTML =
+    `<strong style="color:var(--gold)">After one gradient step (α=${lr.toFixed(2)}):</strong><br>
+    w₁: ${w1.toFixed(3)} − ${lr.toFixed(2)}×${dw1.toFixed(3)} = <strong style="color:var(--green)">${(w1-lr*dw1).toFixed(3)}</strong> &nbsp;|&nbsp;
+    w₂: ${w2.toFixed(3)} − ${lr.toFixed(2)}×${dw2.toFixed(3)} = <strong style="color:var(--green)">${(w2-lr*dw2).toFixed(3)}</strong> &nbsp;|&nbsp;
+    b: ${b.toFixed(3)} − ${lr.toFixed(2)}×${db_g.toFixed(3)} = <strong style="color:var(--green)">${(b-lr*db_g).toFixed(3)}</strong>`;
+
+  drawPlayCanvas(x1,x2,w1,w2,b,yhat,y,dz);
+  return {z,yhat,loss,dz,dw1,dw2,db_g,w1,w2,b,lr,x1,x2,y};
+}
+
+function runStep() {
+  const v = updatePlay();
+  playState.w1 = v.w1 - v.lr*v.dw1;
+  playState.w2 = v.w2 - v.lr*v.dw2;
+  playState.b  = v.b  - v.lr*v.db_g;
+  playState.lossHist.push(v.loss);
+  if(playState.lossHist.length>40) playState.lossHist.shift();
+
+  document.getElementById('sl-w1').value = playState.w1.toFixed(3);
+  document.getElementById('sl-w2').value = playState.w2.toFixed(3);
+  document.getElementById('sl-b').value  = playState.b.toFixed(3);
+  updatePlay();
+  drawLossChart();
+
+  const log = document.getElementById('step-log');
+  const step = playState.lossHist.length;
+  log.innerHTML = `Step ${step}: L=${v.loss.toFixed(4)}, ŷ=${v.yhat.toFixed(3)}\n` + log.innerHTML;
+}
+
+function drawPlayCanvas(x1,x2,w1,w2,b,yhat,y,dz) {
+  const c = document.getElementById('canvas-play');
+  if(!c) return;
+  const W=c.offsetWidth||600; c.width=W; c.height=180;
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,W,180);
+
+  const nodePos = {
+    x1:{x:W*0.08,y:80}, x2:{x:W*0.08,y:130},
+    z:{x:W*0.45,y:105},
+    yhat:{x:W*0.75,y:105},
+    L:{x:W*0.92,y:105}
+  };
+
+  function drawNode(n,label,sub,col,r=22) {
+    ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);
+    ctx.fillStyle=col+'22';ctx.fill();
+    ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=col;ctx.font='bold 12px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(label,n.x,n.y+4);
+    if(sub){ctx.font='9px JetBrains Mono';ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fillText(sub,n.x,n.y+20);}
+  }
+
+  function drawEdge(a,b2,col,label,lx,ly) {
+    ctx.beginPath();ctx.moveTo(a.x+24,a.y);ctx.lineTo(b2.x-24,b2.y);
+    ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
+    if(label){ctx.fillStyle=col;ctx.font='10px JetBrains Mono';ctx.textAlign='center';ctx.fillText(label,lx,ly);}
+  }
+
+  // forward edges
+  drawEdge(nodePos.x1, nodePos.z, '#4a9eff', `w₁=${w1.toFixed(2)}`, W*0.26, 75);
+  drawEdge(nodePos.x2, nodePos.z, '#4a9eff', `w₂=${w2.toFixed(2)}`, W*0.26, 140);
+  drawEdge(nodePos.z,  nodePos.yhat, '#a78bfa', 'σ(z)', W*0.6, 92);
+  drawEdge(nodePos.yhat,nodePos.L, '#d4a84b', 'BCE', W*0.84, 92);
+
+  // backward: dZ arrow
+  const dzColor = Math.abs(dz)>0.3?'#ff6b6b':'#ff9999';
+  ctx.beginPath();
+  ctx.moveTo(nodePos.yhat.x-24,nodePos.yhat.y+14);
+  ctx.lineTo(nodePos.z.x+24,nodePos.z.y+14);
+  ctx.strokeStyle=dzColor;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=dzColor;ctx.font='9px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText(`dZ=${dz.toFixed(3)}`, W*0.6, 132);
+
+  drawNode(nodePos.x1, `x₁=${x1.toFixed(1)}`, null, '#4a9eff', 22);
+  drawNode(nodePos.x2, `x₂=${x2.toFixed(1)}`, null, '#4a9eff', 22);
+  drawNode(nodePos.z,  `z=${(w1*x1+w2*x2+b).toFixed(2)}`, null, '#a78bfa', 26);
+  drawNode(nodePos.yhat,`ŷ=${yhat.toFixed(3)}`, null, '#d4a84b', 26);
+  drawNode(nodePos.L,  'L', null, '#ff6b6b', 18);
+
+  // y label
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='11px JetBrains Mono';ctx.textAlign='left';
+  ctx.fillText(`y=${y}`, W*0.87, 88);
+}
+
+function drawLossChart() {
+  const c = document.getElementById('canvas-loss');
+  if(!c) return;
+  const W=c.offsetWidth||600; c.width=W; c.height=160;
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,W,160);
+
+  const hist = playState.lossHist;
+  const pad = {l:40,r:20,t:15,b:30};
+  const cw=W-pad.l-pad.r, ch=160-pad.t-pad.b;
+
+  ctx.fillStyle='#1c1c22';ctx.fillRect(0,0,W,160);
+
+  if(hist.length<2){
+    ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='12px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText('click "Run one gradient step" to see loss decrease',W/2,85);return;
+  }
+
+  const maxL=Math.max(...hist)*1.1+0.01, minL=0;
+  const toX=i=>pad.l+i*(cw/(hist.length-1));
+  const toY=v=>pad.t+ch-(v-minL)/(maxL-minL)*ch;
+
+  // grid
+  [0.25,0.5,0.75].forEach(f=>{
+    const gy=pad.t+ch*(1-f);
+    ctx.beginPath();ctx.moveTo(pad.l,gy);ctx.lineTo(pad.l+cw,gy);
+    ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font='9px JetBrains Mono';ctx.textAlign='right';
+    ctx.fillText((maxL*f).toFixed(2),pad.l-4,gy+3);
+  });
+
+  // loss line
+  ctx.beginPath();ctx.moveTo(toX(0),toY(hist[0]));
+  hist.forEach((v,i)=>{if(i>0)ctx.lineTo(toX(i),toY(v));});
+  ctx.strokeStyle='#ff6b6b';ctx.lineWidth=2;ctx.stroke();
+
+  // dots
+  hist.forEach((v,i)=>{
+    ctx.beginPath();ctx.arc(toX(i),toY(v),3,0,Math.PI*2);
+    ctx.fillStyle='#ff6b6b';ctx.fill();
+  });
+
+  // axis labels
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='9px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText('steps',W/2,155);
+  ctx.save();ctx.translate(12,ch/2+pad.t);ctx.rotate(-Math.PI/2);
+  ctx.fillText('loss',0,0);ctx.restore();
+}
+
+/* ── init ── */
+renderFormulas();
+setTimeout(drawIntro, 100);
+</script>
+</body>
+</html>
